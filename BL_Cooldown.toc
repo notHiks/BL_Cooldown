@@ -1,0 +1,11 @@
+## Interface: 50200
+## Version: 3.11
+## Title: |cffc41f3bBlood Legion|r Cooldown
+## Notes: Minimalistic Visual Raid Cooldowns
+## OptionalDeps: ElvUI
+## SavedVariables: BLCDDB
+## DefaultState: Enabled
+## LoadOnDemand: 0
+
+libs\load_libs.xml
+load_bl_cooldown.xml

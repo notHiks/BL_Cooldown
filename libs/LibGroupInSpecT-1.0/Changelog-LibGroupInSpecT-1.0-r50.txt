@@ -1,0 +1,24 @@
+------------------------------------------------------------------------
+r50 | oscarucb | 2013-02-24 02:47:34 +0000 (Sun, 24 Feb 2013) | 3 lines
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.0.lua
+   M /trunk/LibGroupInSpecT-1.0.toc
+
+tweak minor version code
+toc bump
+
+------------------------------------------------------------------------
+r49 | anyia3 | 2013-02-24 01:36:48 +0000 (Sun, 24 Feb 2013) | 9 lines
+Changed paths:
+   M /trunk/LibGroupInSpecT-1.0.lua
+
+Improved role information, from Greltok (thanks!)
+
+This introduces the field .spec_role_detailed, which when available has one
+of the following values: "tank", "melee", "ranged" or "healer"
+
+Additionally the .spec_role field may now be populated earlier for classes
+which only have one possible role.
+
+
+------------------------------------------------------------------------

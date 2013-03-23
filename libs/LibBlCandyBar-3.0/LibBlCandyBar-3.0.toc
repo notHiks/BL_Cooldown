@@ -1,0 +1,9 @@
+## Interface: 50200
+## Title: Lib: LibBlCandyBar-3.0
+## Notes: Adapted LibCandyBar-3.0 for BLCD.
+## Author: damonkeytime, Rabbit, Ammo
+
+embeds.xml
+
+lib.xml
+

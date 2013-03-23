@@ -1,0 +1,697 @@
+--------------------------------------------------------
+-- Blood Legion Raidcooldowns - Options --
+--------------------------------------------------------
+if not BLCD then return end
+local BLCD = BLCD
+local AceConfig = LibStub("AceConfig-3.0") -- For the options panel
+local AceConfigDialog = LibStub("AceConfigDialog-3.0") -- Also for options panel
+local AceDB = LibStub("AceDB-3.0") -- Makes saving things really easy
+local AceDBOptions = LibStub("AceDBOptions-3.0") -- More database options
+
+function BLCD:SetupOptions()
+	BLCD.options.args.profile = AceDBOptions:GetOptionsTable(BLCD.db)
+	
+	AceConfig:RegisterOptionsTable("BLCD", BLCD.options, nil)
+	
+	BLCD.optionsFrames = {}
+	BLCD.optionsFrames.general = AceConfigDialog:AddToBlizOptions("BLCD", "Blood Legion Cooldown", nil, "general")
+	BLCD.optionsFrames.cooldowns = AceConfigDialog:AddToBlizOptions("BLCD", "Cooldown Settings", "Blood Legion Cooldown", "cooldown")
+	BLCD.optionsFrames.profile = AceConfigDialog:AddToBlizOptions("BLCD", "Profiles", "Blood Legion Cooldown", "profile")
+end
+
+BLCD.TexCoords = {.08, .92, .08, .92}
+
+BLCD.defaults = {
+	profile = {
+		castannounce = false,
+		cdannounce = false,
+		clickannounce = false,
+		scale = 1,
+		growth = "right",
+		show = "always",
+		autocheckextra = false,
+		hideempty = false,
+		cooldown = {
+			PAL_DEAU = true,
+			PAL_HAOFSA = true,
+			PAL_HAOFPR = true,
+			PRI_POWOBA = true,
+			PRI_PASU = true,
+			PRI_DIHY = true,
+			PRI_GUSP = true,
+			PRI_VOSH = true,
+			PRI_HYOFHO = true,
+			DRU_TR = true,
+			DRU_IR = true,
+			DRU_RE = true,
+			DRU_IN = true,
+			SHA_SPLITO = true,
+			SHA_MATITO = true,
+			SHA_HETITO = true,
+			SHA_STTO = true,
+			SHA_TRTO = true,
+			SHA_BL = false,
+			SHA_HE = false,
+			MON_ZEME = true,
+			MON_LICO = true,
+			MON_RE = true,
+			MON_AVHA = true,
+			WARL_SORE = true,
+			DEA_RAAL = true,
+			DEA_ANMAZO = true,
+			WARR_RACR = true,
+			WARR_DEBA = true,
+			WARR_SKBA = true,
+			WARR_VI = true,
+			MAG_TIWA = true,
+			ROG_SMBO = true,
+		},
+	},
+}
+
+BLCD.options =  {
+	type = "group",
+	name = "Blood Legion Cooldown",
+	args = {
+		general = {
+			order = 1,
+			type = "group",
+			name = "General Settings",
+			cmdInline = true,
+			args = {
+				castannounce = {
+					type = "toggle",
+					name = "Announce Casts",
+					order = 2,
+					get = function()
+						return BLCD.profileDB.castannounce
+					end,
+					set = function(key, value)
+						BLCD.profileDB.castannounce = value
+					end,
+				},		
+				cdannounce = {
+					type = "toggle",
+					name = "Announce CD Expire",
+					order = 3,
+					get = function()
+						return BLCD.profileDB.cdannounce
+					end,
+					set = function(key, value)
+						BLCD.profileDB.cdannounce = value
+					end,
+				},		
+				scale = {
+					order = 4,
+					type = "range",
+					name = 'Set Scale',
+					desc = "Sets Scale of Raid Cooldowns",
+					min = 0.3, max = 2, step = 0.01,
+					get = function()
+						return BLCD.profileDB.scale 
+					end,
+					set = function(info, value)
+						BLCD.profileDB.scale = value;
+						BLCD:Scale();
+					end,
+				},	
+				grow = {
+					order = 5,
+					name = "Bar Grow Direction",
+					type = 'select',
+					get = function()
+						return BLCD.profileDB.growth 
+					end,
+					set = function(info, value)
+						BLCD.profileDB.growth = value
+					end,
+					values = {
+						['left'] = "Left",
+						['right'] = "Right",
+					},			
+				},
+				show = {
+					order = 6,
+					name = "Show Main Frame",
+					type = 'select',
+					get = function()
+						return BLCD.profileDB.show 
+					end,
+					set = function(info, value)
+						BLCD.profileDB.show = value
+					end,
+					values = {
+						['always'] = "Always",
+						['raid'] = "Raid",
+						['party'] = "Party",
+						['none'] = "None",
+					},			
+				},
+				configure = {
+					type = "execute",
+					name = "Apply Changes",
+					desc = "Apply the changes to the active cooldowns and reload the UI.",
+					func = function()
+						ReloadUI()
+					end,
+					order = 1,
+					width = "full",
+				},
+				clickannounce = {
+					type = "toggle",
+					name = "Click to Announce Available",
+					order = 7,
+					get = function()
+						return BLCD.profileDB.clickannounce
+					end,
+					set = function(key, value)
+						BLCD.profileDB.clickannounce = value
+					end,
+				},
+				autocheckextra = {
+					type = "toggle",
+					name = "Automatically Check for Extras",
+					desc = "Enabling this option will automatically filter out extra players in the raid.\n\nIf enabled only players in the first groups up to the maximum players allowed will be tracked by BLCD.\n\nYou can manually filter out extras with \"/blcd ext\" and you can resume showing all players with \"/blcd clrext\"",
+					order = 8,
+					get = function()
+						return BLCD.profileDB.autocheckextra
+					end,
+					set = function(key, value)
+						BLCD.profileDB.autocheckextra = value
+					end,
+				},
+				hideempty = {
+					type = "toggle",
+					name = "Hide Empty Cooldowns",
+					desc = "Hide the icons for cooldowns which no one in the raid has",
+					order = 9,
+					get = function()
+						return BLCD.profileDB.hideempty
+					end,
+					set = function(key, value)
+						BLCD.profileDB.hideempty = value
+					end,
+				},
+			},
+		},
+		cooldown = {
+			order = 2,
+			type = "group",
+			name = "Cooldown Settings",
+			cmdInline = true,
+			args = {
+				configure = {
+					type = "execute",
+					name = "Apply Changes",
+					desc = "Apply the changes to the active cooldowns and reload the UI.",
+					func = function()
+						ReloadUI()
+					end,
+					order = 1,
+					width = "full",
+				},
+				paladin = {
+					type = "group",
+					name = "Paladin Cooldowns",
+					order = 2,
+					args ={
+						PAL_DEAU = {
+							type = "toggle",
+							name = "Devotion Aura",
+							desc = "Inspire all party and raid members within 40 yards, granting them immunity to Silence and Interrupt effects and reducing all magic damage taken by 20%. Lasts 6 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_DEAU
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_DEAU = value
+							end,
+						},
+						PAL_HAOFSA = {
+							type = "toggle",
+							name = "Hand of Sacrifice",
+							desc = "Places a Hand on a party or raid member, transferring 30% damage taken to the Paladin. Lasts 12 sec or until the Paladin has transferred 100% of their maximum health.  Players may only have one Hand on them per Paladin at any one time.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_HAOFSA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_HAOFSA = value
+							end,
+						},					
+						PAL_HAOFPR = {
+							type = "toggle",
+							name = "Hand of Protection",
+							desc = "Places a Hand on a party or raid member, protecting them from all physical attacks for 10 sec, but during that time they cannot attack or use physical abilities.  Players may only have one Hand on them per Paladin at any one time.\n\nCannot be used on a target with Forbearance.  Causes Forbearance for 1 min.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_HAOFPR
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_HAOFPR = value
+							end,
+						},					
+					},
+				},
+				priest = {
+					type = "group",
+					name = "Priest Cooldowns",
+					order = 2,
+					args ={
+						PRI_POWOBA = {
+							type = "toggle",
+							name = "Power Word: Barrier",
+							desc = "Summons a holy barrier on the target location that reduces all damage done to friendly targets by 25%. While within the barrier, spellcasting will not be interrupted by damage. The barrier lasts for 10 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_POWOBA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_POWOBA = value
+							end,
+						},
+						PRI_PASU = {
+							type = "toggle",
+							name = "Pain Suppression",
+							desc = "Instantly reduces a friendly target's threat by 5%, and reduces all damage they take by 40% for 8 sec. Castable while stunned.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_PASU
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_PASU = value
+							end,
+						},		
+						PRI_DIHY = {
+							type = "toggle",
+							name = "Divine Hymn",
+							desc = "Heals 5 nearby lowest health friendly party or raid targets within 40 yards for 7987 (+ 154.2% of Spell Power) every 2 sec for 8 sec, and increases healing done to them by 10% for 8 sec. The Priest must channel to maintain the spell.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_DIHY
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_DIHY = value
+							end,
+						},		
+						PRI_GUSP = {
+							type = "toggle",
+							name = "Guardian Spirit",
+							desc = "Calls upon a guardian spirit to watch over the friendly target. The spirit increases the healing received by the target by 60%, and also prevents the target from dying by sacrificing itself. This sacrifice terminates the effect but heals the target of 50% of their maximum health. Lasts 10 sec. Castable while stunned.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_GUSP
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_GUSP = value
+							end,
+						},		
+						PRI_VOSH = {
+							type = "toggle",
+							name = "Void Shift",
+							desc = "Restores 2% mana to 3 nearby low mana friendly party or raid targets every 2 sec for 8 sec, and increases their total maximum mana by 15% for 8 sec. Maximum of 12 mana restores. The Priest must channel to maintain the spell.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_VOSH
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_VOSH = value
+							end,
+						},
+						PRI_HYOFHO = {
+							type = "toggle",
+							name = "Hymn Of Hope",
+							desc = "You and the currently targeted party or raid member swap health percentages. Increases the lower health percentage of the two to 25% if below that amount.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_HYOFHO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_HYOFHO = value
+							end,
+						},							
+					},
+				},
+				druid = {
+					type = "group",
+					name = "Druid Cooldowns",
+					order = 2,
+					args ={
+						DRU_TR = {
+							type = "toggle",
+							name = "Tranquility",
+							desc = "Heals 5 nearby lowest health party or raid targets within 40 yards with Tranquility every 2 sec for 8 sec.\n\nTranquility heals for 9037 (+ 83.5% of Spell Power) plus an additional 1542 (+ 14.2% of Spell Power) every 2 sec over 8 sec. Stacks up to 3 times. The Druid must channel to maintain the spell.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DRU_TR
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DRU_TR = value
+							end,
+						},		
+						DRU_IR = {
+							type = "toggle",
+							name = "Ironbark",
+							desc = "The target's skin becomes as tough as Ironwood, reducing all damage taken by 20%. Lasts 12 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DRU_IR
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DRU_IR = value
+							end,
+						},	
+						DRU_RE = {
+							type = "toggle",
+							name = "Rebirth",
+							desc = "Returns the spirit to the body, restoring a dead target to life with 60% health and 20% mana.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DRU_RE
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DRU_RE = value
+							end,
+						},	
+						DRU_IN = {
+							type = "toggle",
+							name = "Innervate",
+							desc = "Causes the target to regenerate 10% of the caster's maximum mana over 10 sec. If cast on self, the caster will regenerate an additional 10% of maximum mana over 10 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DRU_IN
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DRU_IN = value
+							end,
+						},		
+					},
+				},
+				shaman = {
+					type = "group",
+					name = "Shaman Cooldowns",
+					order = 2,
+					args ={
+						SHA_SPLITO = {
+							type = "toggle",
+							name = "Spirit Link Totem",
+							desc = "Summons an Air Totem with 5 health at the feet of the caster. The totem reduces damage taken by all party and raid members within 10 yards by 10%. Every 1 sec, the health of all affected players is redistributed, such that each player ends up with the same percentage of their maximum health. Lasts 6 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_SPLITO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_SPLITO = value
+							end,
+						},		
+						SHA_MATITO = {
+							type = "toggle",
+							name = "Mana Tide Totem",
+							desc = "Summons a Water Totem with 10% of the caster's health at the feet of the caster for 16 sec.  Party and raid members within 40 yards of the totem gain 200% of the caster's Spirit (excluding short - duration Spirit bonuses).",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_MATITO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_MATITO = value
+							end,
+						},		
+						SHA_HETITO = {
+							type = "toggle",
+							name = "Healing Tide Totem",
+							desc = "Summons a Water Totem with 10% of the caster's health at the feet of the caster for (11 sec) sec. The Healing Tide Totem pulses every 2 sec, healing the 5 most injured party or raid members within 40 yards for 4932 (+ 48.4% of Spell Power).",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_HETITO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_HETITO = value
+							end,
+						},		
+						SHA_STTO = {
+							type = "toggle",
+							name = "Stormlash Totem",
+							desc = "Summons an Air Totem with 5 health at the feet of the caster, empowering allies within 40 yards with lightning.  While empowered, allies' spells and attacks will trigger bursts of electricity, dealing additional Nature damage to their target. Lasts 10 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_STTO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_STTO = value
+							end,
+						},		
+						SHA_TRTO = {
+							type = "toggle",
+							name = "Tremor Totem",
+							desc = "Summons an Earth Totem with 5 health at the feet of the caster that shakes the ground around it for 6 sec, removing Fear, Charm and Sleep effects from party and raid members within 30 yards.  This totem may be dropped even while the caster is afflicted with such effects.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_TRTO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_TRTO = value
+							end,
+						},		
+						SHA_BL = {
+							type = "toggle",
+							name = "Bloodlust",
+							desc = "Increases melee, ranged, and spell haste by 30% for all party and raid members. Lasts 40 sec.\n\nAllies receiving this effect will become Sated and be unable to benefit from Bloodlust or Time Warp again for 10 min.",
+							order = 1,
+							disabled = function()
+								return (UnitFactionGroup("player") ~= "Horde")
+							end,
+							get = function()
+								if (UnitFactionGroup("player") ~= "Horde") then
+									return false
+								else
+									return BLCD.profileDB.cooldown.SHA_BL
+								end
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_BL = value
+							end,
+						},		
+						SHA_HE = {
+							type = "toggle",
+							name = "Heroism",
+							desc = "Increases melee, ranged, and spell haste by 30% for all party and raid members. Lasts 40 sec.\n\nAllies receiving this effect will become Exhausted and be unable to benefit from Heroism or Time Warp again for 10 min.",
+							order = 1,
+							disabled = function()
+								return (UnitFactionGroup("player") ~= "Alliance")
+							end,
+							get = function()
+								if (UnitFactionGroup("player") ~= "Alliance") then
+									return false
+								else
+									return BLCD.profileDB.cooldown.SHA_HE
+								end
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_HE = value
+							end,
+						},		
+					},
+				},
+				monk = {
+					type = "group",
+					name = "Monk Cooldowns",
+					order = 2,
+					args ={
+						MON_ZEME = {
+							type = "toggle",
+							name = "Zen Meditation",
+							desc = "Reduces all damage taken by 90% and redirects to you up to 5 harmful spells cast against party and raid members within 30 yards.  Lasts 8 sec.\n\nBeing the victim of a melee attack will break your meditation, cancelling the effect.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MON_ZEME
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MON_ZEME = value
+							end,
+						},	
+						MON_LICO = {
+							type = "toggle",
+							name = "Life Cocoon",
+							desc = "Encases the target in a cocoon of Chi energy, absorbing 79916 (+ 1100% of Spell Power) damage and increasing all periodic healing taken by 50%. Lasts for 12 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MON_LICO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MON_LICO = value
+							end,
+						},	
+						MON_RE = {
+							type = "toggle",
+							name = "Revival",
+							desc = "Instantly heals all party and raid members within vision for 13684 (+ 500% of Spell Power), and clears them of any harmful Magical, Poison and Disease effects.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MON_RE
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MON_RE = value
+							end,
+						},	
+						MON_AVHA = {
+							type = "toggle",
+							name = "Avert Harm",
+							desc = "You cause 20% of all damage party and raid members within 10 yards take to be re-directed to you. Lasts for 6 sec.\n\nThe damage received through Avert Harm can be Staggered. Avert Harm is cancelled if you reach 10% or lower health.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MON_AVHA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MON_AVHA = value
+							end,
+						},	
+					},
+				},
+				warlock = {
+					type = "group",
+					name = "Warlock Cooldowns",
+					order = 2,
+					args ={
+						WARL_SORE = {
+							type = "toggle",
+							name = "Soulstone Resurrection",
+							desc = "When cast on living party or raid members, the soul of the target is stored and they will be able to resurrect upon death.\n\nIf cast on a dead target, they are instantly resurrected. Targets resurrect with 60% health and 20% mana.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARL_SORE
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARL_SORE = value
+							end,
+						},
+					},
+				},
+				DK = {
+					type = "group",
+					name = "Death Knight Cooldowns",
+					order = 2,
+					args ={
+						DEA_RAAL = {
+							type = "toggle",
+							name = "Raise Ally",
+							desc = "Pours dark energy into a dead target, reuniting spirit and body to allow the target to reenter battle with 60% health and 20% mana.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DEA_RAAL
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DEA_RAAL = value
+							end,
+						},
+						DEA_ANMAZO = {
+							type = "toggle",
+							name = "Anti-Magic Zone",
+							desc = "Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members inside it by 75%.  The Anti-Magic Zone lasts for 10 sec or until it absorbs at least 136800 (+ 400% of Strength) spell damage.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DEA_ANMAZO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DEA_ANMAZO = value
+							end,
+						},
+					},
+				},
+				warrior = {
+					type = "group",
+					name = "Warrior Cooldowns",
+					order = 2,
+					args ={
+						WARR_RACR = {
+							type = "toggle",
+							name = "Rallying Cry",
+							desc = "Temporarily grants you and all party or raid members within 30 yards 20% of maximum health for 10 sec.  After the effect expires, the health is lost.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_RACR
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_RACR = value
+							end,
+						},
+						WARR_DEBA = {
+							type = "toggle",
+							name = "Demoralizing Banner",
+							desc = "Throw down a war banner within 30 yards that decreases the damage dealt by all enemies within 30 yards of the banner by 10%. Lasts 15 sec.\n\nYou can Intervene to your war banner.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_DEBA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_DEBA = value
+							end,
+						},
+						WARR_SKBA = {
+							type = "toggle",
+							name = "Skull Banner",
+							desc = "Throw down a war banner at your feet that increases the critical damage of party or raid members within 40 yards of the banner by 20%. Lasts 10 sec.\n\nYou can Intervene to your war banner.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_SKBA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_SKBA = value
+							end,
+						},
+						WARR_VI = {
+							type = "toggle",
+							name = "Vigilance",
+							desc = "Focus your protective gaze on a party or raid member, transferring 30% of damage taken to you for 12 sec.\n\nDuring the duration of Vigilance, your Taunt has no cooldown.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_VI
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_VI = value
+							end,
+						},
+					},
+				},
+				mage = {
+					type = "group",
+					name = "Mage Cooldowns",
+					order = 2,
+					args ={
+						MAG_TIWA = {
+							type = "toggle",
+							name = "Time Warp",
+							desc = "Warp the flow of time, increasing melee, ranged, and spell haste by 30% for all party and raid members. Lasts 40 sec.\n\nAllies receiving this effect will become unstuck in time, and be unable to benefit from Bloodlust, Heroism, or Time Warp again for 10 min.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MAG_TIWA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MAG_TIWA = value
+							end,
+						},
+					},
+				},
+				rogue = {
+					type = "group",
+					name = "Rogue Cooldowns",
+					order = 2,
+					args ={
+						ROG_SMBO = {
+							type = "toggle",
+							name = "Smoke Bomb",
+							desc = "Creates a cloud of thick smoke in an 8 yard radius around the Rogue for 5 sec. Enemies are unable to target into or out of the smoke cloud. Allies take 20% less damage while within the cloud.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.ROG_SMBO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.ROG_SMBO = value
+							end,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+--------------------------------------------------------

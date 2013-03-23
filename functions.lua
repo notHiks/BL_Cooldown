@@ -3,8 +3,8 @@
 --------------------------------------------------------
 if not BLCD then return end
 local BLCD = BLCD
-local LGIST=LibStub:GetLibrary("LibGroupInSpecT-1.0")
-local BLCB = LibStub("LibBlCandyBar-3.0")
+local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.0")
+local CB = LibStub("LibCandyBar-3.0")
 local Elv = IsAddOnLoaded("ElvUI")
 
 if(Elv) then
@@ -110,7 +110,7 @@ end
 
 
 function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
-	local bar = BLCB:New(BLCD:BLTexture(), 100, 9)
+	local bar = CB:New(BLCD:BLTexture(), 100, 9)
 	frameicon.bars[bar] = true
 	bar:Set("raidcooldowns:module", "raidcooldowns")
 	bar:Set("raidcooldowns:anchor", frameicon)
@@ -128,7 +128,7 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
 	
-	bar.blCandyBarLabel:SetJustifyH("LEFT")
+	bar.candyBarLabel:SetJustifyH("LEFT")
 	BLCD:BLCreateBG(bar)
 	
 	bar:Start()

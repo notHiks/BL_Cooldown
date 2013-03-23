@@ -1,4 +1,6 @@
 3.11
+-Returned to latest LibCandyBar-3.0 release
+
 -Corrected .pkgmeta paths
 
 -Added repository to WowAce

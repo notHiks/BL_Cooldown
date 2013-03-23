@@ -1,25 +1,24 @@
---- **LibBlCandyBar-3.0** provides elegant timerbars with icons for use in addons.
--- Adapted from LibBlCandyBar-3.0 for use in BLCD
+--- **LibCandyBar-3.0** provides elegant timerbars with icons for use in addons.
 -- It is based of the original ideas of the CandyBar and CandyBar-2.0 library.
--- In contrary to the earlier libraries LibBlCandyBar-3.0 provides you with a timerbar object with a simple API.
+-- In contrary to the earlier libraries LibCandyBar-3.0 provides you with a timerbar object with a simple API.
 --
 -- Creating a new timerbar using the ':New' function will return a new timerbar object. This timerbar object inherits all of the barPrototype functions listed here. \\
 --
 -- @usage
--- local candy = LibStub("LibBlCandyBar-3.0")
+-- local candy = LibStub("LibCandyBar-3.0")
 -- local texture = "Interface\\AddOns\\MyAddOn\\statusbar"
 -- local mybar = candy:New(texture, 100, 16)
 -- mybar:SetLabel("Yay!")
 -- mybar:SetDuration(60)
 -- mybar:Start()
 -- @class file
--- @name LibBlCandyBar-3.0
+-- @name LibCandyBar-3.0
 
-local major = "LibBlCandyBar-3.0"
-local minor = tonumber(("$Rev: 0 $"):match("(%d+)")) or 1
-if not LibStub then error("LibBlCandyBar-3.0 requires LibStub.") end
+local major = "LibCandyBar-3.0"
+local minor = tonumber(("$Rev: 51 $"):match("(%d+)")) or 1
+if not LibStub then error("LibCandyBar-3.0 requires LibStub.") end
 local cbh = LibStub:GetLibrary("CallbackHandler-1.0")
-if not cbh then error("LibBlCandyBar-3.0 requires CallbackHandler-1.0") end
+if not cbh then error("LibCandyBar-3.0 requires CallbackHandler-1.0") end
 local lib, old = LibStub:NewLibrary(major, minor)
 if not lib then return end
 lib.callbacks = lib.callbacks or cbh:New(lib)
@@ -62,25 +61,25 @@ local function resetBar(bar)
 		bar:SetScript(script, nil)
 	end
 
-	bar.blCandyBarBar:GetStatusBarTexture():SetHorizTile(false)
-	bar.blCandyBarBackground:SetVertexColor(0.5, 0.5, 0.5, 0.3)
+	bar.candyBarBar:GetStatusBarTexture():SetHorizTile(false)
+	bar.candyBarBackground:SetVertexColor(0.5, 0.5, 0.5, 0.3)
 	bar:ClearAllPoints()
 	bar:SetWidth(bar.width)
 	bar:SetHeight(bar.height)
 	bar:SetMovable(1)
 	bar:SetScale(1)
 	bar:SetAlpha(1)
-	bar.blCandyBarLabel:SetTextColor(1,1,1,1)
-	bar.blCandyBarLabel:SetJustifyH("CENTER")
-	bar.blCandyBarLabel:SetJustifyV("MIDDLE")
-	bar.blCandyBarLabel:SetFont(_fontName, _fontSize)
-	bar.blCandyBarLabel:SetFontObject("GameFontHighlightSmallOutline")
+	bar.candyBarLabel:SetTextColor(1,1,1,1)
+	bar.candyBarLabel:SetJustifyH("CENTER")
+	bar.candyBarLabel:SetJustifyV("MIDDLE")
+	bar.candyBarLabel:SetFont(_fontName, _fontSize)
+	bar.candyBarLabel:SetFontObject("GameFontHighlightSmallOutline")
 
-	bar.blCandyBarDuration:SetTextColor(1,1,1,1)
-	bar.blCandyBarDuration:SetJustifyH("CENTER")
-	bar.blCandyBarDuration:SetJustifyV("MIDDLE")
-	bar.blCandyBarDuration:SetFont(_fontName, _fontSize)
-	bar.blCandyBarDuration:SetFontObject("GameFontHighlightSmallOutline")
+	bar.candyBarDuration:SetTextColor(1,1,1,1)
+	bar.candyBarDuration:SetJustifyH("CENTER")
+	bar.candyBarDuration:SetJustifyV("MIDDLE")
+	bar.candyBarDuration:SetFont(_fontName, _fontSize)
+	bar.candyBarDuration:SetFontObject("GameFontHighlightSmallOutline")
 end
 
 local tformat1 = "%s%d:%02d"
@@ -96,23 +95,23 @@ local function barUpdate(anim)
 		self.remaining = time
 
 		if self.fill then
-			self.blCandyBarBar:SetValue(t)
+			self.candyBarBar:SetValue(t)
 		else
-			self.blCandyBarBar:SetValue(time)
+			self.candyBarBar:SetValue(time)
 		end
 
 		if time > 3599.9 then -- > 1 hour
 			local h = floor(time/3600)
 			local m = time - (h*3600)
-			self.blCandyBarDuration:SetFormattedText(tformat1, self.isApproximate, h, m)
+			self.candyBarDuration:SetFormattedText(tformat1, self.isApproximate, h, m)
 		elseif time > 59.9 then -- 1 minute to 1 hour
 			local m = floor(time/60)
 			local s = time - (m*60)
-			self.blCandyBarDuration:SetFormattedText(tformat1, self.isApproximate, m, s)
+			self.candyBarDuration:SetFormattedText(tformat1, self.isApproximate, m, s)
 		elseif time < 10 then -- 0 to 10 seconds
-			self.blCandyBarDuration:SetFormattedText(tformat2, self.isApproximate, time)
+			self.candyBarDuration:SetFormattedText(tformat2, self.isApproximate, time)
 		else -- 10 seconds to one minute
-			self.blCandyBarDuration:SetFormattedText(tformat3, self.isApproximate, time)
+			self.candyBarDuration:SetFormattedText(tformat3, self.isApproximate, time)
 		end
 
 		if self.funcs then
@@ -128,22 +127,22 @@ end
 local function restyleBar(self)
 	if not self.running then return end
 	-- In the past we used a :GetTexture check here, but as of WoW v5 it randomly returns nil, so use our own variable.
-	if self.blCandyBarIconFrame.icon then
-		self.blCandyBarBar:SetPoint("TOPLEFT", self.blCandyBarIconFrame, "TOPRIGHT")
-		self.blCandyBarBar:SetPoint("BOTTOMLEFT", self.blCandyBarIconFrame, "BOTTOMRIGHT")
-		self.blCandyBarIconFrame:SetWidth(self.height)
-		self.blCandyBarIconFrame:Show()
+	if self.candyBarIconFrame.icon then
+		self.candyBarBar:SetPoint("TOPLEFT", self.candyBarIconFrame, "TOPRIGHT")
+		self.candyBarBar:SetPoint("BOTTOMLEFT", self.candyBarIconFrame, "BOTTOMRIGHT")
+		self.candyBarIconFrame:SetWidth(self.height)
+		self.candyBarIconFrame:Show()
 	else
-		self.blCandyBarBar:SetPoint("TOPLEFT", self)
-		self.blCandyBarBar:SetPoint("BOTTOMLEFT", self)
-		self.blCandyBarIconFrame:Hide()
+		self.candyBarBar:SetPoint("TOPLEFT", self)
+		self.candyBarBar:SetPoint("BOTTOMLEFT", self)
+		self.candyBarIconFrame:Hide()
 	end
-	if self.blCandyBarLabel:GetText() then self.blCandyBarLabel:Show()
-	else self.blCandyBarLabel:Hide() end
+	if self.candyBarLabel:GetText() then self.candyBarLabel:Show()
+	else self.candyBarLabel:Hide() end
 	if self.showTime then
-		self.blCandyBarDuration:Show()
+		self.candyBarDuration:Show()
 	else
-		self.blCandyBarDuration:Hide()
+		self.candyBarDuration:Hide()
 	end
 end
 
@@ -173,21 +172,21 @@ function barPrototype:Get(key) return self.data and self.data[key] end
 -- @param g Green component (0-1)
 -- @param b Blue component (0-1)
 -- @param a Alpha (0-1)
-function barPrototype:SetColor(...) self.blCandyBarBar:SetStatusBarColor(...) end
+function barPrototype:SetColor(...) self.candyBarBar:SetStatusBarColor(...) end
 --- Sets the texture of the bar.
 -- This should only be needed on running bars that get changed on the fly.
 -- @param texture Path to the bar texture.
 function barPrototype:SetTexture(texture)
-	self.blCandyBarBar:SetStatusBarTexture(texture)
-	self.blCandyBarBar:GetStatusBarTexture():SetHorizTile(false)
-	self.blCandyBarBackground:SetTexture(texture)
+	self.candyBarBar:SetStatusBarTexture(texture)
+	self.candyBarBar:GetStatusBarTexture():SetHorizTile(false)
+	self.candyBarBackground:SetTexture(texture)
 end
 --- Sets the label on the bar.
 -- @param text Label text.
-function barPrototype:SetLabel(text) self.blCandyBarLabel:SetText(text); restyleBar(self) end
+function barPrototype:SetLabel(text) self.candyBarLabel:SetText(text); restyleBar(self) end
 --- Sets the icon next to the bar.
 -- @param icon Path to the icon texture or nil to not display an icon.
-function barPrototype:SetIcon(icon) self.blCandyBarIconFrame:SetTexture(icon); self.blCandyBarIconFrame.icon = icon; restyleBar(self) end
+function barPrototype:SetIcon(icon) self.candyBarIconFrame:SetTexture(icon); self.candyBarIconFrame.icon = icon; restyleBar(self) end
 --- Sets wether or not the time indicator on the right of the bar should be shown.
 -- Time is shown by default.
 -- @param bool true to show the time, false/nil to hide the time.
@@ -202,9 +201,9 @@ function barPrototype:Start()
 	restyleBar(self)
 	if self.fill then
 		local t = GetTime()
-		self.blCandyBarBar:SetMinMaxValues(t, t + self.remaining)
+		self.candyBarBar:SetMinMaxValues(t, t + self.remaining)
 	else
-		self.blCandyBarBar:SetMinMaxValues(0, self.remaining)
+		self.candyBarBar:SetMinMaxValues(0, self.remaining)
 	end
 	self.exp = GetTime() + self.remaining
 	self.anim:SetScript("OnLoop", barUpdate)
@@ -212,16 +211,16 @@ function barPrototype:Start()
 	self:Show()
 end
 --- Stops the bar.
--- This will stop the bar, fire the LibBlCandyBar_Stop callback, and recycle the bar into the candybar pool.
--- Note: make sure you remove all references to the bar in your addon upon receiving the LibBlCandyBar_Stop callback.
+-- This will stop the bar, fire the LibCandyBar_Stop callback, and recycle the bar into the candybar pool.
+-- Note: make sure you remove all references to the bar in your addon upon receiving the LibCandyBar_Stop callback.
 -- @usage
--- -- The example below shows the use of the LibBlCandyBar_Stop callback by printing the contents of the label in the chatframe
+-- -- The example below shows the use of the LibCandyBar_Stop callback by printing the contents of the label in the chatframe
 -- local function barstopped( callback, bar )
 --   print( bar.candybarLabel:GetText(), "stopped")
 -- end
--- LibStub("LibBlCandyBar-3.0"):RegisterCallback(myaddonobject, "LibBlCandyBar_Stop", barstopped)
+-- LibStub("LibCandyBar-3.0"):RegisterCallback(myaddonobject, "LibCandyBar_Stop", barstopped)
 function barPrototype:Stop()
-	cb:Fire("LibBlCandyBar_Stop", self)
+	cb:Fire("LibCandyBar_Stop", self)
 	stopBar(self)
 	availableBars[#availableBars + 1] = self
 end
@@ -241,7 +240,7 @@ end
 -- @param width Width of the bar.
 -- @param height Height of the bar.
 -- @usage
--- mybar = LibStub("LibBlCandyBar-3.0"):New("Interface\\AddOns\\MyAddOn\\media\\statusbar", 100, 16)
+-- mybar = LibStub("LibCandyBar-3.0"):New("Interface\\AddOns\\MyAddOn\\media\\statusbar", 100, 16)
 function lib:New(texture, width, height)
 	local bar = tremove(availableBars)
 	if not bar then
@@ -252,22 +251,22 @@ function lib:New(texture, width, height)
 		icon:SetPoint("TOPLEFT")
 		icon:SetPoint("BOTTOMLEFT")
 		icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-		bar.blCandyBarIconFrame = icon
+		bar.candyBarIconFrame = icon
 		local statusbar = CreateFrame("StatusBar", nil, bar)
 		statusbar:SetPoint("TOPRIGHT")
 		statusbar:SetPoint("BOTTOMRIGHT")
 		hooksecurefunc(statusbar, "SetValue", setValue)
-		bar.blCandyBarBar = statusbar
+		bar.candyBarBar = statusbar
 		local bg = statusbar:CreateTexture(nil, "BACKGROUND")
 		bg:SetAllPoints()
-		bar.blCandyBarBackground = bg
+		bar.candyBarBackground = bg
 		local duration = statusbar:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmallOutline")
 		duration:SetPoint("RIGHT", statusbar, "RIGHT", -2, 0)
-		bar.blCandyBarDuration = duration
+		bar.candyBarDuration = duration
 		local name = statusbar:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmallOutline")
 		name:SetPoint("LEFT", statusbar, "LEFT", 2, 0)
 		name:SetPoint("RIGHT", statusbar, "RIGHT", -2, 0)
-		bar.blCandyBarLabel = name
+		bar.candyBarLabel = name
 	else
 		bar:SetLabel(nil)
 		bar:SetIcon(nil)
@@ -283,8 +282,8 @@ function lib:New(texture, width, height)
 		update:SetDuration(0.04)
 	end
 
-	bar.blCandyBarBar:SetStatusBarTexture(texture)
-	bar.blCandyBarBackground:SetTexture(texture)
+	bar.candyBarBar:SetStatusBarTexture(texture)
+	bar.candyBarBackground:SetTexture(texture)
 	bar.width = width
 	bar.height = height
 	resetBar(bar)

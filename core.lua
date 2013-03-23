@@ -3,7 +3,7 @@
 --------------------------------------------------------
 if not BLCD then return end
 local BLCD = BLCD
-local BLCB = LibStub("LibBlCandyBar-3.0")
+local CB = LibStub("LibCandyBar-3.0")
 local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.0")
 local AceConfig = LibStub("AceConfig-3.0") -- For the options panel
 local AceConfigDialog = LibStub("AceConfigDialog-3.0") -- Also for options panel
@@ -290,7 +290,7 @@ function BLCD:CreateCooldown(index, cooldown)
 		end
 	end
 	
-	BLCB.RegisterCallback(self, "LibBlCandyBar_Stop", CleanBar)
+	CB.RegisterCallback(self, "LibCandyBar_Stop", CleanBar)
 	
 	frameicon:SetScript("OnEnter", function(self,event, ...)
 		BLCD:OnEnter(self, cooldown, BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']])
@@ -359,29 +359,6 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spell,duration)
 	if not(BLCD.curr[cooldown['spellID']][guid]) then
 	    BLCD.curr[cooldown['spellID']][guid] = bar
     end
-end
-
-function BLCD:StopCD(args)
-	BLCD.curr[args[1]['spellID']][args[2]] = nil;
-	
-	local a = args[5]:Get("raidcooldowns:anchor")
-	if a and a.bars and a.bars[args[5]] then
-		args[5]:Stop()
-        BLCD:RearrangeBars(a) 
-	end
-	
-	if(BLCD.profileDB.cdannounce) then
-		local name = select(1, GetSpellInfo(args[1]['spellID']))
-		if(BLCD:GetPartyType()=="raid") then
-			SendChatMessage(args[6].."'s "..name.." CD UP" ,"RAID");
-		elseif(BLCD:GetPartyType()=="party") then
-			SendChatMessage(args[6].."'s "..name.." CD UP" ,"PARTY");
-		else
-			SendChatMessage(args[6].."'s "..name.." CD UP" ,"PARTY");
-		end
-	end
-	
-	args[4]:SetText(BLCD:GetTotalCooldown(args[1]))
 end
 
 function BLCD:getCooldownCD(cooldown,soureGUID)

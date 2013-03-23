@@ -1,27 +1,27 @@
 externals:
-    AceAddon-3.0:
+    libs/AceAddon-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceAddon-3.0
-    AceBucket-3.0:
+    libs/AceBucket-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceBucket-3.0
-    AceComm-3.0:
+    libs/AceComm-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceComm-3.0
-    AceConfig-3.0:
+    libs/AceConfig-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
-    AceConsole-3.0:
+    libs/AceConsole-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConsole-3.0
-    AceDB-3.0:
+    libs/AceDB-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
-    AceDBOptions-3.0:
+    libs/AceDBOptions-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
-    AceEvent-3.0:
+    libs/AceEvent-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-    AceGUI-3.0:
+    libs/AceGUI-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
-    AceLocale-3.0:
+    libs/AceLocale-3.0:
         url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceLocale-3.0
     libs/CallbackHandler-1.0:
         url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
-    LibGroupInSpecT-1.0:
+    libs/LibGroupInSpecT-1.0:
         url: svn://svn.wowace.com/wow/libgroupinspect/mainline/trunk
     libs/LibStub:
         url: svn://svn.wowace.com/wow/libstub/mainline/trunk

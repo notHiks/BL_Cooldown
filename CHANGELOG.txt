@@ -1,2 +1,4 @@
 3.11
+-Corrected .pkgmeta paths
+
 -Added repository to WowAce

@@ -1,4 +1,9 @@
 3.11
+-Tagged as 3.11
+-Updated TOC
+
+-Removed libraries from repository
+
 -Returned to latest LibCandyBar-3.0 release
 
 -Corrected .pkgmeta paths

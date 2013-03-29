@@ -212,7 +212,7 @@ function BLCD:CreateCooldown(index, cooldown)
 	frameicon:SetBackdropBorderColor(classcolor.r,classcolor.g,classcolor.b)
 	frameicon:SetParent(frame)
 	frameicon.bars = {}
-	BLCD:BLSize(frameicon,30*BLCD.profileDB.scale,30*BLCD.profileDB.scale)
+	BLCD:BLSize(frameicon,28*BLCD.profileDB.scale,28*BLCD.profileDB.scale)
 	frameicon:SetClampedToScreen(true);
 
 	BLCD:SetBarGrowthDirection(frame, frameicon, index)
@@ -440,14 +440,15 @@ function BLCD:SlashProcessor_BLCD(input)
 		print("|cffc41f3bBlood Legion Cooldown|r:")
 		print("/blcd lock - Lock/Unlock Cooldown Frame")
 		print("/blcd show - Hide/Show Cooldown Frame")
+		print("/blcd reset - Reset all running cooldowns")
 		print("/blcd opt - Open BLCD Options")
 		print("---------------------------------------")
 	elseif v1 == "lock" or v1 == "unlock" or v1 == "drag" or v1 == "move" or v1 == "l" then
 		BLCD:ToggleMoversLock()
 	elseif v1 == "show" then
 		BLCD:ToggleVisibility()
-	elseif v1 == "raid" then
-		BLCD:print_raid()
+	--elseif v1 == "raid" then
+		--BLCD:print_raid()
 	elseif v1 == "config" or v1 == "opt" then
 		AceConfigDialog:Open("BLCD")
 	elseif v1 == "extra" or v1 == "ext" then
@@ -456,10 +457,10 @@ function BLCD:SlashProcessor_BLCD(input)
 		BLCD:SetExtras()
 	elseif v1 == "reset" or v1 == "wipe" then
 		BLCD:ResetAll()
-	elseif v1 == "dev" then
-	local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
-	print(maxPlayers)
-		print("dev: "..tostring(true))
+	--elseif v1 == "dev" then
+		--local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
+		--print(maxPlayers)
+		--print("dev: "..tostring(true))
 	else
 		print("BLCD Unrecognized command")
 		print("-------------------------")

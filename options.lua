@@ -52,6 +52,7 @@ BLCD.defaults = {
 			SHA_TRTO = true,
 			SHA_BL = false,
 			SHA_HE = false,
+			SHA_RE = true,
 			MON_ZEME = true,
 			MON_LICO = true,
 			MON_RE = true,
@@ -488,6 +489,18 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.SHA_HE = value
+							end,
+						},		
+						SHA_RE = {
+							type = "toggle",
+							name = "Reincarnation",
+							desc = "Allows you to resurrect yourself upon death with 20% health and mana.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_RE
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_RE = value
 							end,
 						},		
 					},

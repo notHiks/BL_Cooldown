@@ -175,6 +175,13 @@ BLCD.cooldowns = {
 		cast = 40,
 		class = "SHAMAN",
 	},
+	{ -- Reincarnation
+		spellID = 20608,
+		succ = "SPELL_RESURRECT",
+		name = "SHA_RE",
+		CD = 1800,
+		class = "SHAMAN",
+	},
  -- Monk
 	{	-- Zen Meditation
 		spellID = 115176,

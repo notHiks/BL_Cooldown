@@ -206,11 +206,21 @@ end
 -- Frame Functions --
 --------------------------------------------------------
 function BLCD:OnEnter(self, cooldown)
-   local parent = self:GetParent()
+	local parent = self:GetParent()
 	GameTooltip:Hide()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT",3, 14)
 	GameTooltip:ClearLines()
 	GameTooltip:AddSpellByID(cooldown['spellID'])
+	local allCD,onCD =  BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']]
+	for i,v in pairs(onCD) do
+		allCD[i] = nil
+	end
+	if next(allCD) ~= nil then
+		GameTooltip:AddLine(' ')
+		for i,v in pairs(allCD) do
+			GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+		end
+	end
 	GameTooltip:Show()
 end
 
@@ -247,7 +257,7 @@ function BLCD:Scale()
 	for i=1,BLCD.active do
 		BLCD:BLHeight(_G['BLCooldown'..i],28*BLCD.profileDB.scale);
 		BLCD:BLWidth(_G['BLCooldown'..i],145*BLCD.profileDB.scale);	
-		BLCD:BLSize(_G['BLCooldownIcon'..i],28*BLCD.profileDB.scale);
+		BLCD:BLSize(_G['BLCooldownIcon'..i],28*BLCD.profileDB.scale,28*BLCD.profileDB.scale);
 		BLCD:BLFontTemplate(_G['BLCooldownIcon'..i].text, 20*BLCD.profileDB.scale, 'OUTLINE')
 	end
 end

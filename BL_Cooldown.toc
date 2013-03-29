@@ -1,8 +1,8 @@
 ## Interface: 50200
-## Version: 3.11
+## Version: 3.12
 ## Title: |cffc41f3bBlood Legion|r Cooldown
 ## Notes: Minimalistic Visual Raid Cooldowns
-## OptionalDeps: ElvUI, LibStub, CallbackHandler-1.0
+## OptionalDeps: ElvUI, LibStub, CallbackHandler-1.0, AceEvent-3.0, AceTimer-3.0
 ## SavedVariables: BLCDDB
 ## DefaultState: Enabled
 ## LoadOnDemand: 0

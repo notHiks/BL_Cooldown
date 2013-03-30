@@ -82,6 +82,15 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "PRIEST",
 	},
+	{ -- Vampiric Embrace
+		spellID = 15286,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "PRI_VAEM",
+		CD = 180, 
+		cast = 15,
+		class = "PRIEST",
+		spec = 258,
+	},
 -- Druid
 	{ -- Tranquility
 		spellID = 740,
@@ -275,6 +284,14 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "WARRIOR",
 		talent = 5,
+	},
+	{ -- Shattering Throw
+		spellID = 64382,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "WARR_SHTH",
+		CD = 300,
+		cast = 10,
+		class = "WARRIOR",
 	},
 -- Mage
 	{ -- Time Warp

@@ -41,6 +41,7 @@ BLCD.defaults = {
 			PRI_GUSP = true,
 			PRI_VOSH = true,
 			PRI_HYOFHO = true,
+			PRI_VAEM = true,
 			DRU_TR = true,
 			DRU_IR = true,
 			DRU_RE = true,
@@ -64,6 +65,7 @@ BLCD.defaults = {
 			WARR_DEBA = true,
 			WARR_SKBA = true,
 			WARR_VI = true,
+			WARR_SHTH = true,
 			MAG_TIWA = true,
 			ROG_SMBO = true,
 		},
@@ -330,7 +332,19 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.PRI_HYOFHO = value
 							end,
-						},							
+						},
+						PRI_VAEM = {
+							type = 'toggle',
+							name = "Vampiric Embrace",
+							desc = "Fills you with the embrace of Shadow energy, causing you and your allies to be healed for 50% of any single-target Shadow spell damage you deal, split evenly between them. Lasts 15 sec.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PRI_VAEM
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PRI_VAEM = value
+							end,
+						},
 					},
 				},
 				druid = {
@@ -661,6 +675,18 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.WARR_VI = value
+							end,
+						},
+						WARR_SHTH = {
+							type = "toggle",
+							name = "Shattering Throw",
+							desc = "Throws your weapon at the enemy causing 12 damage, reducing the armor on the target by 20% for 10 sec or removing any invulnerabilities.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_SHTH
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_SHTH = value
 							end,
 						},
 					},

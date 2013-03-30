@@ -1,3 +1,8 @@
+3.13
+- Tagged as 3.13
+- Added Shadow Priest's Vampiric Embrace
+- Added Warrior's Shattering Throw
+
 3.12
 - Tagged as 3.12
 - Added AceTimer-3.0 back to libs as AceBucket is dependent on it

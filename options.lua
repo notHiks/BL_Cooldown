@@ -34,39 +34,43 @@ BLCD.defaults = {
 		cooldown = {
 			PAL_DEAU = true,
 			PAL_HAOFSA = true,
-			PAL_HAOFPR = true,
+			PAL_HAOFPR = false,
+			PAL_HOAV = false,
+			PAL_HAOFSAL = false,
 			PRI_POWOBA = true,
-			PRI_PASU = true,
+			PRI_PASU = false,
 			PRI_DIHY = true,
 			PRI_GUSP = true,
-			PRI_VOSH = true,
+			PRI_VOSH = false,
 			PRI_HYOFHO = true,
-			PRI_VAEM = true,
+			PRI_VAEM = false,
 			DRU_TR = true,
-			DRU_IR = true,
+			DRU_IR = false,
 			DRU_RE = true,
 			DRU_IN = true,
-			SHA_SPLITO = true,
+			DRU_HEOFTHWI = false,
+			SHA_SPLITO = false,
 			SHA_MATITO = true,
 			SHA_HETITO = true,
-			SHA_STTO = true,
-			SHA_TRTO = true,
+			SHA_STTO = false,
+			SHA_TRTO = false,
 			SHA_BL = false,
 			SHA_HE = false,
-			SHA_RE = true,
-			MON_ZEME = true,
-			MON_LICO = true,
+			SHA_RE = false,
+			SHA_ANGU = false,
+			MON_ZEME = false,
+			MON_LICO = false,
 			MON_RE = true,
-			MON_AVHA = true,
+			MON_AVHA = false,
 			WARL_SORE = true,
 			DEA_RAAL = true,
-			DEA_ANMAZO = true,
+			DEA_ANMAZO = false,
 			WARR_RACR = true,
 			WARR_DEBA = true,
-			WARR_SKBA = true,
-			WARR_VI = true,
-			WARR_SHTH = true,
-			MAG_TIWA = true,
+			WARR_SKBA = false,
+			WARR_VI = false,
+			WARR_SHTH = false,
+			MAG_TIWA = false,
 			ROG_SMBO = true,
 		},
 	},
@@ -254,6 +258,30 @@ BLCD.options =  {
 								BLCD.profileDB.cooldown.PAL_HAOFPR = value
 							end,
 						},					
+						PAL_HOAV = {
+							type = "toggle",
+							name = "Holy Avenger",
+							desc = "Abilities that generate Holy Power will deal 30% additional damage and healing, and generate 3 charges of Holy Power for the next 18 sec.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_HOAV
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_HOAV = value
+							end,
+						},					
+						PAL_HAOFSAL = {
+							type = "toggle",
+							name = "Hand of Salvation",
+							desc = "Places a Hand on the party or raid member, temporarily removing all their threat for 10 sec. Players may only have one Hand on them per Paladin at any one time.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_HAOFSAL
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_HAOFSAL = value
+							end,
+						},					
 					},
 				},
 				priest = {
@@ -312,7 +340,7 @@ BLCD.options =  {
 						PRI_VOSH = {
 							type = "toggle",
 							name = "Void Shift",
-							desc = "Restores 2% mana to 3 nearby low mana friendly party or raid targets every 2 sec for 8 sec, and increases their total maximum mana by 15% for 8 sec. Maximum of 12 mana restores. The Priest must channel to maintain the spell.",
+							desc = "You and the currently targeted party or raid member swap health percentages. Increases the lower health percentage of the two to 25% if below that amount.",
 							order = 2,
 							get = function()
 								return BLCD.profileDB.cooldown.PRI_VOSH
@@ -324,7 +352,7 @@ BLCD.options =  {
 						PRI_HYOFHO = {
 							type = "toggle",
 							name = "Hymn Of Hope",
-							desc = "You and the currently targeted party or raid member swap health percentages. Increases the lower health percentage of the two to 25% if below that amount.",
+							desc = "Restores 2% mana to 3 nearby low mana friendly party or raid targets every 2 sec for 8 sec, and increases their total maximum mana by 15% for 8 sec. Maximum of 12 mana restores. The Priest must channel to maintain the spell.",
 							order = 2,
 							get = function()
 								return BLCD.profileDB.cooldown.PRI_HYOFHO
@@ -398,6 +426,18 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.DRU_IN = value
+							end,
+						},		
+						DRU_HEOFTHWI = {
+							type = "toggle",
+							name = "Heart of the Wild",
+							desc = "Increases Stamina, Agility, and Intellect by 6% at all times.  When activated, dramatically improves the Druid's ability to perform roles outside of their normal specialization for 45 sec. Grants the following benefits based on current specialization:\n\nNon-Guardian\nWhile in Bear Form, Agility, Expertise, Hit Chance, and armor bonuses increased, Vengeance granted, chance to be hit by melee critical strikes reduced.\n\nNon-Feral\nWhile in Cat Form, Agility, Hit Chance, and Expertise increased.\n\nNon-Restoration\nHealing increased and mana cost of all healing spells reduced by 100%.  Guardian Druids may also cast Rejuvenation while shapeshifted.\n\nNon-Balance\nSpell Damage and Hit Chance increased.  Mana cost of all damage spells reduced by 100%.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.DRU_HEOFTHWI
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.DRU_HEOFTHWI = value
 							end,
 						},		
 					},
@@ -515,6 +555,18 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.SHA_RE = value
+							end,
+						},		
+						SHA_ANGU = {
+							type = "toggle",
+							name = "Ancestral Guidance",
+							desc = "When you deal direct damage or healing for the next 10 sec, 40% of damage or 60% of healing is copied as healing to up to 3 nearby injured party or raid members.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.SHA_ANGU
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.SHA_ANGU = value
 							end,
 						},		
 					},

@@ -1,3 +1,12 @@
+3.14
+- Tagged as 3.14
+- Reduced number of active cooldowns on Default settings
+- Added Paladin's Holy Avenger
+- Added Shaman's Ancestral Guidance
+- Added Druid's Heart of the Wild
+- Added Paladin's Hand of Salvation
+- Corrected Void Shift and Hymn of Hope tooltips
+
 3.13
 - Tagged as 3.13
 - Added Shadow Priest's Vampiric Embrace

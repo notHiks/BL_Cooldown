@@ -30,6 +30,23 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PALADIN",
 	},
+	{ -- Holy Avenger
+		spellID = 105809,
+		name = "PAL_HOAV",
+		succ = "SEPLL_CAST_SUCCESS",
+		CD = 120,
+		cast = 18,
+		class = "PALADIN",
+		talent = 5,
+	},
+	{ -- Hand of Salvation
+		spellID = 105622,
+		name = "PAL_HAOFSAL",
+		succ = "SPELL_CAST_SUCCESS",
+		CD = 120,
+		cast = 10,
+		class = "PALADIN",
+	},
 -- Priest
 	{ -- Power Word: Barrier 
 		spellID = 62618,
@@ -123,6 +140,14 @@ BLCD.cooldowns = {
 		CD = 180,
 		class = "DRUID",
 	},
+	{ -- Heart of the Wild
+		spellID = 108288,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "DRU_HEOFTHWI",
+		CD = 360,
+		class = "DRUID",
+		talent = 6,
+	},
 -- Shaman
 	{ -- Spirit Link Totem
 		spellID = 98008,
@@ -190,6 +215,14 @@ BLCD.cooldowns = {
 		name = "SHA_RE",
 		CD = 1800,
 		class = "SHAMAN",
+	},
+	{ -- Ancestral Guidance
+		spellID = 108281,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "SHA_ANGU",
+		cd = 120,
+		class = "SHAMAN",
+		talent = 5,
 	},
  -- Monk
 	{	-- Zen Meditation

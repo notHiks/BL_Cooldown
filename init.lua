@@ -27,7 +27,7 @@ end)
 
 function BLCD:ADDON_LOADED(name)
 	if (name == "BL_Cooldown") then
-		print("|cffc41f3bBlood Legion Cooldown|r: version 3.14 /blcd for options")
+		print("|cffc41f3bBlood Legion Cooldown|r: version 3.15 /blcd for options")
 	end
 end
 

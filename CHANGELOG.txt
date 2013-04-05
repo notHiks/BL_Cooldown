@@ -1,3 +1,9 @@
+3.15
+- Tagged as 3.15
+- Added Paladin's Light's Hammer and Hand of Purity
+- Added Warrior's Intervene
+- Corrected Hand of Salvation spellID
+
 3.14
 - Tagged as 3.14
 - Reduced number of active cooldowns on Default settings

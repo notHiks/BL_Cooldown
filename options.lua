@@ -37,6 +37,8 @@ BLCD.defaults = {
 			PAL_HAOFPR = false,
 			PAL_HOAV = false,
 			PAL_HAOFSAL = false,
+			PAL_HAOFPU = false,
+			PAL_LIHA = false,
 			PRI_POWOBA = true,
 			PRI_PASU = false,
 			PRI_DIHY = true,
@@ -70,6 +72,7 @@ BLCD.defaults = {
 			WARR_SKBA = false,
 			WARR_VI = false,
 			WARR_SHTH = false,
+			WARR_IN = false,
 			MAG_TIWA = false,
 			ROG_SMBO = true,
 		},
@@ -281,7 +284,31 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.PAL_HAOFSAL = value
 							end,
-						},					
+						},
+						PAL_HAOFPU = {
+							type = "toggle",
+							name = "Hand of Purity",
+							desc = "Places a Hand on the friendly target, reducing damage taken by 10% and damage from harmful periodic effects by an additional 70% for 6 sec. Players may only have one Hand on them per Paladin at any one time.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_HAOFPU
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_HAOFPU = value
+							end,
+						},
+						PAL_LIHA = {
+							type = "toggle",
+							name = "Light's Hammer",
+							desc = "Hurl a Light-infused hammer into the ground, where it will blast a 10 yard area with Arcing Light for (15 sec) sec.\n\nArcing Light\nDeals 100 to 121 (+ 32.1% of Spell Power) Holy damage to enemies and reduces their movement speed by 50% for 2 sec. Heals allies for 100 to 121 (+ 32.1% of Spell Power) every 2 sec.",
+							order = 2,
+							get = function()
+								return BLCD.profileDB.cooldown.PAL_LIHA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.PAL_LIHA = value
+							end,
+						},
 					},
 				},
 				priest = {
@@ -739,6 +766,18 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.WARR_SHTH = value
+							end,
+						},
+						WARR_IN = {
+							type = "toggle",
+							name = "Intervene",
+							desc = "Run at high speed towards a party or raid member, intercepting the next melee or ranged attack within 10 sec while the target remains within 10 yards.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.WARR_IN
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.WARR_IN = value
 							end,
 						},
 					},

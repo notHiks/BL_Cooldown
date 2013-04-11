@@ -19,6 +19,7 @@ end
 local freebarbg = {}
 local cooldownFrameicons = {}
 local cooldownFrames = {}
+local cooldownTimes = {}
 --------------------------------------------------------
 -- Raid Roster Functions --
 --------------------------------------------------------
@@ -327,6 +328,26 @@ function BLCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 	            text:SetText(BLCD:GetTotalCooldown(cooldown))
 			end
 		end
+		if IsInRaid() and eventType == "UNIT_DIED" then
+			local raidWiped = true
+			local maxIndex = GetNumGroupMembers()
+			local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
+			
+			if maxPlayers and maxIndex > maxPlayers then
+				maxIndex = maxPlayers
+			end
+			
+			for i = 1, maxIndex, 1 do
+				if not UnitIsDeadOrGhost("raid" .. i) then
+					raidWiped = false
+					break
+				end
+			end
+		
+			if raidWiped then
+				BLCD:ResetWipe()
+			end
+		end
 	elseif(event =="GROUP_ROSTER_UPDATE") then
 	    local partyType = BLCD:GetPartyType()
 	    if(partyType=="none") then
@@ -418,6 +439,16 @@ function BLCD:ResetAll()
 		end
 	end
 end
+
+function BLCD:ResetWipe()
+	for spellId,guids in pairs(BLCD.curr) do
+		if cooldownTimes[spellId] >= 300 then
+			for guid,bar in pairs(BLCD.curr[spellId]) do
+				bar:Stop()
+			end
+		end
+	end
+end
 --------------------------------------------------------
 
 --------------------------------------------------------
@@ -438,10 +469,13 @@ function BLCD:SlashProcessor_BLCD(input)
 
 	if v1 == "" then
 		print("|cffc41f3bBlood Legion Cooldown|r:")
+		print("/blcd opt - Open BLCD Options")
 		print("/blcd lock - Lock/Unlock Cooldown Frame")
 		print("/blcd show - Hide/Show Cooldown Frame")
 		print("/blcd reset - Reset all running cooldowns")
-		print("/blcd opt - Open BLCD Options")
+		print("/blcd wipe - Reset after a wipe")
+		print("/blcd ext - Manually filter extras in raid")
+		print("/blcd clrext - Remove extra filtering (track all players)")
 		print("---------------------------------------")
 	elseif v1 == "lock" or v1 == "unlock" or v1 == "drag" or v1 == "move" or v1 == "l" then
 		BLCD:ToggleMoversLock()
@@ -455,8 +489,10 @@ function BLCD:SlashProcessor_BLCD(input)
 		BLCD:SetExtras(true)
 	elseif v1 == "clearextra" or v1 == "clrext" then
 		BLCD:SetExtras()
-	elseif v1 == "reset" or v1 == "wipe" then
+	elseif v1 == "reset" then
 		BLCD:ResetAll()
+	elseif v1 == "wipe" then
+		BLCD:ResetWipe()
 	--elseif v1 == "dev" then
 		--local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
 		--print(maxPlayers)
@@ -499,6 +535,7 @@ function BLCD:OnInitialize()
 			index = index + 1;
 			BLCD.curr[cooldown['spellID']] = {}
 			BLCD.cooldownRoster[cooldown['spellID']] = {}
+			cooldownTimes[cooldown['spellID']] = cooldown['CD']
 			cooldownFrames[index] = BLCD:CreateCooldown(index, cooldown);
 		end
     end

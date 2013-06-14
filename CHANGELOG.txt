@@ -1,3 +1,6 @@
+3.18
+- Merge InKahootz dead player code
+
 3.17
 - Update ToC to 5.3
 

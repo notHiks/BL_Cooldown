@@ -327,6 +327,8 @@ function BLCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 				BLCD:StartCD(frame,cooldown,text,soureGUID,soureName,frameicon, spellName,duration)
 	            text:SetText(BLCD:GetTotalCooldown(cooldown))
 			end
+		elseif eventType == "UNIT_DIED" then
+			text:SetText(BLCD:GetTotalCooldown(cooldown))
 		end
 		if IsInRaid() and eventType == "UNIT_DIED" then
 			local raidWiped = true
@@ -398,11 +400,18 @@ function BLCD:GetTotalCooldown(cooldown)
 	local cdTotal = 0
 	
 	for i,v in pairs(BLCD.cooldownRoster[cooldown['spellID']]) do
-		cdTotal=cdTotal+1
-	end
+		local unitalive = not (UnitIsDeadOrGhost(v) or false)
+		if unitalive then
+			cdTotal=cdTotal+1
+		end
+ 	end
 	
 	for i,v in pairs(BLCD.curr[cooldown['spellID']]) do
-		cd=cd+1
+		local _,_,_,_,_,name = GetPlayerInfoByGUID(i)
+		local unitalive = not (UnitIsDeadOrGhost(name) or false)
+		if unitalive then
+			cd=cd+1
+		end
 	end
 
 	local total = (cdTotal-cd)
@@ -448,6 +457,20 @@ function BLCD:ResetWipe()
 			end
 		end
 	end
+end
+
+function BLCD:shallowcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
 end
 --------------------------------------------------------
 

@@ -205,20 +205,27 @@ end
 --------------------------------------------------------
 -- Frame Functions --
 --------------------------------------------------------
-function BLCD:OnEnter(self, cooldown)
+function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 	local parent = self:GetParent()
+	local allCD = BLCD:shallowcopy(rosterCD)
 	GameTooltip:Hide()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT",3, 14)
 	GameTooltip:ClearLines()
 	GameTooltip:AddSpellByID(cooldown['spellID'])
-	local allCD,onCD =  BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']]
 	for i,v in pairs(onCD) do
-		allCD[i] = nil
+		allCD[i] = 0
 	end
 	if next(allCD) ~= nil then
 		GameTooltip:AddLine(' ')
 		for i,v in pairs(allCD) do
-			GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+			if allCD[i] ~= 0 then
+				local unitalive = not (UnitIsDeadOrGhost(v) or false)
+				if unitalive then
+					GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+				else
+					GameTooltip:AddLine(v .. ' DEAD but Ready!', 1, 0, 0)
+				end
+			end
 		end
 	end
 	GameTooltip:Show()
@@ -228,21 +235,44 @@ function BLCD:OnLeave(self)
    GameTooltip:Hide()
 end
 
-function BLCD:PostClick(self, cooldown, rosterCD, curr)
+function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 	if(BLCD.profileDB.clickannounce) then
-		local allCD,onCD = rosterCD, curr
+		local allCD = BLCD:shallowcopy(rosterCD)
 		local name = GetSpellInfo(cooldown['spellID'])
+		local grouptype = BLCD:GetPartyType()
 		for i,v in pairs(onCD) do
-			allCD[i] = nil
+			allCD[i] = 0
 		end
-	
+		
 		if next(allCD) ~= nil then
-			SendChatMessage('----- '..name..' -----','raid')
+		
+			if grouptype == "raid" then
+				SendChatMessage('----- '..name..' -----','raid')
+			else 
+				SendChatMessage('----- '..name..' -----','party')
+			end
+			
 			for i,v in pairs(allCD) do
-				SendChatMessage(v..' ready!','raid')
+				if allCD[i] ~= 0 then
+					local unitalive = not (UnitIsDeadOrGhost(v) or false)
+					if grouptype == "raid" then
+						if unitalive then
+							SendChatMessage(v..' ready!','raid')
+						else
+							SendChatMessage(v..' DEAD but ready!','raid')
+						end
+					else
+						if unitalive then
+							SendChatMessage(v..' ready!','party')
+						else
+							SendChatMessage(v..' DEAD but ready!','party')
+						end	
+					end
+				end
 			end
 		end
 	end
+	allCD = nil
 end
 --------------------------------------------------------
 

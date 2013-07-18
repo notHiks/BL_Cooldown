@@ -238,7 +238,7 @@ BLCD.cooldowns = {
 		spellID = 108281,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "SHA_ANGU",
-		cd = 120,
+		CD = 120,
 		class = "SHAMAN",
 		talent = 5,
 	},

@@ -1,3 +1,6 @@
+3.20
+- Fix Ancestral Guidance
+
 3.19
 - Added Shadow Priest Void Shift tracking
 - Position now saves to profile

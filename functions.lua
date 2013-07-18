@@ -198,6 +198,11 @@ function BLCD:ToggleMoversLock()
 		raidcdbasemover:Hide()
 		BLCD.locked = true
 		print("|cffc41f3bBlood Legion Cooldown|r: locked")
+		local point,_,relPoint,xOfs,yOfs = raidcdbasemover:GetPoint(1)
+		BLCD.profileDB.framePoint = point
+		BLCD.profileDB.relativePoint = relPoint
+		BLCD.profileDB.xOffset = xOfs
+		BLCD.profileDB.yOffset = yOfs
 	end
 end
 --------------------------------------------------------

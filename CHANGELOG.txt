@@ -1,3 +1,7 @@
+3.19
+- Added Shadow Priest Void Shift tracking
+- Position now saves to profile
+
 3.18
 - Merge InKahootz dead player code
 

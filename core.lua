@@ -174,7 +174,7 @@ end
 function BLCD:CreateBase()
 	local raidcdbasemover = CreateFrame("Frame", 'BLCooldownBaseMover_Frame', UIParent)
 	raidcdbasemover:SetClampedToScreen(true)
-	BLCD:BLPoint(raidcdbasemover,'TOPLEFT', UIParent, 'TOPLEFT', 0, 0)
+	BLCD:BLPoint(raidcdbasemover,BLCD.profileDB.framePoint,UIParent,BLCD.profileDB.relativePoint,BLCD.profileDB.xOffset,BLCD.profileDB.yOffset)
 	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,(96)*BLCD.profileDB.scale)
 	if(Elv) then
 		raidcdbasemover:SetTemplate()
@@ -321,6 +321,9 @@ end
 function BLCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 	if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
 		local timestamp, eventType , _, soureGUID, soureName, _, _, destGUID, destName, _, _, spellId, spellName = select(1, ...)
+		if spellId == 142723 and cooldown['spellID'] == 108968 then
+			spellId = 108968
+		end
 		if(eventType == cooldown['succ'] and spellId == cooldown['spellID']) then
 			if (BLCD['raidRoster'][soureGUID]  and not BLCD['raidRoster'][soureGUID]['extra']) then
 				local duration = BLCD:getCooldownCD(cooldown,soureGUID)

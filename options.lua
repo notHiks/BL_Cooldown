@@ -27,6 +27,10 @@ BLCD.defaults = {
 		cdannounce = false,
 		clickannounce = false,
 		scale = 1,
+		xOffset = 0,
+		yOffset = 0,
+		framePoint = 'TOPLEFT',
+		relativePoint = 'TOPLEFT',
 		growth = "right",
 		show = "always",
 		autocheckextra = false,
@@ -99,7 +103,7 @@ BLCD.options =  {
 					set = function(key, value)
 						BLCD.profileDB.castannounce = value
 					end,
-				},		
+				},
 				cdannounce = {
 					type = "toggle",
 					name = "Announce CD Expire",
@@ -110,7 +114,7 @@ BLCD.options =  {
 					set = function(key, value)
 						BLCD.profileDB.cdannounce = value
 					end,
-				},		
+				},
 				scale = {
 					order = 4,
 					type = "range",
@@ -124,7 +128,7 @@ BLCD.options =  {
 						BLCD.profileDB.scale = value;
 						BLCD:Scale();
 					end,
-				},	
+				},
 				grow = {
 					order = 5,
 					name = "Bar Grow Direction",
@@ -138,7 +142,7 @@ BLCD.options =  {
 					values = {
 						['left'] = "Left",
 						['right'] = "Right",
-					},			
+					},
 				},
 				show = {
 					order = 6,

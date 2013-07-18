@@ -106,7 +106,7 @@ BLCD.cooldowns = {
 		spellID = 108968,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "PRI_VOSH",
-		CD = 360,
+		CD = 300,
 		class = "PRIEST",
 	},
 	{ -- Hymn Of Hope
@@ -378,5 +378,10 @@ BLCD.cooldownReduction = {
 				spellID = 740,
 				CD = 180,
 				spec = 105,
+			},
+	["PRI_VOSH"] = { -- Void Shift
+				spellID = 108968,
+				CD = 600,
+				spec = 258,
 			},
 }

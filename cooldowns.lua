@@ -192,7 +192,6 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 10,
 		class = "SHAMAN",
-		talent = 5,
 	},
 	{ -- Stormlash Totem
 		spellID = 120668,
@@ -298,7 +297,7 @@ BLCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		name = "DEA_ANMAZO",
 		CD = 120,
-		cast = 10,
+		cast = 3,
 		class = "DEATHKNIGHT",
 		talent = 2,
 	},

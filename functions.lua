@@ -17,8 +17,41 @@ end
 -- Helper Functions --
 --------------------------------------------------------
 function BLCD:GetPartyType()
-    return ((select(2, IsInInstance()) == "pvp" and "battleground") or (select(2, IsInInstance()) == "arena" and "battleground") or (IsInRaid() and "raid") or (GetNumSubgroupMembers() > 0 and "party") or "none") 
+	local name, instancetype, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID, instanceGroupSize = GetInstanceInfo()
+	if instancetype == "pvp" then
+		return "battleground"
+	elseif instancetype == "arena" then
+		return "party"
+	elseif instancetype == "raid" or IsInRaid() then
+		if difficulty == 7 or difficulty == 11 or difficulty == 12 or difficulty == 14 then
+			return "instance"
+		else
+			return "raid"
+		end
+	elseif instancetype == "party" then
+		return "party"
+	else
+		return "none"
+	end
 end
+
+--[[
+0 - None; not in an Instance.
+1 - 5-player Instance.
+2 - 5-player Heroic Instance.
+3 - 10-player Raid Instance.
+4 - 25-player Raid Instance.
+5 - 10-player Heroic Raid Instance.
+6 - 25-player Heroic Raid Instance.
+7 - Raid Finder Instance.
+8 - Challenge Mode Instance.
+9 - 40-player Raid Instance.
+10 - Not used.
+11 - Heroic Scenario Instance.
+12 - Scenario Instance.
+13 - Not used.
+14 - Flexible Raid.
+]]
 
 function BLCD:print_r ( t )
     local print_r_cache={}
@@ -151,17 +184,22 @@ end
 function BLCD:CheckVisibility()
 	local frame = BLCooldownBase_Frame
     local grouptype = BLCD:GetPartyType()
-
     if(BLCD.profileDB.show == "always") then
 		frame:Show()
 		BLCD.show = true
-	elseif(grouptype == "none") then
+	elseif(BLCD.profileDB.show == "never") then
 		frame:Hide()
 		BLCD.show = nil
-	elseif(BLCD.profileDB.show == "raid" and grouptype =="raid") then
+	elseif(BLCD.profileDB.show == "solo" and grouptype == "none") then
 		frame:Show()
 		BLCD.show = true
-	elseif(BLCD.profileDB.show == "raid" and grouptype ~="raid") then
+	elseif(BLCD.profileDB.show == "solo" and grouptype ~= "none") then
+		frame:Hide()
+		BLCD.show = nil
+	elseif(BLCD.profileDB.show == "raid" and (grouptype =="raid" or grouptype == "instance")) then
+		frame:Show()
+		BLCD.show = true
+	elseif(BLCD.profileDB.show == "raid" and not (grouptype =="raid" or grouptype == "instance")) then
 		frame:Hide()
 		BLCD.show = nil
 	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
@@ -224,9 +262,12 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 		GameTooltip:AddLine(' ')
 		for i,v in pairs(allCD) do
 			if allCD[i] ~= 0 then
-				local unitalive = not (UnitIsDeadOrGhost(v) or false)
-				if unitalive then
+				local unitAlive = not (UnitIsDeadOrGhost(v) or false)
+				local unitOnline = (UnitIsConnected(v) or false)
+				if unitAlive and unitOnline then
 					GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+				elseif not unitOnline then
+					GameTooltip:AddLine(v .. ' OFFLINE but ready!', 1, 0, 0)
 				else
 					GameTooltip:AddLine(v .. ' DEAD but Ready!', 1, 0, 0)
 				end
@@ -252,9 +293,11 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 		if next(allCD) ~= nil then
 		
 			if grouptype == "raid" then
-				SendChatMessage('----- '..name..' -----','raid')
-			else 
-				SendChatMessage('----- '..name..' -----','party')
+				SendChatMessage('----- '..name..' -----','RAID')
+			elseif grouptype == "instance" then
+				SendChatMessage('----- '..name..' -----','INSTANCE_CHAT')			
+			else
+				SendChatMessage('----- '..name..' -----','PARTY')
 			end
 			
 			for i,v in pairs(allCD) do
@@ -262,15 +305,21 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 					local unitalive = not (UnitIsDeadOrGhost(v) or false)
 					if grouptype == "raid" then
 						if unitalive then
-							SendChatMessage(v..' ready!','raid')
+							SendChatMessage(v..' ready!','RAID')
 						else
-							SendChatMessage(v..' DEAD but ready!','raid')
+							SendChatMessage(v..' DEAD but ready!','RAID')
+						end
+					elseif grouptype == "instance" then
+						if unitalive then
+							SendChatMessage(v..' ready!','INSTANCE_CHAT')
+						else
+							SendChatMessage(v..' DEAD but ready!','INSTANCE_CHAT')
 						end
 					else
 						if unitalive then
-							SendChatMessage(v..' ready!','party')
+							SendChatMessage(v..' ready!','PARTY')
 						else
-							SendChatMessage(v..' DEAD but ready!','party')
+							SendChatMessage(v..' DEAD but ready!','PARTY')
 						end	
 					end
 				end
@@ -289,31 +338,50 @@ function BLCD:Scale()
 	local raidcdbasemover = BLCooldownBaseMover_Frame
 	BLCD:BLSize(raidcdbase,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
 	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
-	for i=1,BLCD.active do
+	for i,cooldown in pairs(BLCD.cooldowns) do
+		if (BLCD.db.profile.cooldown[cooldown.name]) then
 		BLCD:BLHeight(_G['BLCooldown'..i],28*BLCD.profileDB.scale);
 		BLCD:BLWidth(_G['BLCooldown'..i],145*BLCD.profileDB.scale);	
 		BLCD:BLSize(_G['BLCooldownIcon'..i],28*BLCD.profileDB.scale,28*BLCD.profileDB.scale);
 		BLCD:BLFontTemplate(_G['BLCooldownIcon'..i].text, 20*BLCD.profileDB.scale, 'OUTLINE')
+		end
 	end
 end
 
 function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 	if(BLCD.profileDB.growth == "left") then
-	    if index == 1 then
-			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
+	    if index == nil then
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
 		else
-			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index-1), 'BOTTOMRIGHT', 0, -4);
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index), 'BOTTOMLEFT', 0, -2);
 		end
 		BLCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
 	elseif(BLCD.profileDB.growth  == "right") then
-		if index == 1 then
+		if index == nil then
 			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
 		else
-			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index-1), 'BOTTOMLEFT', 0, -4);
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index), 'BOTTOMLEFT', 0, -2);
 		end
 		BLCD:BLPoint(frameicon,'TOPLEFT', frame, 'TOPLEFT');
 	end
 end
+
+function BLCD:RepositionFrames(frame, index)
+	if(BLCD.profileDB.growth == "left") then
+	    if index == nil then
+			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
+		else
+			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);
+		end
+	elseif(BLCD.profileDB.growth  == "right") then
+		if index == nil then
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
+		else
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index), 'BOTTOMLEFT', 0, -2);
+		end
+	end
+end
+	
 
 function BLCD:BLHeight(frame, height)
 	if(Elv) then

@@ -125,7 +125,7 @@ BLCD.cooldowns = {
 		cast = 15,
 		class = "PRIEST",
 		spec = 258,
-	},
+	},	
 -- Druid
 	{ -- Tranquility
 		spellID = 740,
@@ -139,7 +139,7 @@ BLCD.cooldowns = {
 		spellID = 102342,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "DRU_IR",
-		CD = 120,
+		CD = 60,
 		cast = 12,
 		class = "DRUID",
 		spec = 105,
@@ -226,13 +226,13 @@ BLCD.cooldowns = {
 		cast = 40,
 		class = "SHAMAN",
 	},
-	{ -- Reincarnation
-		spellID = 20608,
-		succ = "SPELL_RESURRECT",
-		name = "SHA_RE",
-		CD = 1800,
-		class = "SHAMAN",
-	},
+	--{ -- Reincarnation  -- Needs work, currently doesn't show in combatlog. Thanks blizz.
+		--spellID = 20608,
+		--succ = "SPELL_RESURRECT",
+		--name = "SHA_RE",
+		--CD = 1800,
+		--class = "SHAMAN",
+	--},
 	{ -- Ancestral Guidance
 		spellID = 108281,
 		succ = "SPELL_CAST_SUCCESS",
@@ -278,8 +278,8 @@ BLCD.cooldowns = {
 	},
 -- Warlock
 	{ -- Soulstone Resurrection
-		spellID = 95750,
-		succ = "SPELL_RESURRECT",
+		spellID = 20707,
+		succ = "SPELL_CAST_SUCCESS",
 		name = "WARL_SORE",
 		CD = 600,
 		class = "WARLOCK",

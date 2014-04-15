@@ -10,9 +10,8 @@ local AceDBOptions = LibStub("AceDBOptions-3.0") -- More database options
 
 function BLCD:SetupOptions()
 	BLCD.options.args.profile = AceDBOptions:GetOptionsTable(BLCD.db)
-	
 	AceConfig:RegisterOptionsTable("BLCD", BLCD.options, nil)
-	
+
 	BLCD.optionsFrames = {}
 	BLCD.optionsFrames.general = AceConfigDialog:AddToBlizOptions("BLCD", "Blood Legion Cooldown", nil, "general")
 	BLCD.optionsFrames.cooldowns = AceConfigDialog:AddToBlizOptions("BLCD", "Cooldown Settings", "Blood Legion Cooldown", "cooldown")
@@ -137,7 +136,7 @@ BLCD.options =  {
 						return BLCD.profileDB.growth 
 					end,
 					set = function(info, value)
-						BLCD.profileDB.growth = value
+						BLCD.profileDB.growth = value; BLCD:UpdateBarGrowthDirection()
 					end,
 					values = {
 						['left'] = "Left",
@@ -152,25 +151,26 @@ BLCD.options =  {
 						return BLCD.profileDB.show 
 					end,
 					set = function(info, value)
-						BLCD.profileDB.show = value
+						BLCD.profileDB.show = value; BLCD:CheckVisibility()
 					end,
 					values = {
 						['always'] = "Always",
 						['raid'] = "Raid",
 						['party'] = "Party",
-						['none'] = "None",
+						['never'] = "Never",
+						['solo'] = "Solo",
 					},			
 				},
-				configure = {
+				--[[configure = {
 					type = "execute",
 					name = "Apply Changes",
 					desc = "Apply the changes to the active cooldowns and reload the UI.",
 					func = function()
-						ReloadUI()
+						BLCD:DebugFunc()
 					end,
 					order = 1,
 					width = "full",
-				},
+				},]]
 				clickannounce = {
 					type = "toggle",
 					name = "Click to Announce Available",
@@ -203,7 +203,7 @@ BLCD.options =  {
 						return BLCD.profileDB.hideempty
 					end,
 					set = function(key, value)
-						BLCD.profileDB.hideempty = value
+						BLCD.profileDB.hideempty = value; BLCD:DynamicCooldownFrame()
 					end,
 				},
 			},
@@ -214,16 +214,6 @@ BLCD.options =  {
 			name = "Cooldown Settings",
 			cmdInline = true,
 			args = {
-				configure = {
-					type = "execute",
-					name = "Apply Changes",
-					desc = "Apply the changes to the active cooldowns and reload the UI.",
-					func = function()
-						ReloadUI()
-					end,
-					order = 1,
-					width = "full",
-				},
 				paladin = {
 					type = "group",
 					name = "Paladin Cooldowns",
@@ -238,7 +228,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_DEAU
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_DEAU = value
+								BLCD.profileDB.cooldown.PAL_DEAU = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PAL_HAOFSA = {
@@ -250,7 +240,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_HAOFSA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_HAOFSA = value
+								BLCD.profileDB.cooldown.PAL_HAOFSA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},					
 						PAL_HAOFPR = {
@@ -262,7 +252,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_HAOFPR
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_HAOFPR = value
+								BLCD.profileDB.cooldown.PAL_HAOFPR = value; BLCD:DynamicCooldownFrame()
 							end,
 						},					
 						PAL_HOAV = {
@@ -274,7 +264,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_HOAV
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_HOAV = value
+								BLCD.profileDB.cooldown.PAL_HOAV = value; BLCD:DynamicCooldownFrame()
 							end,
 						},					
 						PAL_HAOFSAL = {
@@ -286,7 +276,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_HAOFSAL
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_HAOFSAL = value
+								BLCD.profileDB.cooldown.PAL_HAOFSAL = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PAL_HAOFPU = {
@@ -298,7 +288,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_HAOFPU
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_HAOFPU = value
+								BLCD.profileDB.cooldown.PAL_HAOFPU = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PAL_LIHA = {
@@ -310,7 +300,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PAL_LIHA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PAL_LIHA = value
+								BLCD.profileDB.cooldown.PAL_LIHA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -329,7 +319,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_POWOBA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_POWOBA = value
+								BLCD.profileDB.cooldown.PRI_POWOBA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PRI_PASU = {
@@ -341,7 +331,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_PASU
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_PASU = value
+								BLCD.profileDB.cooldown.PRI_PASU = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						PRI_DIHY = {
@@ -353,7 +343,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_DIHY
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_DIHY = value
+								BLCD.profileDB.cooldown.PRI_DIHY = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						PRI_GUSP = {
@@ -365,7 +355,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_GUSP
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_GUSP = value
+								BLCD.profileDB.cooldown.PRI_GUSP = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						PRI_VOSH = {
@@ -377,7 +367,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_VOSH
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_VOSH = value
+								BLCD.profileDB.cooldown.PRI_VOSH = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PRI_HYOFHO = {
@@ -389,7 +379,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_HYOFHO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_HYOFHO = value
+								BLCD.profileDB.cooldown.PRI_HYOFHO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						PRI_VAEM = {
@@ -401,7 +391,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.PRI_VAEM
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_VAEM = value
+								BLCD.profileDB.cooldown.PRI_VAEM = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -420,7 +410,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DRU_TR
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_TR = value
+								BLCD.profileDB.cooldown.DRU_TR = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						DRU_IR = {
@@ -432,7 +422,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DRU_IR
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_IR = value
+								BLCD.profileDB.cooldown.DRU_IR = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 						DRU_RE = {
@@ -444,7 +434,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DRU_RE
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_RE = value
+								BLCD.profileDB.cooldown.DRU_RE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 						DRU_IN = {
@@ -456,7 +446,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DRU_IN
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_IN = value
+								BLCD.profileDB.cooldown.DRU_IN = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						DRU_HEOFTHWI = {
@@ -468,7 +458,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DRU_HEOFTHWI
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_HEOFTHWI = value
+								BLCD.profileDB.cooldown.DRU_HEOFTHWI = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 					},
@@ -487,7 +477,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_SPLITO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_SPLITO = value
+								BLCD.profileDB.cooldown.SHA_SPLITO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_MATITO = {
@@ -499,7 +489,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_MATITO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_MATITO = value
+								BLCD.profileDB.cooldown.SHA_MATITO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_HETITO = {
@@ -511,7 +501,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_HETITO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_HETITO = value
+								BLCD.profileDB.cooldown.SHA_HETITO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_STTO = {
@@ -523,7 +513,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_STTO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_STTO = value
+								BLCD.profileDB.cooldown.SHA_STTO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_TRTO = {
@@ -535,7 +525,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_TRTO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_TRTO = value
+								BLCD.profileDB.cooldown.SHA_TRTO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_BL = {
@@ -554,7 +544,7 @@ BLCD.options =  {
 								end
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_BL = value
+								BLCD.profileDB.cooldown.SHA_BL = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_HE = {
@@ -573,7 +563,7 @@ BLCD.options =  {
 								end
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_HE = value
+								BLCD.profileDB.cooldown.SHA_HE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_RE = {
@@ -585,7 +575,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_RE
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_RE = value
+								BLCD.profileDB.cooldown.SHA_RE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_ANGU = {
@@ -597,7 +587,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.SHA_ANGU
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_ANGU = value
+								BLCD.profileDB.cooldown.SHA_ANGU = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 					},
@@ -616,7 +606,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.MON_ZEME
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.MON_ZEME = value
+								BLCD.profileDB.cooldown.MON_ZEME = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 						MON_LICO = {
@@ -628,7 +618,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.MON_LICO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.MON_LICO = value
+								BLCD.profileDB.cooldown.MON_LICO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 						MON_RE = {
@@ -640,7 +630,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.MON_RE
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.MON_RE = value
+								BLCD.profileDB.cooldown.MON_RE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 						MON_AVHA = {
@@ -652,7 +642,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.MON_AVHA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.MON_AVHA = value
+								BLCD.profileDB.cooldown.MON_AVHA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},	
 					},
@@ -671,7 +661,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARL_SORE
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARL_SORE = value
+								BLCD.profileDB.cooldown.WARL_SORE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -690,7 +680,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DEA_RAAL
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DEA_RAAL = value
+								BLCD.profileDB.cooldown.DEA_RAAL = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						DEA_ANMAZO = {
@@ -702,7 +692,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.DEA_ANMAZO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.DEA_ANMAZO = value
+								BLCD.profileDB.cooldown.DEA_ANMAZO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -721,7 +711,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_RACR
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_RACR = value
+								BLCD.profileDB.cooldown.WARR_RACR = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						WARR_DEBA = {
@@ -733,7 +723,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_DEBA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_DEBA = value
+								BLCD.profileDB.cooldown.WARR_DEBA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						WARR_SKBA = {
@@ -745,7 +735,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_SKBA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_SKBA = value
+								BLCD.profileDB.cooldown.WARR_SKBA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						WARR_VI = {
@@ -757,7 +747,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_VI
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_VI = value
+								BLCD.profileDB.cooldown.WARR_VI = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						WARR_SHTH = {
@@ -769,7 +759,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_SHTH
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_SHTH = value
+								BLCD.profileDB.cooldown.WARR_SHTH = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						WARR_IN = {
@@ -781,7 +771,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.WARR_IN
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_IN = value
+								BLCD.profileDB.cooldown.WARR_IN = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -800,7 +790,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.MAG_TIWA
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.MAG_TIWA = value
+								BLCD.profileDB.cooldown.MAG_TIWA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},
@@ -819,7 +809,7 @@ BLCD.options =  {
 								return BLCD.profileDB.cooldown.ROG_SMBO
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.ROG_SMBO = value
+								BLCD.profileDB.cooldown.ROG_SMBO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},

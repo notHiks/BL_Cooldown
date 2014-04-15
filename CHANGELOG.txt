@@ -1,3 +1,11 @@
+3.5
+- Large internal update
+- No more reloading when choosing cooldowns and their settings such as bar direction
+- Removed tracking ankh, does not show in the combat log in ANY way
+- Wipe/Boss Defeat detection, better resetting cooldowns
+ *Be on the lookout for CD's that reset but are 3 mins, ie Revival
+- Addon comms allow CD's to be tracked across different player states/realms such as Norushen. Both players must have the latest BLCD for this to work.
+
 3.22
 - Update ToC to 5.4
 - Update to reflect changes in 5.4 (Note: tooltip changes will be in a future patch)

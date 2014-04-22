@@ -156,7 +156,8 @@ BLCD.options =  {
 					values = {
 						['always'] = "Always",
 						['raid'] = "Raid",
-						['party'] = "Party",
+						['party'] = "Party (BG's/Arena included)",
+						['raidorparty'] = "Raid or Party",
 						['never'] = "Never",
 						['solo'] = "Solo",
 					},			

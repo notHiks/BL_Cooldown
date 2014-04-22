@@ -2,7 +2,6 @@
 -- Blood Legion Raidcooldowns - Core --
 --------------------------------------------------------
 if not BLCD then return end
-local BLCD = BLCD
 local CB = LibStub("LibCandyBar-3.0")
 local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.0")
 local AceConfig = LibStub("AceConfig-3.0") -- For the options panel
@@ -381,10 +380,10 @@ function BLCD:UpdateCooldown(frame,event,unit,cooldown,text,frameicon, ...)
 			if (BLCD['raidRoster'][soureGUID]  and not BLCD['raidRoster'][soureGUID]['extra']) then
 				local duration = BLCD:getCooldownCD(cooldown,soureGUID)
 				local index = frame.index
-				local data = {cooldown,soureGUID,sourceName,spellName,duration,index}
-				if UnitIsUnit(sourceName, "player") then BLCD:SendCommand(data) end
-				-- USERDATA: frame,text,frameicon
 				BLCD:StartCD(frame,cooldown,text,soureGUID,sourceName,frameicon, spellName,duration,false)
+				local data = {cooldown,soureGUID,sourceName,spellName,duration,index}
+				BLCD:SendCommand(data)
+				-- USERDATA: frame,text,frameicon
 	            text:SetText(BLCD:GetTotalCooldown(cooldown))
 			end
 		elseif eventType == "UNIT_DIED" or eventType == "SPELL_RESURRECT" then
@@ -575,6 +574,7 @@ function BLCD:SlashProcessor_BLCD(input)
 		--local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
 		--print(maxPlayers)
 		--print("dev: "..tostring(true))
+		--print(BLCD:GetPartyType())
 	else
 		print("BLCD Unrecognized command")
 		print("-------------------------")
@@ -742,20 +742,21 @@ function BLCD:OnCommReceived_MyMessage(prefix, message, distribution, sender)
  elseif prefix == commPrefix and not UnitIsUnit(sender, "player") then
 	local index = DATA[6]
 	--print('recieved@ ', GetTime(), 'from: ', sender, 'message: ', BLCD:print_r(DATA))
-	--local DATA = {cooldown,soureGUID,sourceName,spellName,duration,index}
+	--local DATA = {cooldown,sourceGUID,sourceName,spellName,duration,index}
 	--	DATA			1		 2		   3		  4		   5	   6
-  	if not(BLCD.curr[DATA[1]['spellID']][DATA[2]]) then
-		local frameicon = cooldownFrameicons[DATA[1]['spellID']]
-		local text = frameicon.text
-	  --BLCD:StartCD(frame                , cooldown,text,soureGUID,sourceName,frameicon, spellName,duration, true)
-		BLCD:StartCD(cooldownFrames[index], DATA[1], text,DATA[2],  DATA[3],   frameicon, DATA[4],  DATA[5],  true )
-	    text:SetText(BLCD:GetTotalCooldown(DATA[1]))
-    end
+	if BLCD.db.profile.cooldown[DATA[1]['name']] then -- The player might not be tracking the cooldown that is received from comms
+		if not(BLCD.curr[DATA[1]['spellID']][DATA[2]]) then
+			local frameicon = cooldownFrameicons[DATA[1]['spellID']]
+			local text = frameicon.text
+		  --BLCD:StartCD(frame                , cooldown,text,soureGUID,sourceName,frameicon, spellName,duration, true)
+			BLCD:StartCD(cooldownFrames[index], DATA[1], text,DATA[2],  DATA[3],   frameicon, DATA[4],  DATA[5],  true )
+			text:SetText(BLCD:GetTotalCooldown(DATA[1]))
+		end
+	end
  end
 end
 
 function BLCD:SendCommand(data)
- local t = { someData = "hello", someMoreData = 123 }
  local s = self:Serialize(data)
  self:SendCommMessage(commPrefix, s, "RAID", "", "ALERT")
 end

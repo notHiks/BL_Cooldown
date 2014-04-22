@@ -18,17 +18,13 @@ end
 --------------------------------------------------------
 function BLCD:GetPartyType()
 	local name, instancetype, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID, instanceGroupSize = GetInstanceInfo()
-	if instancetype == "pvp" then
-		return "battleground"
-	elseif instancetype == "arena" then
-		return "party"
-	elseif instancetype == "raid" or IsInRaid() then
+	if instancetype == "raid" or IsInRaid() then
 		if difficulty == 7 or difficulty == 11 or difficulty == 12 or difficulty == 14 then
 			return "instance"
 		else
 			return "raid"
 		end
-	elseif instancetype == "party" then
+	elseif instancetype == "party" or (instancetype == "none" and IsInGroup()) or instancetype == "arena" or instancetype == "pvp" then
 		return "party"
 	else
 		return "none"
@@ -202,6 +198,12 @@ function BLCD:CheckVisibility()
 	elseif(BLCD.profileDB.show == "raid" and not (grouptype =="raid" or grouptype == "instance")) then
 		frame:Hide()
 		BLCD.show = nil
+	elseif(BLCD.profileDB.show == "raidorparty" and (grouptype =="raid" or grouptype == "instance" or grouptype=="party")) then
+		frame:Show()
+		BLCD.show = true
+	elseif(BLCD.profileDB.show == "raidorparty" and not (grouptype =="raid" or grouptype == "instance" or grouptype=="party")) then
+		frame:Hide()
+		BLCD.show = nil	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
 	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
 		frame:Show()
 		BLCD.show = true
@@ -255,6 +257,8 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT",3, 14)
 	GameTooltip:ClearLines()
 	GameTooltip:AddSpellByID(cooldown['spellID'])
+
+	local i,v
 	for i,v in pairs(onCD) do
 		allCD[i] = 0
 	end

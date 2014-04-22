@@ -1,4 +1,8 @@
-3.5
+3.51
+- Bug fix when not tracking a CD but recieved addon comm about it
+- Added Raid/Party option on when to enable BLCD
+
+3.50
 - Large internal update
 - No more reloading when choosing cooldowns and their settings such as bar direction
 - Removed tracking ankh, does not show in the combat log in ANY way

@@ -203,7 +203,7 @@ function BLCD:CheckVisibility()
 		BLCD.show = true
 	elseif(BLCD.profileDB.show == "raidorparty" and not (grouptype =="raid" or grouptype == "instance" or grouptype=="party")) then
 		frame:Hide()
-		BLCD.show = nil	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
+		BLCD.show = nil	
 	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
 		frame:Show()
 		BLCD.show = true

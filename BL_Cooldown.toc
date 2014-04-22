@@ -6,10 +6,6 @@
 ## SavedVariables: BLCDDB
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## X-Curse-Packaged-Version: 3.51
-## X-Curse-Project-Name: Blood Legion Cooldown
-## X-Curse-Project-ID: bl_cooldown
-## X-Curse-Repository-ID: wow/bl_cooldown/mainline
 
 libs\load_libs.xml
 load_bl_cooldown.xml

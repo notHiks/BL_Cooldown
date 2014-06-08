@@ -1,8 +1,8 @@
 --------------------------------------------------------
 -- Blood Legion Raidcooldowns - Initialization --
 --------------------------------------------------------
-local name = "BLCooldown"
-BLCD = LibStub("AceAddon-3.0"):NewAddon(name, "AceEvent-3.0", "AceConsole-3.0", "AceBucket-3.0", "AceComm-3.0", "AceSerializer-3.0")
+local name = "BL_Cooldown"
+BLCD = LibStub("AceAddon-3.0"):NewAddon(name, "AceEvent-3.0", "AceConsole-3.0", "AceBucket-3.0", "AceComm-3.0", "AceSerializer-3.0", "AceTimer-3.0")
 
 if not BLCD then return end
 
@@ -29,7 +29,4 @@ function BLCD:ADDON_LOADED(name)
 	end
 end
 
-function BLCD:GROUP_ROSTER_UPDATE()
-	BLCD:CheckVisibility()
-end
 --------------------------------------------------------

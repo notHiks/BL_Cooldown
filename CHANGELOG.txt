@@ -1,3 +1,12 @@
+r44
+- ALPHA. ALPHA. ALPHA.
+- Added option to show cooldowns available via bars.
+- Report bugs please if using the available bars feature. Do NOT expect it to work 100%.
+-- Due to way tracking player specs/talents works, if you reloadui right before a boss pull. Expect some bars to not show.
+- Reduced amount of text sent via addon comm.
+- Added group version tracking. /blcd who
+- Changed the look of the addon without ElvUI
+
 3.51
 - Bug fix when not tracking a CD but recieved addon comm about it
 - Added Raid/Party option on when to enable BLCD

@@ -17,14 +17,12 @@ end
 -- Helper Functions --
 --------------------------------------------------------
 function BLCD:GetPartyType()
-	local name, instancetype, difficulty, difficultyName, maxPlayers, playerDifficulty, isDynamicInstance, mapID, instanceGroupSize = GetInstanceInfo()
-	if instancetype == "raid" or IsInRaid() then
-		if difficulty == 7 or difficulty == 11 or difficulty == 12 or difficulty == 14 then
-			return "instance"
-		else
-			return "raid"
-		end
-	elseif instancetype == "party" or (instancetype == "none" and IsInGroup()) or instancetype == "arena" or instancetype == "pvp" then
+	local grouptype = (IsInGroup(2) and 3) or (IsInRaid() and 2) or (IsInGroup() and 1)
+	if grouptype == 3 then
+		return "instance"
+	elseif grouptype == 2 then
+		return "raid"
+	elseif grouptype == 1 then
 		return "party"
 	else
 		return "none"
@@ -62,8 +60,12 @@ function BLCD:print_r ( t )
                         print(indent.."["..pos.."] => "..tostring(t).." {")
                         sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
                         print(indent..string.rep(" ",string.len(pos)+6).."}")
-                    else
-                        print(indent.."["..pos.."] => "..tostring(val))
+                    elseif (type(pos)=="table") then
+						print(indent.."["..tostring(pos).."] => "..tostring(t).." {")
+                        sub_print_r(pos,indent..string.rep(" ",string.len(tostring(pos))+8))
+                        print(indent..string.rep(" ",string.len(tostring(pos))+6).."}")
+					else
+                        print(indent.."["..tostring(pos).."] => "..tostring(val))
                     end
                 end
             else
@@ -94,7 +96,70 @@ end
 -- Display Bar Functions --
 --------------------------------------------------------
 local function barSorter(a, b)
-	return a.remaining < b.remaining and true or false
+	if a['running'] and b['running'] then
+		return a.remaining < b.remaining 
+	elseif a['running'] then
+		return true
+	elseif b['running'] then
+		return false
+	else
+		return false
+	end
+end
+
+function BLCD:BLCreateBG(frame)
+	if(Elv) then
+		local bg = nil
+		if #BLCD.frame_cache > 0 then
+			bg = table.remove(BLCD.frame_cache)
+		else
+			bg = CreateFrame("Frame");
+		end
+		bg:SetTemplate("Default")
+		bg:SetParent(frame)
+		bg:ClearAllPoints()
+		bg:Point("TOPLEFT", frame, "TOPLEFT", -2, 2)
+		bg:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
+		bg:SetFrameStrata("MEDIUM")
+		bg:Show()
+		frame:Set("raidcooldowns:elvbg", bg)
+	else
+		local bg = nil
+		if #BLCD.frame_cache > 0 then
+			bg = table.remove(BLCD.frame_cache)
+		else
+			bg = CreateFrame("Frame");
+		end
+		
+		bg:SetBackdrop({
+		  bgFile = "Interface\\BUTTONS\\WHITE8X8", 
+		  edgeFile = "Interface\\BUTTONS\\WHITE8X8", 
+		  tile = false, tileSize = 0, edgeSize = 1, 
+		  insets = { left = 0, right = 0, top = 0, bottom = 0}
+		})	
+		
+		local backdropTexture = bg:CreateTexture(nil, "BORDER")
+		backdropTexture:SetDrawLayer("BACKGROUND", 1)
+		bg.backdropTexture = backdropTexture
+		
+		if bg.backdropTexture then 
+		bg:SetBackdropColor(0, 0, 0, 1)
+		bg.backdropTexture:SetVertexColor(.1, .1, .1)
+		bg.backdropTexture:SetAlpha(1)		
+		bg.backdropTexture:SetTexture("Interface\\BUTTONS\\WHITE8X8")
+		bg.backdropTexture:SetInside(bg)
+		end
+		bg:SetBackdropBorderColor(0, 0, 0)
+
+		
+		bg:SetParent(frame)
+		bg:ClearAllPoints()
+		bg:Point("TOPLEFT", frame, "TOPLEFT", -2, 2)
+		bg:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
+		bg:SetFrameStrata("MEDIUM")
+		bg:Show()
+		frame:Set("raidcooldowns:elvbg", bg)	
+	end
 end
 
 function BLCD:RearrangeBars(anchor)
@@ -112,7 +177,7 @@ function BLCD:RearrangeBars(anchor)
     for bar in pairs(anchor.bars) do
 		if bar:IsVisible() then
 			currBars[#currBars + 1] = bar
-		else
+		else	
 			bar:Stop()
 			anchor.bars[bar] = nil
 		end
@@ -137,7 +202,6 @@ function BLCD:RearrangeBars(anchor)
 	end
 end
 
-
 function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	local bar = CB:New(BLCD:BLTexture(), 100, 9)
 	frameicon.bars[bar] = true
@@ -159,19 +223,51 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	
 	bar.candyBarLabel:SetJustifyH("LEFT")
 	BLCD:BLCreateBG(bar)
-	
-	bar:Start()
-
-	BLCD:RearrangeBars(frameicon)
-	
 	return bar
-end
+end	
 
 function BLCD:CancelBars(frameicon)
-    for k in pairs(frameicon.bars) do
+    for k in pairs(frameicon['bars']) do
         k:Stop()
+		frameicon.bars[k] = nil
     end
 end
+
+function BLCD:restyleBar(self)
+	self.candyBarBar:SetPoint("TOPLEFT", self)
+	self.candyBarBar:SetPoint("BOTTOMLEFT", self)
+	self.candyBarIconFrame:Hide()
+	if self.candyBarLabel:GetText() then self.candyBarLabel:Show()
+	else self.candyBarLabel:Hide() end
+	self.candyBarDuration:Hide()
+end
+
+function BLCD:StopPausedBar(cooldown,guid)
+	if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
+		local bar = BLCD.curr[cooldown['spellID']][guid]
+		if not bar.running then
+			bar:Stop()
+		end
+	end
+end
+
+function BLCD:CheckPausedBars(cooldown,unit)
+	if BLCD.profileDB.availablebars then
+		local unitAlive = not (UnitIsDeadOrGhost(unit) or false)
+		local unitOnline = (UnitIsConnected(unit) or false)
+		local guid = UnitGUID(unit)
+		
+		if not unitAlive or not unitOnline then
+		if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
+			local bar = BLCD.curr[cooldown['spellID']][guid]
+			if not bar.running then
+				bar:Stop()
+		end
+		end
+	end
+	end
+end
+
 --------------------------------------------------------
 
 --------------------------------------------------------
@@ -251,21 +347,24 @@ end
 -- Frame Functions --
 --------------------------------------------------------
 function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
-	local parent = self:GetParent()
-	local allCD = BLCD:shallowcopy(rosterCD)
+	--local parent = self:GetParent()
+	--local allCD = BLCD:shallowcopy(rosterCD)
 	GameTooltip:Hide()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT",3, 14)
 	GameTooltip:ClearLines()
 	GameTooltip:AddSpellByID(cooldown['spellID'])
 
-	local i,v
-	for i,v in pairs(onCD) do
-		allCD[i] = 0
-	end
-	if next(allCD) ~= nil then
+	local guid,bar,i,v
+	--for guid,bar in pairs(onCD) do
+		--print('on: ', guid,bar)
+		--allCD[guid] = 0
+	--end
+	if next(rosterCD) ~= nil then
 		GameTooltip:AddLine(' ')
-		for i,v in pairs(allCD) do
-			if allCD[i] ~= 0 then
+		for i,v in pairs(rosterCD) do
+		-- guid, name
+		--print(i,v)
+			if not (onCD[i] and onCD[i]['running']) then
 				local unitAlive = not (UnitIsDeadOrGhost(v) or false)
 				local unitOnline = (UnitIsConnected(v) or false)
 				if unitAlive and unitOnline then
@@ -287,41 +386,37 @@ end
 
 function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 	if(BLCD.profileDB.clickannounce) then
-		local allCD = BLCD:shallowcopy(rosterCD)
-		local name = GetSpellInfo(cooldown['spellID'])
-		local grouptype = BLCD:GetPartyType()
-		for i,v in pairs(onCD) do
-			allCD[i] = 0
-		end
+		--local allCD = BLCD:shallowcopy(rosterCD)
+		--local grouptype = BLCD:GetPartyType()
+		--for i,v in pairs(onCD) do
+			--allCD[i] = 0
+		--end
 		
-		if next(allCD) ~= nil then
-		
-			if grouptype == "raid" then
-				SendChatMessage('----- '..name..' -----','RAID')
-			elseif grouptype == "instance" then
-				SendChatMessage('----- '..name..' -----','INSTANCE_CHAT')			
-			else
+		if next(rosterCD) ~= nil then
+			local name = GetSpellInfo(cooldown['spellID'])
+			if IsInRaid() or IsInGroup(2) then
+				SendChatMessage('----- '..name..' -----',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")			
+			elseif IsInGroup() then
 				SendChatMessage('----- '..name..' -----','PARTY')
 			end
 			
-			for i,v in pairs(allCD) do
-				if allCD[i] ~= 0 then
+			for i,v in pairs(rosterCD) do
+				if not (onCD[i] and onCD[i]['running']) then
 					local unitalive = not (UnitIsDeadOrGhost(v) or false)
-					if grouptype == "raid" then
+					local unitOnline = (UnitIsConnected(v) or false)
+					if IsInRaid() or IsInGroup(2) then
 						if unitalive then
-							SendChatMessage(v..' ready!','RAID')
+							SendChatMessage(v..' ready!',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
+						elseif not unitOnline then
+							SendChatMessage(v..' OFFLINE but ready!',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
 						else
-							SendChatMessage(v..' DEAD but ready!','RAID')
+							SendChatMessage(v..' DEAD but ready!',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
 						end
-					elseif grouptype == "instance" then
-						if unitalive then
-							SendChatMessage(v..' ready!','INSTANCE_CHAT')
-						else
-							SendChatMessage(v..' DEAD but ready!','INSTANCE_CHAT')
-						end
-					else
+					elseif IsInGroup() then
 						if unitalive then
 							SendChatMessage(v..' ready!','PARTY')
+						elseif not unitOnline then
+							SendChatMessage(v..' OFFLINE but ready!', 'PARTY')
 						else
 							SendChatMessage(v..' DEAD but ready!','PARTY')
 						end	
@@ -330,7 +425,6 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 			end
 		end
 	end
-	allCD = nil
 end
 --------------------------------------------------------
 
@@ -370,7 +464,7 @@ function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 	end
 end
 
-function BLCD:RepositionFrames(frame, index)
+function BLCD:RepositionFrames(frame, index, cooldownFrames)
 	if(BLCD.profileDB.growth == "left") then
 	    if index == nil then
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
@@ -385,8 +479,51 @@ function BLCD:RepositionFrames(frame, index)
 		end
 	end
 end
-	
 
+function BLCD:InsertFrame(frame, prevIndex, nextIndex, cooldownFrames)
+	if(BLCD.profileDB.growth == "left") then
+		if prevIndex == nil then
+			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2); 
+			frame:Show()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', frame, 'TOPRIGHT', 0, -2); end
+		else
+			BLCD:BLPoint(frame,'TOPRIGHT', cooldownFrames[prevIndex], 'BOTTOMRIGHT', 0, -2);
+			frame:Show()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', frame, 'BOTTOMRIGHT', 0, -2); end
+		end
+	elseif(BLCD.profileDB.growth  == "right") then
+		if prevIndex == nil then
+			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); 
+			frame:Show()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
+		else
+			BLCD:BLPoint(frame,'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2);
+			frame:Show()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
+		end
+	end
+end
+
+function BLCD:RemoveFrame(frame, prevIndex, nextIndex, cooldownFrames)
+	if(BLCD.profileDB.growth == "left") then
+	    if prevIndex == nil then
+			frame:Hide()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2); end
+		else
+			frame:Hide()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', cooldownFrames[prevIndex], 'BOTTOMRIGHT', 0, -2); end
+		end
+	elseif(BLCD.profileDB.growth  == "right") then
+		if prevIndex == nil then
+			frame:Hide()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); end
+		else
+			frame:Hide()
+			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2); end
+		end
+	end
+end
+	
 function BLCD:BLHeight(frame, height)
 	if(Elv) then
 		frame:Height(height)
@@ -423,7 +560,7 @@ function BLCD:BLTexture()
 	if(Elv) then
 		return E["media"].normTex
 	else
-		return "Interface\\AddOns\\BL_Cooldown\\statusbar"	
+		return "Interface\\TargetingFrame\\UI-StatusBar"	
 	end
 end
 

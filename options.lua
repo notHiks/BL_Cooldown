@@ -31,9 +31,10 @@ BLCD.defaults = {
 		framePoint = 'TOPLEFT',
 		relativePoint = 'TOPLEFT',
 		growth = "right",
-		show = "always",
-		autocheckextra = false,
+		show = "raidorparty",
+		autocheckextra = true,
 		hideempty = false,
+		availablebars = false,
 		cooldown = {
 			PAL_DEAU = true,
 			PAL_HAOFSA = true,
@@ -204,7 +205,23 @@ BLCD.options =  {
 						return BLCD.profileDB.hideempty
 					end,
 					set = function(key, value)
-						BLCD.profileDB.hideempty = value; BLCD:DynamicCooldownFrame()
+						BLCD.profileDB.hideempty = value; 
+						--local i
+						--for i in select('#', BLCD.cooldowns) do
+							BLCD:DynamicCooldownFrame()
+						--end
+					end,
+				},
+				availablebars = {
+					type = "toggle",
+					name = "Show available via bars",
+					desc = "Show timer bars of cooldowns available and used",
+					order = 10,
+					get = function()
+						return BLCD.profileDB.availablebars
+					end,
+					set = function(key, value)
+						BLCD.profileDB.availablebars = value; BLCD:AvailableBars(value)
 					end,
 				},
 			},

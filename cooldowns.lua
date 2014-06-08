@@ -13,22 +13,27 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 6,
 		class = "PALADIN",
+		index = 1,
 	},
 	{ -- Hand of Sacrifice
 		spellID = 6940,
 		name = "PAL_HAOFSA",
 		succ = "SPELL_CAST_SUCCESS",
+		charges = 2,
 		CD = 120,
 		cast = 12,
 		class = "PALADIN",
+		index = 2,
 	},
 	{ -- Hand of Protection
 		spellID = 1022,
 		name = "PAL_HAOFPR",
 		succ = "SPELL_CAST_SUCCESS",
+		charges = 2,
 		CD = 300,
 		cast = 10,
 		class = "PALADIN",
+		index = 3,
 	},
 	{ -- Holy Avenger
 		spellID = 105809,
@@ -38,23 +43,28 @@ BLCD.cooldowns = {
 		cast = 18,
 		class = "PALADIN",
 		talent = 5,
+		index = 4,
 	},
 	{ -- Hand of Salvation
 		spellID = 1038,
 		name = "PAL_HAOFSAL",
 		succ = "SPELL_CAST_SUCCESS",
+		charges = 2,
 		CD = 120,
 		cast = 10,
 		class = "PALADIN",
+		index = 5,
 	},
 	{ -- Hand of Purity
 		spellID = 114039,
 		name = "PAL_HAOFPU",
 		succ = "SPELL_CAST_SUCCESS",
+		charges = 2,
 		CD = 30,
 		cast = 6,
 		class = "PALADIN",
 		talent = 4,
+		index = 6,
 	},
 	{ -- Light's Hammer
 		spellID = 114158,
@@ -64,6 +74,7 @@ BLCD.cooldowns = {
 		cast = 15,
 		class = "PALADIN",
 		talent = 6,
+		index = 7,
 	},
 -- Priest
 	{ -- Power Word: Barrier 
@@ -74,6 +85,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PRIEST",
 		spec = 256,
+		index = 8,
 	},
 	{ -- Pain Suppression  
 		spellID = 33206,
@@ -83,6 +95,7 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "PRIEST", 
 		spec = 256,
+		index = 9,
 	},
 	{ -- Divine Hymn
 		spellID = 64843,
@@ -92,6 +105,7 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "PRIEST",
 		spec = 257,
+		index = 10,
 	},	
 	{ -- Guardian Spirit 
 		spellID = 47788,
@@ -101,6 +115,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PRIEST", 
 		spec = 257,
+		index = 11,
 	},	
 	{ -- Void Shift
 		spellID = 108968,
@@ -108,6 +123,7 @@ BLCD.cooldowns = {
 		name = "PRI_VOSH",
 		CD = 300,
 		class = "PRIEST",
+		index = 12,
 	},
 	{ -- Hymn Of Hope
 		spellID = 64901,
@@ -116,6 +132,7 @@ BLCD.cooldowns = {
 		CD = 360, 
 		cast = 8,
 		class = "PRIEST",
+		index = 13,
 	},
 	{ -- Vampiric Embrace
 		spellID = 15286,
@@ -125,6 +142,7 @@ BLCD.cooldowns = {
 		cast = 15,
 		class = "PRIEST",
 		spec = 258,
+		index = 14,
 	},	
 -- Druid
 	{ -- Tranquility
@@ -134,6 +152,7 @@ BLCD.cooldowns = {
 		CD = 480,
 		cast = 8,
 		class = "DRUID",
+		index = 15,
 	},
 	{ -- Ironbark
 		spellID = 102342,
@@ -143,6 +162,7 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "DRUID",
 		spec = 105,
+		index = 16,
 	},
 	{ -- Rebirth
 		spellID = 20484,
@@ -150,6 +170,7 @@ BLCD.cooldowns = {
 		name = "DRU_RE",
 		CD = 600,
 		class = "DRUID",
+		index = 17,
 	},
 	{ -- Innervate
 		spellID = 29166,
@@ -157,6 +178,7 @@ BLCD.cooldowns = {
 		name = "DRU_IN",
 		CD = 180,
 		class = "DRUID",
+		index = 18,
 	},
 	{ -- Heart of the Wild
 		spellID = 108288,
@@ -165,6 +187,7 @@ BLCD.cooldowns = {
 		CD = 360,
 		class = "DRUID",
 		talent = 6,
+		index = 19,
 	},
 -- Shaman
 	{ -- Spirit Link Totem
@@ -175,6 +198,7 @@ BLCD.cooldowns = {
 		cast = 6,
 		class = "SHAMAN", 
 		spec = 264,
+		index = 20,
 	},
 	{ -- Mana Tide Totem
 		spellID = 16190,
@@ -184,6 +208,7 @@ BLCD.cooldowns = {
 		cast = 16,
 		class = "SHAMAN",
 		spec = 264,
+		index = 21,
 	},
 	{ -- Healing Tide Totem
 		spellID = 108280,
@@ -192,6 +217,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 10,
 		class = "SHAMAN",
+		index = 22,
 	},
 	{ -- Stormlash Totem
 		spellID = 120668,
@@ -200,6 +226,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 10,
 		class = "SHAMAN",
+		index = 23,
 	},
 	{ -- Tremor Totem
 		spellID = 8143,
@@ -209,6 +236,7 @@ BLCD.cooldowns = {
 		cast = 6,
 		class = "SHAMAN",
 		talent = 5,
+		index = 24,
 	},
 	{ -- Bloodlust
 		spellID = 2825,
@@ -217,6 +245,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "SHAMAN",
+		index = 25,
 	},
 	{ -- Heroism
 		spellID = 32182,
@@ -225,6 +254,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "SHAMAN",
+		index = 26,
 	},
 	--{ -- Reincarnation  -- Needs work, currently doesn't show in combatlog. Thanks blizz.
 		--spellID = 20608,
@@ -240,6 +270,7 @@ BLCD.cooldowns = {
 		CD = 120,
 		class = "SHAMAN",
 		talent = 5,
+		index = 27,
 	},
  -- Monk
 	{	-- Zen Meditation
@@ -249,6 +280,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 8,
 		class = "MONK",
+		index = 28,
 	},
 	{	-- Life Cocoon
 		spellID = 116849,
@@ -258,6 +290,7 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "MONK",
 		spec = 270,
+		index = 29,
 	},
 	{	-- Revival
 		spellID = 115310,
@@ -266,6 +299,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		class = "MONK",
 		spec = 270,
+		index = 30,
 	},
 	{	-- Avert Harm
 		spellID = 115213,
@@ -275,6 +309,7 @@ BLCD.cooldowns = {
 		cast = 6,
 		class = "MONK",
 		spec = 268,
+		index = 31,
 	},
 -- Warlock
 	{ -- Soulstone Resurrection
@@ -283,6 +318,7 @@ BLCD.cooldowns = {
 		name = "WARL_SORE",
 		CD = 600,
 		class = "WARLOCK",
+		index = 32,
 	},
 -- Death Knight
 	{ -- Raise Ally
@@ -291,6 +327,7 @@ BLCD.cooldowns = {
 		name = "DEA_RAAL",
 		CD = 600,
 		class = "DEATHKNIGHT",
+		index = 33,
 	},
 	{ -- Anti-Magic Zone
 		spellID = 51052,
@@ -300,6 +337,7 @@ BLCD.cooldowns = {
 		cast = 3,
 		class = "DEATHKNIGHT",
 		talent = 2,
+		index = 34,
 	},
 -- Warrior
 	{ -- Rallying Cry
@@ -309,6 +347,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 10,
 		class = "WARRIOR",
+		index = 35,
 	},
 	{ -- Demoralizing Banner
 		spellID = 114203,
@@ -317,6 +356,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 15,
 		class = "WARRIOR",
+		index = 36,
 	},
 	{ -- Skull Banner
 		spellID = 114207,
@@ -325,6 +365,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 10,
 		class = "WARRIOR",
+		index = 37,
 	},
 	{ -- Vigilance
 		spellID = 114030,
@@ -334,6 +375,7 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "WARRIOR",
 		talent = 5,
+		index = 38,
 	},
 	{ -- Shattering Throw
 		spellID = 64382,
@@ -342,6 +384,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 10,
 		class = "WARRIOR",
+		index = 39,
 	},
 	{ -- Intervene
 		spellID = 3411,
@@ -350,6 +393,7 @@ BLCD.cooldowns = {
 		CD = 30,
 		cast = 10,
 		class = "WARRIOR",
+		index = 40,
 	},
 -- Mage
 	{ -- Time Warp
@@ -359,6 +403,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "MAGE",
+		index = 41,
 	},
 -- Rogue
 	{ -- Smoke Bomb
@@ -368,6 +413,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 5,
 		class = "ROGUE",
+		index = 42,
 	},
 }
 --------------------------------------------------------

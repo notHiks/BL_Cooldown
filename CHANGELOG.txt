@@ -1,4 +1,4 @@
-r44
+r46
 - ALPHA. ALPHA. ALPHA.
 - Added option to show cooldowns available via bars.
 - Report bugs please if using the available bars feature. Do NOT expect it to work 100%.

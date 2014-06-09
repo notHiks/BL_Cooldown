@@ -118,7 +118,7 @@ function BLCD:BLCreateBG(frame)
 		bg:SetTemplate("Default")
 		bg:SetParent(frame)
 		bg:ClearAllPoints()
-		bg:Point(bg,"TOPLEFT", frame, "TOPLEFT", -2, 2)
+		bg:Point("TOPLEFT", frame, "TOPLEFT", -2, 2)
 		bg:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
 		bg:SetFrameStrata("MEDIUM")
 		bg:Show()
@@ -146,18 +146,13 @@ function BLCD:BLCreateBG(frame)
 			bg:SetBackdropColor(0, 0, 0, 1)
 			bg.backdropTexture:SetVertexColor(.1, .1, .1)
 			bg.backdropTexture:SetAlpha(1)		
-			bg.backdropTexture:SetTexture("Interface\\BUTTONS\\WHITE8X8")
-			bg.backdropTexture:SetInside(bg)
-			
+			bg.backdropTexture:SetTexture("Interface\\BUTTONS\\WHITE8X8")			
 			local anchor = bg
-		
 			if bg.backdropTexture:GetPoint() then
 				bg.backdropTexture:ClearAllPoints()
 			end
-		
 			BLCD:BLPoint(bg.backdropTexture,'TOPLEFT', anchor, 'TOPLEFT', 1, -1)
 			BLCD:BLPoint(bg.backdropTexture,'BOTTOMRIGHT', anchor, 'BOTTOMRIGHT', -1, 1)
-		
 		end
 		bg:SetBackdropBorderColor(0, 0, 0)
 

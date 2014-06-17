@@ -1,4 +1,4 @@
-r46
+r48
 - ALPHA. ALPHA. ALPHA.
 - Added option to show cooldowns available via bars.
 - Report bugs please if using the available bars feature. Do NOT expect it to work 100%.
@@ -6,6 +6,8 @@ r46
 - Reduced amount of text sent via addon comm.
 - Added group version tracking. /blcd who
 - Changed the look of the addon without ElvUI
+- Try to retain cooldown roster through reloads
+- Class color bars now an option.
 
 3.51
 - Bug fix when not tracking a CD but recieved addon comm about it

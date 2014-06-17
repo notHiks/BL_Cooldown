@@ -19,6 +19,7 @@ end
 BLCD.frame:UnregisterAllEvents()
 BLCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 BLCD.frame:RegisterEvent("ADDON_LOADED")
+BLCD.frame:RegisterEvent("PLAYER_LOGOUT")
 
 BLCD.frame:SetScript("OnEvent", function(this, event, ...) return BLCD[event](BLCD, ...) end)
 

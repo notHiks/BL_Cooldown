@@ -35,6 +35,7 @@ BLCD.defaults = {
 		autocheckextra = true,
 		hideempty = false,
 		availablebars = false,
+		classcolorbars = false,
 		cooldown = {
 			PAL_DEAU = true,
 			PAL_HAOFSA = true,
@@ -214,14 +215,26 @@ BLCD.options =  {
 				},
 				availablebars = {
 					type = "toggle",
-					name = "Show available via bars",
-					desc = "Show timer bars of cooldowns available and used",
+					name = "Ready bar mode",
+					desc = "Always show bars",
 					order = 10,
 					get = function()
 						return BLCD.profileDB.availablebars
 					end,
 					set = function(key, value)
 						BLCD.profileDB.availablebars = value; BLCD:AvailableBars(value)
+					end,
+				},
+				classcolorbars = {
+					type = "toggle",
+					name = "Class color bars",
+					desc = "Color the cooldown bars according to class",
+					order = 11,
+					get = function()
+						return BLCD.profileDB.classcolorbars
+					end,
+					set = function(key, value)
+						BLCD.profileDB.classcolorbars = value; BLCD:RecolorBars(value)
 					end,
 				},
 			},

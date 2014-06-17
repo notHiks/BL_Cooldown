@@ -11,6 +11,11 @@ if(Elv) then
 	E, L, V, P, G =  unpack(ElvUI);
 end
 
+local GameFontHighlightSmallOutline = GameFontHighlightSmallOutline
+local _fontName, _fontSize = GameFontHighlightSmallOutline:GetFont()
+local _fontShadowX, _fontShadowY = GameFontHighlightSmallOutline:GetShadowOffset()
+local _fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA = GameFontHighlightSmallOutline:GetShadowColor()
+
 --------------------------------------------------------
 
 --------------------------------------------------------
@@ -96,11 +101,11 @@ end
 -- Display Bar Functions --
 --------------------------------------------------------
 local function barSorter(a, b)
-	if a['running'] and b['running'] then
+	if a['updater']:IsPlaying() and b['updater']:IsPlaying() then
 		return a.remaining < b.remaining 
-	elseif a['running'] then
+	elseif a['updater']:IsPlaying() then
 		return true
-	elseif b['running'] then
+	elseif b['updater']:IsPlaying() then
 		return false
 	else
 		return false
@@ -218,11 +223,32 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	bar:Set("raidcooldowns:cooldown", cooldown)
 	bar:SetParent(frameicon)
 	bar:SetFrameStrata("MEDIUM")
-	bar:SetColor(.5,.5,.5,1);	
+	if BLCD.profileDB.classcolorbars then
+		local color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
+		bar:SetColor(color.r,color.g,color.b,1)
+	else
+		bar:SetColor(.5,.5,.5,1)
+	end	
 	bar:SetDuration(duration)
 	bar:SetScale(BLCD.profileDB.scale)
 	bar:SetClampedToScreen(true)
+	
+	if not (Elv) then
+		bar.candyBarLabel:SetTextColor(1,1,1,1)
+		bar.candyBarLabel:SetJustifyH("CENTER")
+		bar.candyBarLabel:SetJustifyV("MIDDLE")
+		bar.candyBarLabel:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
+		bar.candyBarLabel:SetShadowOffset(_fontShadowX, _fontShadowY)
+		bar.candyBarLabel:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
 
+		bar.candyBarDuration:SetTextColor(1,1,1,1)
+		bar.candyBarDuration:SetJustifyH("CENTER")
+		bar.candyBarDuration:SetJustifyV("MIDDLE")
+		bar.candyBarDuration:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
+		bar.candyBarDuration:SetShadowOffset(_fontShadowX, _fontShadowY)
+		bar.candyBarDuration:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
+	end
+	
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
 	
@@ -250,7 +276,7 @@ end
 function BLCD:StopPausedBar(cooldown,guid)
 	if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 		local bar = BLCD.curr[cooldown['spellID']][guid]
-		if not bar.running then
+		if not bar.updater:IsPlaying() then
 			bar:Stop()
 		end
 	end
@@ -258,18 +284,25 @@ end
 
 function BLCD:CheckPausedBars(cooldown,unit)
 	if BLCD.profileDB.availablebars then
-		local unitAlive = not (UnitIsDeadOrGhost(unit) or false)
+		local unitDead = UnitIsDeadOrGhost(unit) and true
 		local unitOnline = (UnitIsConnected(unit) or false)
+		local name = UnitName(unit)
 		local guid = UnitGUID(unit)
 		
-		if not unitAlive or not unitOnline then
 		if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 			local bar = BLCD.curr[cooldown['spellID']][guid]
-			if not bar.running then
-				bar:Stop()
+			if unitDead or not unitOnline then
+				if not bar.updater:IsPlaying() then
+					bar:Stop()
+				end
+			end
+
 		end
+		if BLCD.profileDB.cooldown[cooldown.name] and BLCD.cooldownRoster[cooldown['spellID']][guid] and not (BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid]) then
+			if not unitDead and unitOnline then
+				BLCD:CreatePausedBar(cooldown,guid)
+			end
 		end
-	end
 	end
 end
 
@@ -369,7 +402,7 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 		for i,v in pairs(rosterCD) do
 		-- guid, name
 		--print(i,v)
-			if not (onCD[i] and onCD[i]['running']) then
+			if not (onCD[i] and onCD[i]['updater']:IsPlaying()) then
 				local unitAlive = not (UnitIsDeadOrGhost(v) or false)
 				local unitOnline = (UnitIsConnected(v) or false)
 				if unitAlive and unitOnline then
@@ -406,7 +439,7 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 			end
 			
 			for i,v in pairs(rosterCD) do
-				if not (onCD[i] and onCD[i]['running']) then
+				if not (onCD[i] and onCD[i]['updater']:IsPlaying()) then
 					local unitalive = not (UnitIsDeadOrGhost(v) or false)
 					local unitOnline = (UnitIsConnected(v) or false)
 					if IsInRaid() or IsInGroup(2) then
@@ -565,7 +598,7 @@ function BLCD:BLTexture()
 	if(Elv) then
 		return E["media"].normTex
 	else
-		return "Interface\\TargetingFrame\\UI-StatusBar"	
+		return "Interface\\AddOns\\BL_Cooldown\\media\\bar15.tga"
 	end
 end
 
@@ -573,7 +606,9 @@ function BLCD:BLFontTemplate(frame, x, y)
 	if(Elv) then
 		frame:FontTemplate(nil, x, y)
 	else
-		frame:SetFont("Fonts\\FRIZQT__.TTF", x, y)
+		frame:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", x, y)
+		frame:SetShadowColor(0, 0, 0, 0.2)
+		frame:SetShadowOffset(1, -1)
 	end
 end
 --------------------------------------------------------

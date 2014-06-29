@@ -188,8 +188,9 @@ function BLCD:RearrangeBars(anchor)
 		if bar:IsVisible() then
 			currBars[#currBars + 1] = bar
 		else	
-			bar:Stop()
 			anchor.bars[bar] = nil
+			--print('stop 2: ', bar:Get("raidcooldowns:spell"))
+			bar:Stop()
 		end
 	end
 	
@@ -296,12 +297,14 @@ function BLCD:CheckPausedBars(cooldown,unit)
 					bar:Stop()
 				end
 			end
-
 		end
 		if BLCD.profileDB.cooldown[cooldown.name] and BLCD.cooldownRoster[cooldown['spellID']][guid] and not (BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid]) then
 			if not unitDead and unitOnline then
 				BLCD:CreatePausedBar(cooldown,guid)
 			end
+		end
+		if not unitDead and unitOnline then
+			BLCD:ScheduleTimer( function() BLCD.tmp[name] = 0 end, 1)
 		end
 	end
 end

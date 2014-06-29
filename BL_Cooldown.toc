@@ -1,5 +1,5 @@
 ## Interface: 50400
-## Version: 3.51.48
+## Version: 3.52
 ## Title: |cffc41f3bBlood Legion|r Cooldown
 ## Notes: Minimalistic Visual Raid Cooldowns
 ## OptionalDeps: ElvUI, LibStub, CallbackHandler-1.0, AceEvent-3.0, AceTimer-3.0

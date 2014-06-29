@@ -1,13 +1,11 @@
-r48
-- ALPHA. ALPHA. ALPHA.
-- Added option to show cooldowns available via bars.
-- Report bugs please if using the available bars feature. Do NOT expect it to work 100%.
--- Due to way tracking player specs/talents works, if you reloadui right before a boss pull. Expect some bars to not show.
-- Reduced amount of text sent via addon comm.
+3.52
+- Added option to show always show bars called Ready Mode.
+- Report bugs please if using the ready bar feature. I believe a lot of bugs are gone now b/c of the alpha testing.
+- Class color bars now an option. You can also click them to send a whisper to the person asking them to use the CD.
 - Added group version tracking. /blcd who
 - Changed the look of the addon without ElvUI
-- Try to retain cooldown roster through reloads
-- Class color bars now an option.
+- Fixed total number of CD's not showing.
+- Retain cooldown roster through reloads. You can issue a roster rescan via /blcd rescan
 
 3.51
 - Bug fix when not tracking a CD but recieved addon comm about it

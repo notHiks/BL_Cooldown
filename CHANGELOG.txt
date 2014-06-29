@@ -1,3 +1,6 @@
+3.53
+- Fixed total number of CD's not showing again when ready mode is off.
+
 3.52
 - Added option to show always show bars called Ready Mode.
 - Report bugs please if using the ready bar feature. I believe a lot of bugs are gone now b/c of the alpha testing.

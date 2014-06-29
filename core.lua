@@ -99,14 +99,16 @@ function BLCD:UpdateRoster(cooldown)
 						rosterCount = rosterCount + 1				
 					end
 					
-					if BLCD.profileDB.availablebars and BLCD.profileDB.cooldown[cooldown.name] and unitalive and
-						(cooldown["spec"] and char["spec"] and char["spec"] == cooldown["spec"] or 
-						(cooldown["talent"] and char["talents"] and char["talents"][cooldown["spellID"]]) or
-						(not cooldown["spec"] and not cooldown["talent"] and cooldown["class"] == char["class"])) then
-							BLCD:CreatePausedBar(cooldown,guid)
-					elseif(unitalive and BLCD.cooldownRoster[cooldown["spellID"]][guid]) then
-						BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
-						BLCD:StopPausedBar(cooldown,guid)
+					if BLCD.profileDB.availablebars then
+						if BLCD.profileDB.cooldown[cooldown.name] and unitalive and
+							(cooldown["spec"] and char["spec"] and char["spec"] == cooldown["spec"] or 
+							(cooldown["talent"] and char["talents"] and char["talents"][cooldown["spellID"]]) or
+							(not cooldown["spec"] and not cooldown["talent"] and cooldown["class"] == char["class"])) then
+								BLCD:CreatePausedBar(cooldown,guid)
+						elseif(unitalive and BLCD.cooldownRoster[cooldown["spellID"]][guid]) then
+							BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
+							BLCD:StopPausedBar(cooldown,guid)
+						end
 					end
 					
 				end

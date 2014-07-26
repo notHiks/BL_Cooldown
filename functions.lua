@@ -213,8 +213,52 @@ function BLCD:RearrangeBars(anchor)
 	end
 end
 
+local function styleBar(bar)
+	local backdropBorder = {
+		bgFile = "Interface\\Buttons\\WHITE8X8",
+		edgeFile = "Interface\\Buttons\\WHITE8X8", 
+		tile = false, tileSize = 0, edgeSize = 1,
+		insets = {left = 0, right = 0, top = 0, bottom = 0}
+	}
+
+	local bd = bar.candyBarBackdrop
+
+	if Elv then
+		bd:SetTemplate("Transparent")
+		bd:SetOutside(bar)
+		if not E.PixelMode and bd.iborder then
+			bd.iborder:Show()
+			bd.oborder:Show()
+		end
+	else
+		bd:SetBackdrop(backdropBorder)
+		bd:SetBackdropColor(0.06, 0.06, 0.06, 0.8)
+		bd:SetBackdropBorderColor(0, 0, 0)
+
+		bd:ClearAllPoints()
+		bd:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1)
+		bd:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 1, -1)
+		
+		bar.candyBarLabel:SetTextColor(1,1,1,1)
+		bar.candyBarLabel:SetJustifyH("CENTER")
+		bar.candyBarLabel:SetJustifyV("MIDDLE")
+		bar.candyBarLabel:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
+		bar.candyBarLabel:SetShadowOffset(_fontShadowX, _fontShadowY)
+		bar.candyBarLabel:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
+
+		bar.candyBarDuration:SetTextColor(1,1,1,1)
+		bar.candyBarDuration:SetJustifyH("CENTER")
+		bar.candyBarDuration:SetJustifyV("MIDDLE")
+		bar.candyBarDuration:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
+		bar.candyBarDuration:SetShadowOffset(_fontShadowX, _fontShadowY)
+		bar.candyBarDuration:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
+	end
+	bd:Show()
+end
+
 function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	local bar = CB:New(BLCD:BLTexture(), 100, 9)
+	styleBar(bar)
 	frameicon.bars[bar] = true
 	bar:Set("raidcooldowns:module", "raidcooldowns")
 	bar:Set("raidcooldowns:anchor", frameicon)
@@ -234,27 +278,10 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	bar:SetScale(BLCD.profileDB.scale)
 	bar:SetClampedToScreen(true)
 	
-	if not (Elv) then
-		bar.candyBarLabel:SetTextColor(1,1,1,1)
-		bar.candyBarLabel:SetJustifyH("CENTER")
-		bar.candyBarLabel:SetJustifyV("MIDDLE")
-		bar.candyBarLabel:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
-		bar.candyBarLabel:SetShadowOffset(_fontShadowX, _fontShadowY)
-		bar.candyBarLabel:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
-
-		bar.candyBarDuration:SetTextColor(1,1,1,1)
-		bar.candyBarDuration:SetJustifyH("CENTER")
-		bar.candyBarDuration:SetJustifyV("MIDDLE")
-		bar.candyBarDuration:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", _fontSize)
-		bar.candyBarDuration:SetShadowOffset(_fontShadowX, _fontShadowY)
-		bar.candyBarDuration:SetShadowColor(_fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA)
-	end
-	
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
 	
 	bar.candyBarLabel:SetJustifyH("LEFT")
-	BLCD:BLCreateBG(bar)
 	return bar
 end	
 
@@ -490,9 +517,9 @@ end
 function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 	if(BLCD.profileDB.growth == "left") then
 	    if index == nil then
-			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
+			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
 		else
-			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index), 'BOTTOMLEFT', 0, -2);
+			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);
 		end
 		BLCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
 	elseif(BLCD.profileDB.growth  == "right") then
@@ -522,46 +549,24 @@ function BLCD:RepositionFrames(frame, index, cooldownFrames)
 end
 
 function BLCD:InsertFrame(frame, prevIndex, nextIndex, cooldownFrames)
-	if(BLCD.profileDB.growth == "left") then
-		if prevIndex == nil then
-			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2); 
-			frame:Show()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', frame, 'TOPRIGHT', 0, -2); end
-		else
-			BLCD:BLPoint(frame,'TOPRIGHT', cooldownFrames[prevIndex], 'BOTTOMRIGHT', 0, -2);
-			frame:Show()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', frame, 'BOTTOMRIGHT', 0, -2); end
-		end
-	elseif(BLCD.profileDB.growth  == "right") then
-		if prevIndex == nil then
-			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); 
-			frame:Show()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
-		else
-			BLCD:BLPoint(frame,'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2);
-			frame:Show()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
-		end
+	if prevIndex == nil then
+		BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); 
+		frame:Show()
+		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
+	else
+		BLCD:BLPoint(frame,'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2);
+		frame:Show()
+		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
 	end
 end
 
 function BLCD:RemoveFrame(frame, prevIndex, nextIndex, cooldownFrames)
-	if(BLCD.profileDB.growth == "left") then
-	    if prevIndex == nil then
-			frame:Hide()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2); end
-		else
-			frame:Hide()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPRIGHT', cooldownFrames[prevIndex], 'BOTTOMRIGHT', 0, -2); end
-		end
-	elseif(BLCD.profileDB.growth  == "right") then
-		if prevIndex == nil then
-			frame:Hide()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); end
-		else
-			frame:Hide()
-			if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2); end
-		end
+	if prevIndex == nil then
+		frame:Hide()
+		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); end
+	else
+		frame:Hide()
+		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2); end
 	end
 end
 	

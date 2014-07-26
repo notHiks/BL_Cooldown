@@ -61,7 +61,6 @@ end
 
 
 function BLCD:UpdateRoster(cooldown)
-
 	local bar
 	--local time1 = debugprofilestop()
 	local grouptype = BLCD:GetPartyType()
@@ -156,10 +155,8 @@ function BLCD:UpdateRoster(cooldown)
 end
 
 function BLCD:DebugFunc()
-	--BLCD:RemoveFrame(cooldownFrames[2], 1, 3)
-	self:print_r(LGIST:QueuedInspections())
-	for spell, frame in pairs(cooldownFrameicons) do
-		BLCD:RearrangeBars(frame)
+	for i,v in pairs(cooldownIndex) do
+		print(cooldownIndex[i]['previous'], i, cooldownIndex[i]['next'])
 	end
 end
 
@@ -241,6 +238,11 @@ end
 function BLCD:CreateBase()
 	local raidcdbasemover = CreateFrame("Frame", 'BLCooldownBaseMover_Frame', UIParent)
 	raidcdbasemover:SetClampedToScreen(true)
+	raidcdbasemover:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+                                            edgeFile = nil, 
+                                            tile = true, tileSize = 16, edgeSize = 16, 
+                                            insets = { left = 4, right = 4, top = 4, bottom = 4 }});
+	raidcdbasemover:SetBackdropColor(0,0,0,1)
 	BLCD:BLPoint(raidcdbasemover,BLCD.profileDB.framePoint,UIParent,BLCD.profileDB.relativePoint,BLCD.profileDB.xOffset,BLCD.profileDB.yOffset)
 	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,(96)*BLCD.profileDB.scale)
 	if(Elv) then
@@ -326,14 +328,12 @@ function BLCD:CreateCooldown(index, cooldown)
 	local function CleanBar(callback, bar)
 	local a = bar:Get("raidcooldowns:anchor") --'a' is frameicon
 	if a and a.bars and a.bars[bar] then
-
-			local bg = bar:Get("raidcooldowns:elvbg")
-			if (bg) then
-				bg:ClearAllPoints()
-				bg:SetParent(UIParent)
-				bg:Hide()
-				BLCD.frame_cache[#BLCD.frame_cache + 1] = bg
-			end
+		local bd = bar.candyBarBackdrop
+		bd:Hide()
+		if bd.iborder then
+			bd.iborder:Hide()
+			bd.oborder:Hide()
+		end
 		local guid = bar:Get("raidcooldowns:key")
 		local spell = bar:Get("raidcooldowns:spell")
 		local cooldown = bar:Get("raidcooldowns:cooldown")
@@ -541,7 +541,6 @@ function BLCD:DynamicCooldownFrame()--key,value)
 			BLCD:RemoveFrame(cooldownFrames[i],cooldownIndex[i]['previous'],cooldownIndex[i]['next'], cooldownFrames)
 			BLCD:RemoveNode(cooldownIndex[i])
 			cooldownIndex[i] = nil
-			
 		end
     
 		if (BLCD.profileDB.cooldown[cooldown.name] and cooldownIndex[i] == nil) then  -- cooldown added

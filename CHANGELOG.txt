@@ -2,6 +2,7 @@
 - Fix: Anchoring issues when bar growth is set to "Left"
 - Fix: Styling issues conflicting with BigWigs (hopefully)
 - Fix: Show the mover when you unlock it w/out ElvUI
+- Fix: Class color bars bug
 
 3.53
 - Fixed total number of CD's not showing again when ready mode is off.

@@ -26,7 +26,7 @@ BLCD.frame:SetScript("OnEvent", function(this, event, ...) return BLCD[event](BL
 
 function BLCD:ADDON_LOADED(name)
 	if (name == "BL_Cooldown") then
-		print("|cffc41f3bBlood Legion Cooldown|r: version 3.52 /blcd for options")
+		print("|cffc41f3bBlood Legion Cooldown|r: version 3.54 /blcd for options")
 	end
 end
 

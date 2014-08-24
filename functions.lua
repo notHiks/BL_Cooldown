@@ -113,66 +113,6 @@ local function barSorter(a, b)
 	end
 end
 
-function BLCD:BLCreateBG(frame)
-	if(Elv) then
-		local bg = nil
-		if #BLCD.frame_cache > 0 then
-			bg = table.remove(BLCD.frame_cache)
-		else
-			bg = CreateFrame("Frame");
-		end
-		bg:SetTemplate("Default")
-		bg:SetParent(frame)
-		bg:ClearAllPoints()
-		bg:Point("TOPLEFT", frame, "TOPLEFT", -2, 2)
-		bg:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
-		bg:SetFrameStrata("MEDIUM")
-		bg:Show()
-		frame:Set("raidcooldowns:elvbg", bg)
-	else
-		local bg = nil
-		if #BLCD.frame_cache > 0 then
-			bg = table.remove(BLCD.frame_cache)
-		else
-			bg = CreateFrame("Frame");
-		end
-
-		bg:SetBackdrop({
-		  bgFile = "Interface\\BUTTONS\\WHITE8X8",
-		  edgeFile = "Interface\\BUTTONS\\WHITE8X8",
-		  tile = false, tileSize = 0, edgeSize = 1,
-		  insets = { left = 0, right = 0, top = 0, bottom = 0}
-		})
-
-		local backdropTexture = bg:CreateTexture(nil, "BORDER")
-		backdropTexture:SetDrawLayer("BACKGROUND", 1)
-		bg.backdropTexture = backdropTexture
-
-		if bg.backdropTexture then
-			bg:SetBackdropColor(0, 0, 0, 1)
-			bg.backdropTexture:SetVertexColor(.1, .1, .1)
-			bg.backdropTexture:SetAlpha(1)
-			bg.backdropTexture:SetTexture("Interface\\BUTTONS\\WHITE8X8")
-			local anchor = bg
-			if bg.backdropTexture:GetPoint() then
-				bg.backdropTexture:ClearAllPoints()
-			end
-			BLCD:BLPoint(bg.backdropTexture,'TOPLEFT', anchor, 'TOPLEFT', 1, -1)
-			BLCD:BLPoint(bg.backdropTexture,'BOTTOMRIGHT', anchor, 'BOTTOMRIGHT', -1, 1)
-		end
-		bg:SetBackdropBorderColor(0, 0, 0)
-
-
-		bg:SetParent(frame)
-		bg:ClearAllPoints()
-		BLCD:BLPoint(bg,"TOPLEFT", frame, "TOPLEFT", -2, 2)
-		BLCD:BLPoint(bg,"BOTTOMRIGHT", frame, "BOTTOMRIGHT", 2, -2)
-		bg:SetFrameStrata("MEDIUM")
-		bg:Show()
-		frame:Set("raidcooldowns:elvbg", bg)
-	end
-end
-
 function BLCD:RearrangeBars(anchor)
 	if not anchor then return end
     if not next(anchor.bars) then
@@ -233,7 +173,7 @@ local function styleBar(bar)
 		end
 	else
 		bd:SetBackdrop(backdropBorder)
-		bd:SetBackdropColor(0.06, 0.06, 0.06, 0.8)
+		bd:SetBackdropColor(0.06, 0.06, 0.06, 1)
 		bd:SetBackdropBorderColor(0, 0, 0)
 
 		bd:ClearAllPoints()
@@ -505,10 +445,12 @@ function BLCD:Scale()
 	local raidcdbasemover = BLCooldownBaseMover_Frame
 	BLCD:BLSize(raidcdbase,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
 	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
+	local i,cooldown
 	for i,cooldown in pairs(BLCD.cooldowns) do
+		i = cooldown.index
 		if (BLCD.db.profile.cooldown[cooldown.name]) then
 		BLCD:BLHeight(_G['BLCooldown'..i],28*BLCD.profileDB.scale);
-		BLCD:BLWidth(_G['BLCooldown'..i],145*BLCD.profileDB.scale);
+		BLCD:BLWidth(_G['BLCooldown'..i],145*BLCD.profileDB.scale);	
 		BLCD:BLSize(_G['BLCooldownIcon'..i],28*BLCD.profileDB.scale,28*BLCD.profileDB.scale);
 		BLCD:BLFontTemplate(_G['BLCooldownIcon'..i].text, 20*BLCD.profileDB.scale, 'OUTLINE')
 		end

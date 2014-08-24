@@ -300,9 +300,9 @@ function BLCD:CreateCooldown(index, cooldown)
 	BLCD:BLFontTemplate(frameicon.text, 20*BLCD.profileDB.scale, 'OUTLINE')
 	BLCD:BLPoint(frameicon.text, "CENTER", frameicon, "CENTER", 1, 0)
 	cooldownFrameicons[cooldown['spellID']] = frameicon
-
-	BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon) -- XXX FIXME, variable "event" doesn't exist (nil) and will be rejected by :UpdateCooldown
-
+	
+	--BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon) -- XXX FIXME
+ 	
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 	frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 	frame:RegisterEvent("ENCOUNTER_END")
@@ -495,9 +495,13 @@ function BLCD:AvailableBars(value)
 				local unitalive = not (UnitIsDeadOrGhost(sourceName) or not UnitIsConnected(sourceName) or false)
 				if unitalive then
 				if not(BLCD.curr[spell][sourceGUID]) then
-					local cooldown = {spellID = spell, name = cooldownNames[spell], CD = cooldownTimes[spell]} -- This is so I don't have to traverse through cooldowns list. All that is ever used is the spellID
-					BLCD:CreatePausedBar(cooldown,sourceGUID)
-					BLCD:RearrangeBars(cooldownFrameicons[spell])
+					local x, cooldown
+					for x, cooldown in pairs(BLCD.cooldowns) do
+						if cooldown['spellID'] == spell then
+							BLCD:CreatePausedBar(cooldown,sourceGUID)
+							BLCD:RearrangeBars(cooldownFrameicons[spell])
+						end
+					end
 				end
 				end
 			end
@@ -670,7 +674,10 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 						BLCD['raidRoster'][guid]["spec"] = cooldown["spec"]
 						BLCD.cooldownRoster[cooldown['spellID']][guid] = BLCD['raidRoster'][guid]['name']
 					elseif(cooldown["talent"]) then
-						BLCD['raidRoster'][guid]["talents"][cooldown["spellID"]] = {}
+						if not BLCD['raidRoster'][guid]["talents"] then
+							BLCD['raidRoster'][guid]["talents"] = {}
+							BLCD['raidRoster'][guid]["talents"][cooldown["spellID"]] = {}
+						end
 						BLCD.cooldownRoster[cooldown['spellID']][guid] = BLCD['raidRoster'][guid]['name']
 					elseif(not cooldown["spec"] and not cooldown["talent"] and cooldown["class"]) then -- we should never miss a class ability
 						BLCD.cooldownRoster[cooldown['spellID']][guid] = BLCD['raidRoster'][guid]['name']
@@ -1020,7 +1027,7 @@ function BLCD:PrintVersions()
 		elseif not version then
 			version = ""
 		else
-			version = ("|cFFCCCCCC(%s%s)|r"):format(version, alpha and "-alpha" or "") -- XXX FIXME, variable "alpha" doesn't exist
+			version = ("|cFFCCCCCC(%s)|r"):format(version)
 		end
 
 		local _, class = UnitClass(name)

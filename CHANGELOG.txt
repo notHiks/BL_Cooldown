@@ -1,8 +1,13 @@
+3.55
+- WoD Update
+- Fix: HoTW not tracking correctly
+- New: New cooldowns added and old removed for WoD
+- New: Now tracks the amount of battle resurrections you have in an encounter, this will show up as the amount you have available (1 at the start of an encounter)
+
 3.54
 - Fix: Anchoring issues when bar growth is set to "Left"
 - Fix: Styling issues conflicting with BigWigs (hopefully)
 - Fix: Show the mover when you unlock it w/out ElvUI
-- Fix: Class color bars bug
 
 3.53
 - Fixed total number of CD's not showing again when ready mode is off.

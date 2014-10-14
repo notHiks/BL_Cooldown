@@ -3,11 +3,10 @@
 --------------------------------------------------------
 if not BLCD then return end
 local BLCD = BLCD
-local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.0")
+local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.1")
 local CB = LibStub("LibCandyBar-3.0")
 local Elv = IsAddOnLoaded("ElvUI")
 
-local E, L, V, P, G
 if(Elv) then
 	E, L, V, P, G =  unpack(ElvUI);
 end
@@ -103,7 +102,7 @@ end
 --------------------------------------------------------
 local function barSorter(a, b)
 	if a['updater']:IsPlaying() and b['updater']:IsPlaying() then
-		return a.remaining < b.remaining
+		return a.remaining < b.remaining 
 	elseif a['updater']:IsPlaying() then
 		return true
 	elseif b['updater']:IsPlaying() then
@@ -124,17 +123,17 @@ function BLCD:RearrangeBars(anchor)
 	local scale = BLCD.profileDB.scale
 	local growth = BLCD.profileDB.growth
     local currBars = {}
-
+	
     for bar in pairs(anchor.bars) do
 		if bar:IsVisible() then
 			currBars[#currBars + 1] = bar
-		else
+		else	
 			anchor.bars[bar] = nil
 			--print('stop 2: ', bar:Get("raidcooldowns:spell"))
 			bar:Stop()
 		end
 	end
-
+	
 	if(#currBars > 2)then
 		BLCD:BLHeight(frame, (14*#currBars)*scale);
 	else
@@ -142,7 +141,7 @@ function BLCD:RearrangeBars(anchor)
 	end
 
 	table.sort(currBars, barSorter)
-
+	
 	for i, bar in ipairs(currBars) do
 		local spacing = (((-14)*(i-1))-2)
 		bar:ClearAllPoints()
@@ -164,7 +163,7 @@ local backdropBorder = {
 local function styleBar(bar)
 	local bd = bar.candyBarBackdrop
 
-	if Elv then
+	if Elv and false then
 		bd:SetTemplate("Transparent")
 		bd:SetOutside(bar)
 		if not E.PixelMode and bd.iborder then
@@ -179,7 +178,7 @@ local function styleBar(bar)
 		bd:ClearAllPoints()
 		bd:SetPoint("TOPLEFT", bar, "TOPLEFT", -1, 1)
 		bd:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 1, -1)
-
+		
 		bar.candyBarLabel:SetTextColor(1,1,1,1)
 		bar.candyBarLabel:SetJustifyH("CENTER")
 		bar.candyBarLabel:SetJustifyV("MIDDLE")
@@ -214,17 +213,17 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 		bar:SetColor(color.r,color.g,color.b,1)
 	else
 		bar:SetColor(.5,.5,.5,1)
-	end
+	end	
 	bar:SetDuration(duration)
 	bar:SetScale(BLCD.profileDB.scale)
 	bar:SetClampedToScreen(true)
-
+	
 	local caster = strsplit("-",caster)
 	bar:SetLabel(caster)
-
+	
 	bar.candyBarLabel:SetJustifyH("LEFT")
 	return bar
-end
+end	
 
 function BLCD:CancelBars(frameicon)
     for k in pairs(frameicon['bars']) do
@@ -257,7 +256,7 @@ function BLCD:CheckPausedBars(cooldown,unit)
 		local unitOnline = (UnitIsConnected(unit) or false)
 		local name = UnitName(unit)
 		local guid = UnitGUID(unit)
-
+		
 		if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 			local bar = BLCD.curr[cooldown['spellID']][guid]
 			if unitDead or not unitOnline then
@@ -308,7 +307,7 @@ function BLCD:CheckVisibility()
 		BLCD.show = true
 	elseif(BLCD.profileDB.show == "raidorparty" and not (grouptype =="raid" or grouptype == "instance" or grouptype=="party")) then
 		frame:Hide()
-		BLCD.show = nil
+		BLCD.show = nil	
 	elseif(BLCD.profileDB.show == "party" and grouptype =="party") then
 		frame:Show()
 		BLCD.show = true
@@ -400,15 +399,15 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 		--for i,v in pairs(onCD) do
 			--allCD[i] = 0
 		--end
-
+		
 		if next(rosterCD) ~= nil then
 			local name = GetSpellInfo(cooldown['spellID'])
 			if IsInRaid() or IsInGroup(2) then
-				SendChatMessage('----- '..name..' -----',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
+				SendChatMessage('----- '..name..' -----',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")			
 			elseif IsInGroup() then
 				SendChatMessage('----- '..name..' -----','PARTY')
 			end
-
+			
 			for i,v in pairs(rosterCD) do
 				if not (onCD[i] and onCD[i]['updater']:IsPlaying()) then
 					local unitalive = not (UnitIsDeadOrGhost(v) or false)
@@ -428,7 +427,7 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 							SendChatMessage(v..' OFFLINE but ready!', 'PARTY')
 						else
 							SendChatMessage(v..' DEAD but ready!','PARTY')
-						end
+						end	
 					end
 				end
 			end
@@ -466,11 +465,11 @@ function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 		end
 		BLCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
 	elseif(BLCD.profileDB.growth  == "right") then
-		if index == nil then
+		--[[if index == nil then
 			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
 		else
 			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldown'..(index), 'BOTTOMLEFT', 0, -2);
-		end
+		end]]
 		BLCD:BLPoint(frameicon,'TOPLEFT', frame, 'TOPLEFT');
 	end
 end
@@ -493,7 +492,7 @@ end
 
 function BLCD:InsertFrame(frame, prevIndex, nextIndex, cooldownFrames)
 	if prevIndex == nil then
-		BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
+		BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2); 
 		frame:Show()
 		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', frame, 'BOTTOMLEFT', 0, -2); end
 	else
@@ -512,7 +511,7 @@ function BLCD:RemoveFrame(frame, prevIndex, nextIndex, cooldownFrames)
 		if nextIndex ~= nil then BLCD:BLPoint(cooldownFrames[nextIndex],'TOPLEFT', cooldownFrames[prevIndex], 'BOTTOMLEFT', 0, -2); end
 	end
 end
-
+	
 function BLCD:BLHeight(frame, height)
 	if(Elv) then
 		frame:Height(height)
@@ -546,7 +545,7 @@ function BLCD:BLPoint(obj, arg1, arg2, arg3, arg4, arg5)
 end
 
 function BLCD:BLTexture()
-	if(Elv) then
+	if(Elv and false) then
 		return E["media"].normTex
 	else
 		return "Interface\\AddOns\\BL_Cooldown\\media\\bar15.tga"

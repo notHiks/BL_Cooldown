@@ -48,18 +48,13 @@ BLCD.defaults = {
 			PRI_PASU = false,
 			PRI_DIHY = true,
 			PRI_GUSP = true,
-			PRI_VOSH = false,
-			PRI_HYOFHO = true,
 			PRI_VAEM = false,
 			DRU_TR = true,
 			DRU_IR = false,
 			DRU_RE = true,
-			DRU_IN = true,
 			DRU_HEOFTHWI = false,
 			SHA_SPLITO = false,
-			SHA_MATITO = true,
 			SHA_HETITO = true,
-			SHA_STTO = false,
 			SHA_TRTO = false,
 			SHA_BL = false,
 			SHA_HE = false,
@@ -68,18 +63,17 @@ BLCD.defaults = {
 			MON_ZEME = false,
 			MON_LICO = false,
 			MON_RE = true,
-			MON_AVHA = false,
 			WARL_SORE = true,
 			DEA_RAAL = true,
 			DEA_ANMAZO = false,
 			WARR_RACR = true,
-			WARR_DEBA = true,
-			WARR_SKBA = false,
 			WARR_VI = false,
 			WARR_SHTH = false,
 			WARR_IN = false,
 			MAG_TIWA = false,
+			MAG_AMMA = true,
 			ROG_SMBO = true,
+			HUN_ASOFTHFO = true,
 		},
 	},
 }
@@ -388,30 +382,6 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.PRI_GUSP = value; BLCD:DynamicCooldownFrame()
 							end,
-						},		
-						PRI_VOSH = {
-							type = "toggle",
-							name = "Void Shift",
-							desc = "You and the currently targeted party or raid member swap health percentages. Increases the lower health percentage of the two to 25% if below that amount.",
-							order = 2,
-							get = function()
-								return BLCD.profileDB.cooldown.PRI_VOSH
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_VOSH = value; BLCD:DynamicCooldownFrame()
-							end,
-						},
-						PRI_HYOFHO = {
-							type = "toggle",
-							name = "Hymn Of Hope",
-							desc = "Restores 2% mana to 3 nearby low mana friendly party or raid targets every 2 sec for 8 sec, and increases their total maximum mana by 15% for 8 sec. Maximum of 12 mana restores. The Priest must channel to maintain the spell.",
-							order = 2,
-							get = function()
-								return BLCD.profileDB.cooldown.PRI_HYOFHO
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.PRI_HYOFHO = value; BLCD:DynamicCooldownFrame()
-							end,
 						},
 						PRI_VAEM = {
 							type = 'toggle',
@@ -467,18 +437,6 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.DRU_RE = value; BLCD:DynamicCooldownFrame()
 							end,
-						},	
-						DRU_IN = {
-							type = "toggle",
-							name = "Innervate",
-							desc = "Causes the target to regenerate 10% of the caster's maximum mana over 10 sec. If cast on self, the caster will regenerate an additional 10% of maximum mana over 10 sec.",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.DRU_IN
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.DRU_IN = value; BLCD:DynamicCooldownFrame()
-							end,
 						},		
 						DRU_HEOFTHWI = {
 							type = "toggle",
@@ -510,19 +468,7 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.SHA_SPLITO = value; BLCD:DynamicCooldownFrame()
 							end,
-						},		
-						SHA_MATITO = {
-							type = "toggle",
-							name = "Mana Tide Totem",
-							desc = "Summons a Water Totem with 10% of the caster's health at the feet of the caster for 16 sec.  Party and raid members within 40 yards of the totem gain 200% of the caster's Spirit (excluding short - duration Spirit bonuses).",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.SHA_MATITO
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_MATITO = value; BLCD:DynamicCooldownFrame()
-							end,
-						},		
+						},				
 						SHA_HETITO = {
 							type = "toggle",
 							name = "Healing Tide Totem",
@@ -534,19 +480,7 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.SHA_HETITO = value; BLCD:DynamicCooldownFrame()
 							end,
-						},		
-						SHA_STTO = {
-							type = "toggle",
-							name = "Stormlash Totem",
-							desc = "Summons an Air Totem with 5 health at the feet of the caster, empowering allies within 40 yards with lightning.  While empowered, allies' spells and attacks will trigger bursts of electricity, dealing additional Nature damage to their target. Lasts 10 sec.",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.SHA_STTO
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_STTO = value; BLCD:DynamicCooldownFrame()
-							end,
-						},		
+						},			
 						SHA_TRTO = {
 							type = "toggle",
 							name = "Tremor Totem",
@@ -663,19 +597,7 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.profileDB.cooldown.MON_RE = value; BLCD:DynamicCooldownFrame()
 							end,
-						},	
-						MON_AVHA = {
-							type = "toggle",
-							name = "Avert Harm",
-							desc = "You cause 20% of all damage party and raid members within 10 yards take to be re-directed to you. Lasts for 6 sec.\n\nThe damage received through Avert Harm can be Staggered. Avert Harm is cancelled if you reach 10% or lower health.",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.MON_AVHA
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.MON_AVHA = value; BLCD:DynamicCooldownFrame()
-							end,
-						},	
+						},		
 					},
 				},
 				warlock = {
@@ -745,30 +667,6 @@ BLCD.options =  {
 								BLCD.profileDB.cooldown.WARR_RACR = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
-						WARR_DEBA = {
-							type = "toggle",
-							name = "Demoralizing Banner",
-							desc = "Throw down a war banner within 30 yards that decreases the damage dealt by all enemies within 30 yards of the banner by 10%. Lasts 15 sec.\n\nYou can Intervene to your war banner.",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.WARR_DEBA
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_DEBA = value; BLCD:DynamicCooldownFrame()
-							end,
-						},
-						WARR_SKBA = {
-							type = "toggle",
-							name = "Skull Banner",
-							desc = "Throw down a war banner at your feet that increases the critical damage of party or raid members within 40 yards of the banner by 20%. Lasts 10 sec.\n\nYou can Intervene to your war banner.",
-							order = 1,
-							get = function()
-								return BLCD.profileDB.cooldown.WARR_SKBA
-							end,
-							set = function(key, value)
-								BLCD.profileDB.cooldown.WARR_SKBA = value; BLCD:DynamicCooldownFrame()
-							end,
-						},
 						WARR_VI = {
 							type = "toggle",
 							name = "Vigilance",
@@ -824,6 +722,18 @@ BLCD.options =  {
 								BLCD.profileDB.cooldown.MAG_TIWA = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
+						MAG_AMMA = {
+							type = "toggle",
+							name = "Amplify Magic",
+							desc = "Amplify the effects of helpful magic, increasing all healing received by 12% for all party and raid members within 100 yards. Lasts 6 sec.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.MAG_AMMA
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.MAG_AMMA = value; BLCD:DynamicCooldownFrame()
+							end,
+						},
 					},
 				},
 				rogue = {
@@ -841,6 +751,25 @@ BLCD.options =  {
 							end,
 							set = function(key, value)
 								BLCD.profileDB.cooldown.ROG_SMBO = value; BLCD:DynamicCooldownFrame()
+							end,
+						},
+					},
+				},
+				hunter = {
+					type = "group",
+					name = "Hunter Cooldowns",
+					order = 2,
+					args ={
+						HUN_ASOFTHFO = {
+							type = "toggle",
+							name = "Aspect of the Fox",
+							desc = "Party and raid members within 40 yards take on the aspects of a fox, allowing them to move while casting all spells and abilities for 6 sec. Only one Aspect can be active at a time.",
+							order = 1,
+							get = function()
+								return BLCD.profileDB.cooldown.HUN_ASOFTHFO
+							end,
+							set = function(key, value)
+								BLCD.profileDB.cooldown.HUN_ASOFTHFO = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 					},

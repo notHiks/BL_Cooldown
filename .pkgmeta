@@ -27,7 +27,7 @@ externals:
         url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
     libs/LibCandyBar-3.0:
         url: svn://svn.wowace.com/wow/libcandybar-3-0/mainline/trunk
-    libs/LibGroupInSpecT-1.0:
+    libs/LibGroupInSpecT-1.1:
         url: svn://svn.wowace.com/wow/libgroupinspect/mainline/trunk
     libs/LibStub:
         url: svn://svn.wowace.com/wow/libstub/mainline/trunk

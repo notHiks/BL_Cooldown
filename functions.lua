@@ -53,32 +53,32 @@ end
 ]]
 
 function BLCD:print_r ( t )
-    local print_r_cache={}
-    local function sub_print_r(t,indent)
-        if (print_r_cache[tostring(t)]) then
-            print(indent.."*"..tostring(t))
-        else
-            print_r_cache[tostring(t)]=true
-            if (type(t)=="table") then
-                for pos,val in pairs(t) do
-                    if (type(val)=="table") then
-                        print(indent.."["..pos.."] => "..tostring(t).." {")
-                        sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
-                        print(indent..string.rep(" ",string.len(pos)+6).."}")
-                    elseif (type(pos)=="table") then
+	local print_r_cache={}
+	local function sub_print_r(t,indent)
+		if (print_r_cache[tostring(t)]) then
+			print(indent.."*"..tostring(t))
+		else
+			print_r_cache[tostring(t)]=true
+			if (type(t)=="table") then
+				for pos,val in pairs(t) do
+					if (type(val)=="table") then
+						print(indent.."["..pos.."] => "..tostring(t).." {")
+						sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+						print(indent..string.rep(" ",string.len(pos)+6).."}")
+					elseif (type(pos)=="table") then
 						print(indent.."["..tostring(pos).."] => "..tostring(t).." {")
-                        sub_print_r(pos,indent..string.rep(" ",string.len(tostring(pos))+8))
-                        print(indent..string.rep(" ",string.len(tostring(pos))+6).."}")
+						sub_print_r(pos,indent..string.rep(" ",string.len(tostring(pos))+8))
+						print(indent..string.rep(" ",string.len(tostring(pos))+6).."}")
 					else
-                        print(indent.."["..tostring(pos).."] => "..tostring(val))
-                    end
-                end
-            else
-                print(indent..tostring(t))
-            end
-        end
-    end
-    sub_print_r(t," ")
+						print(indent.."["..tostring(pos).."] => "..tostring(val))
+					end
+				end
+			else
+				print(indent..tostring(t))
+			end
+		end
+	end
+	sub_print_r(t," ")
 end
 
 function BLCD:ClassColorString (class)
@@ -94,6 +94,10 @@ end
 
 function BLCD:sec2Min(secs)
 	return secs
+end
+
+local function print(...)
+	DEFAULT_CHAT_FRAME:AddMessage("|cffc41f3bBLCD|r: " .. table.concat({...}, " "))
 end
 --------------------------------------------------------
 
@@ -403,7 +407,7 @@ function BLCD:PostClick(self, cooldown, rosterCD, onCD)
 		if next(rosterCD) ~= nil then
 			local name = GetSpellInfo(cooldown['spellID'])
 			if IsInRaid() or IsInGroup(2) then
-				SendChatMessage('----- '..name..' -----',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")			
+				SendChatMessage('----- '..name..' -----',IsInGroup(2) and "INSTANCE_CHAT" or "RAID")
 			elseif IsInGroup() then
 				SendChatMessage('----- '..name..' -----','PARTY')
 			end

@@ -1,3 +1,6 @@
+3.56
+- Send chat messages to specified channels
+- Fix: Set extras (hopefully)
 3.55
 - WoD Update
 - Fix: HoTW not tracking correctly

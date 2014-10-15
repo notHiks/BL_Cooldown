@@ -175,16 +175,18 @@ function BLCD:DebugFunc()
 	BLCD:ResetBRes(true)
 end
 
+local function print(...)
+	DEFAULT_CHAT_FRAME:AddMessage("|cffc41f3bBLCD|r: " .. table.concat({...}, " "))
+end
+
 function BLCD:SetExtras(set)
 	if set then
 		local inInstance,_ = IsInInstance()
-		local _,_,_,_,maxPlayers,_,_,_ = GetInstanceInfo()
+		local _,_,_,_,_,_,_,_,maxPlayers = GetInstanceInfo()
 		local maxSubgroup = 8
 
-		if maxPlayers == 25 then
-			maxSubgroup = 5
-		elseif maxPlayers == 10 then
-			maxSubgroup = 2
+		if maxPlayers < 40 then
+			maxSubgroup = math.ceil(maxPlayers/5)
 		end
 
 		if IsInRaid() and inInstance then
@@ -369,15 +371,21 @@ function BLCD:CreateCooldown(index, cooldown)
 
 		if(BLCD.profileDB.cdannounce) then
 			local name = select(1, GetSpellInfo(cooldown['spellID']))
-			local grouptype = BLCD:GetPartyType()
-			if(grouptype == "raid") then
-				SendChatMessage(caster.."'s "..name.." is ready!" ,"RAID");
-			elseif(grouptype == "instance") then
-				SendChatMessage(caster.."'s "..name.." is ready!" ,"INSTANCE_CHAT");
-			elseif(grouptype == "party") then
+			local custom = BLCD.profileDB.announcechannel
+			if custom then
+				local list = {GetChannelList()}
+				local channel = BLCD.profileDB.customchan
+				for i = 1,#list/2 do
+					if list[i*2] == channel then
+						SendChatMessage(caster.."'s "..name.." is ready!" ,"CHANNEL", nil, list[(i*2)-1]);
+					end
+				end
+			elseif IsInRaid() or IsInGroup(2) then
+				SendChatMessage(caster.."'s "..name.." is ready!" ,IsInGroup(2) and "INSTANCE_CHAT" or "RAID");
+			elseif IsInGroup() then
 				SendChatMessage(caster.."'s "..name.." is ready!" ,"PARTY");
 			else
-				SendChatMessage(caster.."'s "..name.." is ready!" ,"PARTY");
+				SendChatMessage(caster.."'s "..name.." is ready!" ,"SAY");
 			end
 		end
 
@@ -664,8 +672,16 @@ end
 function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,duration,fromComms)
 	if(BLCD.profileDB.castannounce) then
 		local name = select(1, GetSpellInfo(cooldown['spellID']))
-		--print(caster,name,duration)
-		if(BLCD:GetPartyType()=="raid") then
+		local custom = BLCD.profileDB.announcechannel
+		if custom then
+			local list = {GetChannelList()}
+			local channel = BLCD.profileDB.customchan
+			for i = 1,#list/2 do
+					if list[i*2] == channel then
+					SendChatMessage(caster.." Casts "..name.." "..BLCD:sec2Min(duration).."CD" ,"CHANNEL", nil, list[(i*2)-1]);
+				end
+			end
+		elseif(BLCD:GetPartyType()=="raid") then
 			SendChatMessage(caster.." Casts "..name.." "..BLCD:sec2Min(duration).."CD" ,"RAID");
 		elseif(BLCD:GetPartyType()=="party") then
 			SendChatMessage(caster.." Casts "..name.." "..BLCD:sec2Min(duration).."CD" ,"PARTY");

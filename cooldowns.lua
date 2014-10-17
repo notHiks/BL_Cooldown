@@ -304,6 +304,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "WARRIOR",
 		index = 29,
+		notspec = 73,
 	},
 	[114030] = { -- Vigilance
 		spellID = 114030,
@@ -315,15 +316,6 @@ BLCD.cooldowns = {
 		talent = 5,
 		talentidx = 19676,
 		index = 30,
-	},
-	[64382] = { -- Shattering Throw
-		spellID = 64382,
-		succ = "SPELL_CAST_SUCCESS",
-		name = "WARR_SHTH",
-		CD = 300,
-		cast = 10,
-		class = "WARRIOR",
-		index = 31,
 	},
 	[3411] = { -- Intervene
 		spellID = 3411,

@@ -67,11 +67,8 @@ local function hasHoTW(guid)
 end
 
 function BLCD:UpdateRoster(cooldown)
-	local bar
-	--local time1 = debugprofilestop()
-	local grouptype = BLCD:GetPartyType()
-	local sologroup = (grouptype == "none" and (BLCD.profileDB.show == "solo" or BLCD.profileDB.show == "always"))
-	if(grouptype == "party" or grouptype == "raid" or grouptype == "instance" or sologroup) then
+	local sologroup = (not IsInGroup() and (BLCD.profileDB.show == "solo" or BLCD.profileDB.show == "always"))
+	if(IsInGroup() or sologroup) then
 		local guid, name, char
 		for guid, name in pairs(BLCD.cooldownRoster[cooldown['spellID']]) do
 			if not(UnitInRaid(name) or UnitInParty(name)) or guid['extra'] then
@@ -86,10 +83,10 @@ function BLCD:UpdateRoster(cooldown)
 		local rosterCount = 0
 		for guid, char in pairs(BLCD['raidRoster']) do
 			if (UnitInRaid(char['name']) or UnitInParty(char['name'])) and not char['extra'] or sologroup then
-				if(string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then
+				if(char["class"] and string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then
 					local unitalive = (not UnitIsDeadOrGhost(char['name'])) and UnitIsConnected(char['name'])
-					if(cooldown["spec"] and char["spec"]) then
-						if(char["spec"]==cooldown["spec"]) then
+					if((cooldown["spec"] or cooldown["notspec"]) and char["spec"]) then
+						if(cooldown["spec"] and char["spec"]==cooldown["spec"]) or (cooldown["notspec"] and char["spec"]~=cooldown["notspec"]) then
 							BLCD.cooldownRoster[cooldown['spellID']][guid] = char['name']
 							rosterCount = rosterCount + 1
 						end
@@ -113,7 +110,7 @@ function BLCD:UpdateRoster(cooldown)
 						if BLCD.profileDB.cooldown[cooldown.name] and unitalive and
 							((cooldown["spec"] and char["spec"] and char["spec"] == cooldown["spec"] or (cooldown["notspec"] and char["spec"] and char["spec"] ~= cooldown["notspec"])) or 
 							(cooldown["talent"] and char["talents"] and (char["talents"][cooldown["talentidx"]] or hasHoTW(guid))) or
-							(not cooldown["spec"] and not cooldown["talent"] and cooldown["class"] == char["class"])) then
+							(not cooldown["spec"] and not cooldown["notspec"] and not cooldown["talent"] and cooldown["class"] == char["class"])) then
 							BLCD:CreatePausedBar(cooldown,guid)
 						elseif(unitalive and BLCD.cooldownRoster[cooldown["spellID"]][guid]) then
 							BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
@@ -278,6 +275,7 @@ function BLCD:CreateBase()
 
 	BLCD:RegisterBucketEvent("GROUP_ROSTER_UPDATE", 3, "UpdateExtras")
 
+	BLCD.baseFrame = raidcdbase
 	BLCD.locked = true
 	BLCD:CheckVisibility()
 end
@@ -447,19 +445,14 @@ end
 
 function BLCD:CreatePausedBar(cooldown,guid)
 	if BLCD.curr[cooldown['spellID']][guid] then
-		local bar = BLCD.curr[cooldown['spellID']][guid]
-		if (cooldown['name'] == "DRU_TR" or cooldown['name'] == "PRI_VOSH") then
-			local duration = BLCD:getCooldownCD(cooldown,guid)
-			local rand = tonumber(string.format("%." .. (3 or 0) .. "f", fastrandom()*0.01)) -- add .00X to keep the compare from jumping around in the bar sorter.
-			bar:SetDuration(duration - 1 - rand)
-		end
-	else
+		local bar = BLCD.curr[cooldown['spellID']][guid] 
+		bar:Show()
+	else 
 		local duration = BLCD:getCooldownCD(cooldown,guid)
-		local rand = tonumber(string.format("%." .. (3 or 0) .. "f", fastrandom()*0.01)) -- add .00X to keep the compare from jumping around in the bar sorter.
 		local spellID = cooldown['spellID']
 		local spellName = GetSpellInfo(spellID)
 		local caster = select(6,GetPlayerInfoByGUID(guid))
-		local bar = BLCD:CreateBar(nil, cooldown, caster, cooldownFrameicons[spellID], guid, duration - 1 - rand, spellName)
+		local bar = BLCD:CreateBar(nil, cooldown, caster, cooldownFrameicons[spellID], guid, duration - 1, spellName)
 		BLCD.curr[spellID][guid] = bar
 		bar:SetTimeVisibility(false)
 		bar.candyBarBar:SetMinMaxValues(0, bar.remaining)
@@ -473,18 +466,17 @@ function BLCD:CreatePausedBar(cooldown,guid)
 end
 
 function BLCD:StopAllBars()
-	local spellId,bar,frame
-	for spellId, frame in pairs(cooldownFrameicons) do
-		for bar in pairs(frame.bars) do
-			if bar then bar:Stop() end
+	for spellId, guid in pairs(BLCD.curr) do
+		for guid, bar in pairs(guid) do
+			bar:Stop()
 		end
 	end
 end
 
 function BLCD:StopAllPausedBars()
 	local spellId,bar,frame
-	for spellId, frame in pairs(cooldownFrameicons) do
-		for bar in pairs(frame.bars) do
+	for spellId, guid in pairs(BLCD.curr) do
+		for i, bar in pairs(guid) do
 			if not bar.updater:IsPlaying() then bar:Stop() end
 		end
 	end
@@ -523,13 +515,13 @@ function BLCD:AvailableBars(value)
 			for sourceGUID, sourceName in pairs(tabled) do
 				local unitalive = not (UnitIsDeadOrGhost(sourceName) or not UnitIsConnected(sourceName) or false)
 				if unitalive then
-				if not(BLCD.curr[spell][sourceGUID]) then
-					local cooldown = BLCD.cooldowns[spell]
+					if not(BLCD.curr[spell][sourceGUID]) then
+						local cooldown = BLCD.cooldowns[spell]
 						if cooldown['spellID'] == spell then
 							BLCD:CreatePausedBar(cooldown,sourceGUID)
 							BLCD:RearrangeBars(cooldownFrameicons[spell])
 						end
-				end
+					end
 				end
 			end
 		end
@@ -543,7 +535,7 @@ function BLCD:RecolorBars(value)
 	for spellId, frame in pairs(cooldownFrameicons) do
 		for bar in pairs(frame.bars) do
 			if value then
-				cooldown = 	bar:Get("raidcooldowns:cooldown")
+				cooldown = bar:Get("raidcooldowns:cooldown")
 				local color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
 				bar:SetColor(color.r,color.g,color.b,1)
 			else
@@ -554,6 +546,8 @@ function BLCD:RecolorBars(value)
 end
 
 function BLCD:DynamicCooldownFrame()--key,value)
+	local wasVisible = BLCD.baseFrame:IsVisible()
+	BLCD.baseFrame:Show()
 	local i, cooldown
 	for i, cooldown in pairs(BLCD.cooldowns) do
 		i = cooldown.index
@@ -594,8 +588,8 @@ function BLCD:DynamicCooldownFrame()--key,value)
 			local frameicon = cooldownFrameicons[cooldown['spellID']]
 			if frameicon then frameicon.text:SetText(BLCD:GetTotalCooldown(cooldown)) end
 		end
-    end
-	--BLCD:RedrawCDList()
+	end
+	if not wasVisible then BLCD.baseFrame:Hide() end
 end
 
 --------------------------------------------------------
@@ -658,7 +652,7 @@ function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 	elseif(event =="GROUP_ROSTER_UPDATE") then
 	    local partyType = BLCD:GetPartyType()
 	    if(partyType=="none" and (BLCD.profileDB.show ~= "always" or BLCD.profileDB.show ~= "solo")) then
-	        BLCD:CancelBars(frameicon)
+	        BLCD:CancelBars(cooldown['spellID'])
 	        BLCD.curr[cooldown['spellID']]={}
 	        BLCD.cooldownRoster[cooldown['spellID']] = {}
 	        BLCD:CheckVisibility()
@@ -1136,7 +1130,9 @@ end
 
 function BLCD:SendCommand(data)
 	local s = self:Serialize(data)
-	self:SendCommMessage(commPrefix, s, "RAID", "", "ALERT")
+	if IsInGroup() then
+		self:SendCommMessage(commPrefix, s, IsInGroup(2) and "INSTANCE_CHAT" or "RAID", "", "ALERT")
+	end
 end
 
 function BLCD:OnEnable()

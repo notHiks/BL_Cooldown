@@ -82,10 +82,10 @@ function BLCD:print_r ( t )
 end
 
 function BLCD:ClassColorString (class)
-    return string.format ("|cFF%02x%02x%02x",
-        RAID_CLASS_COLORS[class].r * 255,
-        RAID_CLASS_COLORS[class].g * 255,
-        RAID_CLASS_COLORS[class].b * 255)
+	return string.format ("|cFF%02x%02x%02x",
+		RAID_CLASS_COLORS[class].r * 255,
+		RAID_CLASS_COLORS[class].g * 255,
+		RAID_CLASS_COLORS[class].b * 255)
 end
 
 function BLCD:print_raid()
@@ -105,35 +105,32 @@ end
 -- Display Bar Functions --
 --------------------------------------------------------
 local function barSorter(a, b)
-	if a['updater']:IsPlaying() and b['updater']:IsPlaying() then
-		return a.remaining < b.remaining 
-	elseif a['updater']:IsPlaying() then
-		return true
-	elseif b['updater']:IsPlaying() then
-		return false
+	local caster1 = a:Get("raidcooldowns:caster")
+	local caster2 = b:Get("raidcooldowns:caster")
+	if a.remaining == b.remaining then
+		return caster1 < caster2
 	else
-		return false
+		return a.remaining < b.remaining
 	end
 end
 
-function BLCD:RearrangeBars(anchor)
+function BLCD:RearrangeBars(anchor) -- frameicon
 	if not anchor then return end
-    if not next(anchor.bars) then
+	if not next(anchor.bars) then
 		if anchor:IsVisible() then
 			BLCD:BLHeight(anchor:GetParent(), 28*BLCD.profileDB.scale)
 		end
 	return end
-    local frame = anchor:GetParent()
+	local frame = anchor:GetParent()
 	local scale = BLCD.profileDB.scale
 	local growth = BLCD.profileDB.growth
-    local currBars = {}
+	local currBars = {}
 	
-    for bar in pairs(anchor.bars) do
+	for bar in pairs(anchor.bars) do
 		if bar:IsVisible() then
 			currBars[#currBars + 1] = bar
 		else	
 			anchor.bars[bar] = nil
-			--print('stop 2: ', bar:Get("raidcooldowns:spell"))
 			bar:Stop()
 		end
 	end
@@ -149,7 +146,7 @@ function BLCD:RearrangeBars(anchor)
 	for i, bar in ipairs(currBars) do
 		local spacing = (((-14)*(i-1))-2)
 		bar:ClearAllPoints()
-	    if(growth  == "right") then
+		if(growth  == "right") then
 			BLCD:BLPoint(bar, "TOPLEFT", anchor, "TOPRIGHT", 5, spacing)
 		elseif(growth  == "left") then
 			BLCD:BLPoint(bar, "TOPRIGHT", anchor, "TOPLEFT", -5, spacing)
@@ -229,11 +226,10 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	return bar
 end	
 
-function BLCD:CancelBars(frameicon)
-    for k in pairs(frameicon['bars']) do
-        k:Stop()
-		frameicon.bars[k] = nil
-    end
+function BLCD:CancelBars(spellID)
+	for guid, bar in pairs(BLCD.curr[spellID]) do
+		bar:Stop()
+	end
 end
 
 function BLCD:restyleBar(self)
@@ -287,8 +283,8 @@ end
 --------------------------------------------------------
 function BLCD:CheckVisibility()
 	local frame = BLCooldownBase_Frame
-    local grouptype = BLCD:GetPartyType()
-    if(BLCD.profileDB.show == "always") then
+	local grouptype = BLCD:GetPartyType()
+	if(BLCD.profileDB.show == "always") then
 		frame:Show()
 		BLCD.show = true
 	elseif(BLCD.profileDB.show == "never") then
@@ -339,13 +335,13 @@ function BLCD:ToggleMoversLock()
 		raidcdbasemover:RegisterForDrag("LeftButton")
 		raidcdbasemover:Show()
 		BLCD.locked = nil
-		print("|cffc41f3bBlood Legion Cooldown|r: unlocked")
+		print("unlocked")
 	else
 		raidcdbasemover:EnableMouse(false)
 		raidcdbasemover:RegisterForDrag(nil)
 		raidcdbasemover:Hide()
 		BLCD.locked = true
-		print("|cffc41f3bBlood Legion Cooldown|r: locked")
+		print("locked")
 		local point,_,relPoint,xOfs,yOfs = raidcdbasemover:GetPoint(1)
 		BLCD.profileDB.framePoint = point
 		BLCD.profileDB.relativePoint = relPoint
@@ -462,7 +458,7 @@ end
 
 function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 	if(BLCD.profileDB.growth == "left") then
-	    if index == nil then
+		if index == nil then
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
 		else
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);
@@ -480,7 +476,7 @@ end
 
 function BLCD:RepositionFrames(frame, index, cooldownFrames)
 	if(BLCD.profileDB.growth == "left") then
-	    if index == nil then
+		if index == nil then
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldownBase_Frame', 'TOPRIGHT', 2, -2);
 		else
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);

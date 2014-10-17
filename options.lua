@@ -178,7 +178,7 @@ BLCD.options =  {
 						return BLCD.profileDB.show 
 					end,
 					set = function(info, value)
-						BLCD.profileDB.show = value; BLCD:CheckVisibility()
+						BLCD.profileDB.show = value; BLCD:DynamicCooldownFrame(); BLCD:CheckVisibility()
 					end,
 					values = {
 						['always'] = "Always",

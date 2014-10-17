@@ -1,6 +1,9 @@
 3.56
 - Send chat messages to specified channels
 - Fix: Set extras (hopefully)
+- Fix: Various utility cooldowns for WoD (Shattering Throw removed, RC non prot, Zen Med non MW)
+- Various other bug fixes
+
 3.55
 - WoD Update
 - Fix: HoTW not tracking correctly
@@ -25,7 +28,7 @@
 - Retain cooldown roster through reloads. You can issue a roster rescan via /blcd rescan
 
 3.51
-- Bug fix when not tracking a CD but recieved addon comm about it
+- Bug fix when not tracking a CD but received addon comm about it
 - Added Raid/Party option on when to enable BLCD
 
 3.50

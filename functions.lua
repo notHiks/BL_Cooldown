@@ -15,6 +15,7 @@ local GameFontHighlightSmallOutline = GameFontHighlightSmallOutline
 local _fontName, _fontSize = GameFontHighlightSmallOutline:GetFont()
 local _fontShadowX, _fontShadowY = GameFontHighlightSmallOutline:GetShadowOffset()
 local _fontShadowR, _fontShadowG, _fontShadowB, _fontShadowA = GameFontHighlightSmallOutline:GetShadowColor()
+local bResIDs = {20484, 20707, 61999}
 
 --------------------------------------------------------
 
@@ -256,7 +257,6 @@ function BLCD:CheckPausedBars(cooldown,unit)
 		local unitOnline = (UnitIsConnected(unit) or false)
 		local name = UnitName(unit)
 		local guid = UnitGUID(unit)
-		
 		if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 			local bar = BLCD.curr[cooldown['spellID']][guid]
 			if unitDead or not unitOnline then
@@ -267,16 +267,12 @@ function BLCD:CheckPausedBars(cooldown,unit)
 		end
 		if BLCD.profileDB.cooldown[cooldown.name] and BLCD.cooldownRoster[cooldown['spellID']][guid] and not (BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid]) then
 			if not unitDead and unitOnline then
-				BLCD:CreatePausedBar(cooldown,guid)
+				BLCD:CreatePausedBar(cooldown, guid)
 			end
-		end
-		if not unitDead and unitOnline then
-			BLCD:ScheduleTimer( function() BLCD.tmp[name] = 0 end, 1)
 		end
 	end
 end
 
---------------------------------------------------------
 
 --------------------------------------------------------
 -- Visibility Functions --
@@ -442,8 +438,8 @@ end
 function BLCD:Scale()
 	local raidcdbase = BLCooldownBase_Frame
 	local raidcdbasemover = BLCooldownBaseMover_Frame
-	BLCD:BLSize(raidcdbase,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
-	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,(32*BLCD.active)*BLCD.profileDB.scale)
+	BLCD:BLSize(raidcdbase,32*BLCD.profileDB.scale,32*BLCD.profileDB.scale)
+	BLCD:BLSize(raidcdbasemover,32*BLCD.profileDB.scale,96*BLCD.profileDB.scale)
 	local i,cooldown
 	for i,cooldown in pairs(BLCD.cooldowns) do
 		i = cooldown.index
@@ -454,6 +450,9 @@ function BLCD:Scale()
 		BLCD:BLFontTemplate(_G['BLCooldownIcon'..i].text, 20*BLCD.profileDB.scale, 'OUTLINE')
 		end
 	end
+	BLCD:BLSize(BLCD.resFrame,35*BLCD.profileDB.scale,30*BLCD.profileDB.scale);
+	BLCD:BLSize(BLCD.resIconFrame,35*BLCD.profileDB.scale,30*BLCD.profileDB.scale);
+	BLCD:BLFontTemplate(BLCD.resIconFrame.text, 14*BLCD.profileDB.scale, 'OUTLINE')
 end
 
 function BLCD:SetBarGrowthDirection(frame, frameicon, index)
@@ -528,11 +527,11 @@ function BLCD:BLWidth(frame, width)
 	end
 end
 
-function BLCD:BLSize(frame, height, width)
+function BLCD:BLSize(frame, width, height)
 	if(Elv) then
-		frame:Size(height, width)
+		frame:Size(width, height)
 	else
-		frame:SetSize(height, width)
+		frame:SetSize(width, height)
 	end
 end
 

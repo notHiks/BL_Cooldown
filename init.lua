@@ -18,15 +18,16 @@ if (not frame) then
 	BLCD.frame = frame
 end
 
-BLCD.frame:SetScript("OnEvent", function(this, event, ...) return BLCD[event](BLCD, ...) end)
+BLCD.frame:SetScript("OnEvent", function(this, event, ...) 
+	BLCD[event](BLCD, ...)
+end)
 
 BLCD.frame:UnregisterAllEvents()
 BLCD.frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 BLCD.frame:RegisterEvent("ADDON_LOADED")
 BLCD.frame:RegisterEvent("PLAYER_LOGOUT")
-BLCD.frame:RegisterEvent("ENCOUNTER_START")
-BLCD.frame:RegisterEvent("ENCOUNTER_END")
-
+BLCD.frame:RegisterEvent("UNIT_HEALTH")
+BLCD.frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 function BLCD:ADDON_LOADED(name)
 	if (name == "BL_Cooldown") then
@@ -34,28 +35,15 @@ function BLCD:ADDON_LOADED(name)
 	end
 end
 
-function BLCD:ENCOUNTER_END()
-	if IsInRaid() then 
-		BLCD:ResetWipe() 
-		BLCD:CancelTimer(BLCD.resTimer)
-	end
-end
-
-function BLCD:ENCOUNTER_START()
-	if IsInRaid() then
-		BLCD:ResetBRes(true)
-	end
-end
-
 function BLCD:CreateRaidTables()
 	BLCD.cooldownRoster = {}
 	BLCD.raidRoster = BLCDrosterReload or {}
 	BLCD.curr = {}
-	BLCD.tmp = {}
+	BLCD.dead = {}
 	BLCD.charges = {}
-	--BLCD.handles = {}
 	BLCD.frame_cache = {}
-	
+	BLCD.cooldownFrameicons = {}
+
 	for guid, v in pairs(BLCD['raidRoster']) do -- Clean old GUIDs
 		if not guid:find("%a+-%x+-%x+") then
 			BLCD['raidRoster'][guid] = nil

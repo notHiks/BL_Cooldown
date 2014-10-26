@@ -811,7 +811,9 @@ function BLCD:ResetWipe()
 	end
 	for _, spellId in pairs(bResIDs) do
 		local frameicon = cooldownFrameicons[spellId]
-		frameicon.cooldown:SetCooldown(0, 0)
+		if frameicon then
+			frameicon.cooldown:SetCooldown(0, 0)
+		end
 	end
 end
 --------------------------------------------------------

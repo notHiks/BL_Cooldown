@@ -1,3 +1,7 @@
+3.58
+- Fix Spirit Shell CD
+- Fix Stampeding Roar when not glyped
+
 3.57
 - Add separate battle rez tracker, shows on boss engage. Top of the frame.
 - Handle players that release/insta-res better

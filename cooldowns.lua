@@ -4,6 +4,12 @@
 if not BLCD then return end
 local BLCD = BLCD
 
+local index = 0
+local function getIndex()
+	index = index + 1
+	return index
+end
+
 BLCD.cooldowns = {
 -- Paladin
 	[31821] = { -- Devotion Aura
@@ -14,7 +20,7 @@ BLCD.cooldowns = {
 		cast = 6,
 		class = "PALADIN",
 		spec = 65,
-		index = 1,
+		index = getIndex(),
 	},
 	[6940] = { -- Hand of Sacrifice
 		spellID = 6940,
@@ -24,7 +30,7 @@ BLCD.cooldowns = {
 		CD = 120,
 		cast = 12,
 		class = "PALADIN",
-		index = 2,
+		index = getIndex(),
 	},
 	[1022] = { -- Hand of Protection
 		spellID = 1022,
@@ -34,7 +40,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 10,
 		class = "PALADIN",
-		index = 3,
+		index = getIndex(),
 	},
 	[105809] = { -- Holy Avenger
 		spellID = 105809,
@@ -45,7 +51,7 @@ BLCD.cooldowns = {
 		class = "PALADIN",
 		talent = 5,
 		talentidx = 17597,
-		index = 4,
+		index = getIndex(),
 	},
 	[1038] = { -- Hand of Salvation
 		spellID = 1038,
@@ -56,7 +62,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PALADIN",
 		spec = 66,
-		index = 5,
+		index = getIndex(),
 	},
 	[114039] = { -- Hand of Purity
 		spellID = 114039,
@@ -68,7 +74,7 @@ BLCD.cooldowns = {
 		class = "PALADIN",
 		talent = 4,
 		talentidx = 17589,
-		index = 6,
+		index = getIndex(),
 	},
 	[114158] = { -- Light's Hammer
 		spellID = 114158,
@@ -79,7 +85,7 @@ BLCD.cooldowns = {
 		class = "PALADIN",
 		talent = 6,
 		talentidx = 17607,
-		index = 7,
+		index = getIndex(),
 	},
 -- Priest
 	[62618] = { -- Power Word: Barrier 
@@ -90,7 +96,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PRIEST",
 		spec = 256,
-		index = 8,
+		index = getIndex(),
 	},
 	[33206] = { -- Pain Suppression  
 		spellID = 33206,
@@ -100,7 +106,19 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "PRIEST", 
 		spec = 256,
-		index = 9,
+		index = getIndex(),
+	},
+	[109964] = { -- Spirit Shell
+		spellID = 109964,
+		name = "PRI_SPSH",
+		succ = "SPELL_CAST_SUCCESS",
+		CD = 180,
+		cast = 10,
+		class = "PRIEST", 
+		spec = 256,
+		talent = 5,
+		talentidx = 21754,
+		index = 37,
 	},
 	[64843] = { -- Divine Hymn
 		spellID = 64843,
@@ -110,7 +128,7 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "PRIEST",
 		spec = 257,
-		index = 10,
+		index = getIndex(),
 	},	
 	[47788] = { -- Guardian Spirit 
 		spellID = 47788,
@@ -120,7 +138,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "PRIEST", 
 		spec = 257,
-		index = 11,
+		index = getIndex(),
 	},	
 	[15286] = { -- Vampiric Embrace
 		spellID = 15286,
@@ -130,7 +148,7 @@ BLCD.cooldowns = {
 		cast = 15,
 		class = "PRIEST",
 		spec = 258,
-		index = 12,
+		index = getIndex(),
 	},	
 -- Druid
 	[740] = { -- Tranquility
@@ -141,7 +159,7 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "DRUID",
 		spec = 105,
-		index = 13,
+		index = getIndex(),
 	},
 	[102342] = { -- Ironbark
 		spellID = 102342,
@@ -151,7 +169,7 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "DRUID",
 		spec = 105,
-		index = 14,
+		index = getIndex(),
 	},
 	[20484] = { -- Rebirth
 		spellID = 20484,
@@ -159,17 +177,27 @@ BLCD.cooldowns = {
 		name = "DRU_RE",
 		CD = 600,
 		class = "DRUID",
-		index = 15,
+		index = getIndex(),
 	},
 	[108291] = { -- Heart of the Wild
 		spellID = 108291,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "DRU_HEOFTHWI",
 		CD = 360,
+		cast = 45,
 		class = "DRUID",
 		talent = 6,
 		--Special idx for all tiers, see code
-		index = 16,
+		index = getIndex(),
+	},
+	[77761] = { -- Stampeding Roar
+		spellID = 77761,
+		succ = "SPELL_CAST_SUCCESS",
+		name = "DRU_STRO",
+		CD = 120,
+		cast = 8,
+		class = "DRUID",
+		index = getIndex(),
 	},
 -- Shaman
 	[98008] = { -- Spirit Link Totem
@@ -180,7 +208,7 @@ BLCD.cooldowns = {
 		cast = 6,
 		class = "SHAMAN", 
 		spec = 264,
-		index = 17,
+		index = getIndex(),
 	},
 	[108280] = { -- Healing Tide Totem
 		spellID = 108280,
@@ -190,7 +218,7 @@ BLCD.cooldowns = {
 		cast = 10,
 		class = "SHAMAN",
 		spec = 264,
-		index = 18,
+		index = getIndex(),
 	},
 	[8143] = { -- Tremor Totem
 		spellID = 8143,
@@ -199,7 +227,7 @@ BLCD.cooldowns = {
 		CD = 60,
 		cast = 6,
 		class = "SHAMAN",
-		index = 19,
+		index = getIndex(),
 	},
 	[2825] = { -- Bloodlust
 		spellID = 2825,
@@ -208,7 +236,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "SHAMAN",
-		index = 20,
+		index = getIndex(),
 	},
 	[32182] = { -- Heroism
 		spellID = 32182,
@@ -217,7 +245,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "SHAMAN",
-		index = 21,
+		index = getIndex(),
 	},
 	--{ -- Reincarnation  -- Needs work, currently doesn't show in combatlog. Thanks blizz.
 		--spellID = 20608,
@@ -231,10 +259,11 @@ BLCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		name = "SHA_ANGU",
 		CD = 120,
+		cast = 10,
 		class = "SHAMAN",
 		talent = 5,
 		talentidx = 19269,
-		index = 22,
+		index = getIndex(),
 	},
  -- Monk
 	[115176] = {	-- Zen Meditation
@@ -245,7 +274,7 @@ BLCD.cooldowns = {
 		cast = 8,
 		class = "MONK",
 		notspec = 270,
-		index = 23,
+		index = getIndex(),
 	},
 	[116849] = {	-- Life Cocoon
 		spellID = 116849,
@@ -255,7 +284,7 @@ BLCD.cooldowns = {
 		cast = 12,
 		class = "MONK",
 		spec = 270,
-		index = 24,
+		index = getIndex(),
 	},
 	[115310] = {	-- Revival
 		spellID = 115310,
@@ -264,7 +293,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		class = "MONK",
 		spec = 270,
-		index = 25,
+		index = getIndex(),
 	},
 -- Warlock
 	[20707] = { -- Soulstone Resurrection
@@ -273,7 +302,7 @@ BLCD.cooldowns = {
 		name = "WARL_SORE",
 		CD = 600,
 		class = "WARLOCK",
-		index = 26,
+		index = getIndex(),
 	},
 -- Death Knight
 	[61999] = { -- Raise Ally
@@ -282,7 +311,7 @@ BLCD.cooldowns = {
 		name = "DEA_RAAL",
 		CD = 600,
 		class = "DEATHKNIGHT",
-		index = 27,
+		index = getIndex(),
 	},
 	[51052] = { -- Anti-Magic Zone
 		spellID = 51052,
@@ -293,7 +322,7 @@ BLCD.cooldowns = {
 		class = "DEATHKNIGHT",
 		talent = 2,
 		talentidx = 19219,
-		index = 28,
+		index = getIndex(),
 	},
 -- Warrior
 	[97462] = { -- Rallying Cry
@@ -303,7 +332,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 10,
 		class = "WARRIOR",
-		index = 29,
+		index = getIndex(),
 		notspec = 73,
 	},
 	[114030] = { -- Vigilance
@@ -315,7 +344,7 @@ BLCD.cooldowns = {
 		class = "WARRIOR",
 		talent = 5,
 		talentidx = 19676,
-		index = 30,
+		index = getIndex(),
 	},
 	[3411] = { -- Intervene
 		spellID = 3411,
@@ -324,7 +353,7 @@ BLCD.cooldowns = {
 		CD = 30,
 		cast = 10,
 		class = "WARRIOR",
-		index = 32,
+		index = getIndex(),
 	},
 -- Mage
 	[80353] = { -- Time Warp
@@ -334,7 +363,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 40,
 		class = "MAGE",
-		index = 33,
+		index = getIndex(),
 	},
 	[159916] = { -- Amplify Magic
 		spellID = 159916,
@@ -343,7 +372,7 @@ BLCD.cooldowns = {
 		CD = 120,
 		cast = 6,
 		class = "MAGE",
-		index = 34,
+		index = getIndex(),
 	},
 -- Rogue
 	[76577] = { -- Smoke Bomb
@@ -353,7 +382,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 5,
 		class = "ROGUE",
-		index = 35,
+		index = getIndex(),
 	},
 -- Hunter
 	[172106] = { -- Aspect of the Fox
@@ -363,11 +392,7 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 6,
 		class = "HUNTER",
-		index = 36,
+		index = getIndex(),
 	},
 }
 --------------------------------------------------------
-
-BLCD.cooldownReduction = {
-
-}

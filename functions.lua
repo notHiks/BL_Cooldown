@@ -6,6 +6,7 @@ local BLCD = BLCD
 local LGIST = LibStub:GetLibrary("LibGroupInSpecT-1.1")
 local CB = LibStub("LibCandyBar-3.0")
 local Elv = IsAddOnLoaded("ElvUI")
+local ACD = LibStub("AceConfigDialog-3.0") -- Also for options panel
 
 if(Elv) then
 	E, L, V, P, G =  unpack(ElvUI);
@@ -346,6 +347,109 @@ function BLCD:ToggleMoversLock()
 	end
 end
 --------------------------------------------------------
+--------------------------------------------------------
+-- Minimap Button
+
+function BLCD:initMiniMap()
+	button = CreateFrame("Button", "BLCD_MinimapButton", Minimap)
+	button.db = BLCD.profileDB.minimapPos or 0
+	button:SetFrameStrata("MEDIUM")
+	button:SetSize(31, 31)
+	button:SetFrameLevel(8)
+	button:RegisterForClicks("anyUp")
+	button:RegisterForDrag("LeftButton")
+	button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+	local overlay = button:CreateTexture(nil, "OVERLAY")
+	overlay:SetSize(53, 53)
+	overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+	overlay:SetPoint("TOPLEFT")
+	local background = button:CreateTexture(nil, "BACKGROUND")
+	background:SetSize(20, 20)
+	background:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+	background:SetPoint("TOPLEFT", 7, -5)
+	local icon = button:CreateTexture(nil, "ARTWORK")
+	icon:SetSize(17, 17)
+	icon:SetTexture("Interface\\Addons\\BL_Cooldown\\media\\BLCD")
+	icon:SetPoint("TOPLEFT", 7, -6)
+	button.icon = icon
+	button.isMouseDown = false
+
+	--button:SetScript("OnEnter", onEnter)
+	--button:SetScript("OnLeave", onLeave)
+
+	local onClick, onMouseUp, onMouseDown, onDragStart, onDragStop, onDragEnd, updatePosition
+
+	local minimapShapes = {
+		["ROUND"] = {true, true, true, true},
+		["SQUARE"] = {false, false, false, false},
+		["CORNER-TOPLEFT"] = {false, false, false, true},
+		["CORNER-TOPRIGHT"] = {false, false, true, false},
+		["CORNER-BOTTOMLEFT"] = {false, true, false, false},
+		["CORNER-BOTTOMRIGHT"] = {true, false, false, false},
+		["SIDE-LEFT"] = {false, true, false, true},
+		["SIDE-RIGHT"] = {true, false, true, false},
+		["SIDE-TOP"] = {false, false, true, true},
+		["SIDE-BOTTOM"] = {true, true, false, false},
+		["TRICORNER-TOPLEFT"] = {false, true, true, true},
+		["TRICORNER-TOPRIGHT"] = {true, false, true, true},
+		["TRICORNER-BOTTOMLEFT"] = {true, true, false, true},
+		["TRICORNER-BOTTOMRIGHT"] = {true, true, true, false},
+	}
+
+	function updatePosition(button)
+		local angle = math.rad(BLCD.db.profile.minimapPos or 225)
+		local x, y, q = math.cos(angle), math.sin(angle), 1
+		if x < 0 then q = q + 1 end
+		if y > 0 then q = q + 2 end
+		local minimapShape = GetMinimapShape and GetMinimapShape() or "ROUND"
+		local quadTable = minimapShapes[minimapShape]
+		if quadTable[q] then
+			x, y = x*80, y*80
+		else
+			local diagRadius = 103.13708498985 --math.sqrt(2*(80)^2)-10
+			x = math.max(-80, math.min(x*diagRadius, 80))
+			y = math.max(-80, math.min(y*diagRadius, 80))
+		end
+		button:SetPoint("CENTER", Minimap, "CENTER", x, y)
+	end
+
+	local function onUpdate(self)
+		local mx, my = Minimap:GetCenter()
+		local px, py = GetCursorPosition()
+		local scale = Minimap:GetEffectiveScale()
+		px, py = px / scale, py / scale
+		BLCD.db.profile.minimapPos = math.deg(math.atan2(py - my, px - mx)) % 360
+		updatePosition(self)
+	end
+
+	function onDragStart(self)
+		self:LockHighlight()
+		self.isMouseDown = true
+		self:SetScript("OnUpdate", onUpdate)
+		self.isMoving = true
+		GameTooltip:Hide()
+	end
+
+	function onDragStop(self)
+		self:SetScript("OnUpdate", nil)
+		self.isMouseDown = false
+		self:UnlockHighlight()
+		self.isMoving = nil
+	end
+
+	button:SetScript("OnClick", function() if ACD.OpenFrames["BLCD"] then ACD:Close("BLCD") else ACD:Open("BLCD") end end)
+	button:SetScript("OnDragStart", onDragStart)
+	button:SetScript("OnDragStop", onDragStop)
+	updatePosition(button)
+	if BLCD.db.profile.minimap then
+		button:Show()
+	else
+		button:Hide()
+	end
+	BLCD.minimapButton = button
+end
+
+---------------------------------------------------------------------------------------
 
 --------------------------------------------------------
 -- Frame Functions --

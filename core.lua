@@ -803,7 +803,7 @@ end
 
 function BLCD:ResetWipe()
 	for spellId,guids in pairs(BLCD.curr) do
-		if BLCD.cooldowns[spellId]['CD'] >= 300 or spellId == 115310 then
+		if BLCD.cooldowns[spellId]['CD'] >= 300 or spellId == 115310 or spellId == 740 then
 			for guid,bar in pairs(BLCD.curr[spellId]) do
 				bar:Stop()
 			end
@@ -926,7 +926,7 @@ function BLCD:OnInitialize()
 	
 	BLCD.profileDB = BLCD.db.profile
 	BLCD:SetupOptions()
-	
+	BLCD:initMiniMap()
 	LGIST.RegisterCallback (BLCD, "GroupInSpecT_Update", "OnLGIST")
 
 	LGIST.RegisterCallback (BLCD, "GroupInSpecT_Remove", "OnLGIST")

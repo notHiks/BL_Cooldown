@@ -67,8 +67,6 @@ local function hasHoTW(guid)
 end
 
 function BLCD:UpdateRoster(cooldown)
-	if cooldown.spellID == 740 then print(debugstack()) end
-	
 	local sologroup = (not IsInGroup() and (BLCD.db.profile.show == "solo" or BLCD.db.profile.show == "always"))
 	if(IsInGroup() or sologroup) then
 		local guid, name, char

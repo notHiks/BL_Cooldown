@@ -97,8 +97,4 @@ function BLCD:SlashProcessor_BLCD(input)
 		print("-------------------------")
 	end
 end
-
-function BLCD:OnProfileChanged()
-	BLCD.profileDB = BLCD.db.profile
-end
 --------------------------------------------------------

@@ -61,8 +61,9 @@ BLCD.defaults = {
 			DRU_TR = true,
 			DRU_IR = false,
 			DRU_RE = true,
-			DRU_HEOFTHWI = true,
+			DRU_HEOFTHWI = false,
 			DRU_STRO = true,
+			DRU_NAVI = false,
 			SHA_SPLITO = true,
 			SHA_HETITO = true,
 			SHA_TRTO = false,
@@ -97,8 +98,8 @@ BLCD.options =  {
 			type = "group",
 			name = "General Settings",
 			cmdInline = true,
-			get = function(info) return BLCD.profileDB[info[#info]] end,
-			set = function(info,value) BLCD.profileDB[info[#info]] = value; end,
+			get = function(info) return BLCD.db.profile[info[#info]] end,
+			set = function(info,value) BLCD.db.profile[info[#info]] = value; end,
 			args = {
 				minimap = {
 					type = "toggle",
@@ -143,7 +144,7 @@ BLCD.options =  {
 					desc = "Sets Scale of Raid Cooldowns",
 					min = 0.3, max = 2, step = 0.01,
 					set = function(info, value)
-						BLCD.profileDB.scale = value;
+						BLCD.db.profile.scale = value;
 						BLCD:Scale();
 					end,
 				},
@@ -152,7 +153,7 @@ BLCD.options =  {
 					name = "Bar Grow Direction",
 					type = 'select',
 					set = function(info, value)
-						BLCD.profileDB.growth = value; BLCD:UpdateBarGrowthDirection()
+						BLCD.db.profile.growth = value; BLCD:UpdateBarGrowthDirection()
 					end,
 					values = {
 						['left'] = "Left",
@@ -164,7 +165,7 @@ BLCD.options =  {
 					name = "Show Main Frame",
 					type = 'select',
 					set = function(info, value)
-						BLCD.profileDB.show = value; BLCD:DynamicCooldownFrame(); BLCD:CheckVisibility()
+						BLCD.db.profile.show = value; BLCD:DynamicCooldownFrame(); BLCD:CheckVisibility()
 					end,
 					values = {
 						['always'] = "Always",
@@ -186,7 +187,7 @@ BLCD.options =  {
 					desc = "Enabling this option will automatically filter out extra players in the raid.\n\nIf enabled only players in the first groups up to the maximum players allowed will be tracked by BLCD.\n\nYou can manually filter out extras with \"/blcd ext\" and you can resume showing all players with \"/blcd clrext\"",
 					order = getOrder(),
 					set = function(key, value)
-						BLCD.profileDB.autocheckextra = value;
+						BLCD.db.profile.autocheckextra = value;
 						BLCD:UpdateExtras();
 					end,
 				},
@@ -196,7 +197,7 @@ BLCD.options =  {
 					desc = "Hide the icons for cooldowns which no one in the raid has",
 					order = getOrder(),
 					set = function(key, value)
-						BLCD.profileDB.hideempty = value; 
+						BLCD.db.profile.hideempty = value; 
 						BLCD:DynamicCooldownFrame()
 					end,
 				},
@@ -206,7 +207,7 @@ BLCD.options =  {
 					desc = "Always show bars",
 					order = getOrder(),
 					set = function(key, value)
-						BLCD.profileDB.availablebars = value; BLCD:AvailableBars(value)
+						BLCD.db.profile.availablebars = value; BLCD:AvailableBars(value)
 					end,
 				},
 				classcolorbars = {
@@ -215,7 +216,7 @@ BLCD.options =  {
 					desc = "Color the cooldown bars according to class",
 					order = getOrder(),
 					set = function(key, value)
-						BLCD.profileDB.classcolorbars = value; BLCD:RecolorBars(value)
+						BLCD.db.profile.classcolorbars = value; BLCD:RecolorBars(value)
 					end,
 				},
 			},
@@ -225,8 +226,8 @@ BLCD.options =  {
 			type = "group",
 			name = "Cooldown Settings",
 			cmdInline = true,
-			get = function(info) return BLCD.profileDB.cooldown[info[#info]] end,
-			set = function(info,value) BLCD.profileDB.cooldown[info[#info]] = value; BLCD:DynamicCooldownFrame() end,
+			get = function(info) return BLCD.db.profile.cooldown[info[#info]] end,
+			set = function(info,value) BLCD.db.profile.cooldown[info[#info]] = value; BLCD:DynamicCooldownFrame() end,
 			args = {
 				paladin = {
 					type = "group",
@@ -355,6 +356,12 @@ BLCD.options =  {
 							desc = "The Druid roars, increasing the movement speed of all friendly players within 10 yards by 60% for 8 sec and removing all roots and snares on those targets.",
 							order = getOrder(),
 						},
+						DRU_NAVI = {
+							type = "toggle",
+							name = "Nature's Vigil",
+							desc = "While active, all single-target healing and damage spells and abilities also heal a nearby friendly target based on the amount done, 30% for heals, 40% for damage spells..",
+							order = getOrder(),
+						},
 					},
 				},
 				shaman = {
@@ -392,11 +399,11 @@ BLCD.options =  {
 								if (UnitFactionGroup("player") ~= "Horde") then
 									return false
 								else
-									return BLCD.profileDB.cooldown.SHA_BL
+									return BLCD.db.profile.cooldown.SHA_BL
 								end
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_BL = value; BLCD:DynamicCooldownFrame()
+								BLCD.db.profile.cooldown.SHA_BL = value; BLCD:DynamicCooldownFrame()
 							end,
 						},
 						SHA_HE = {
@@ -411,11 +418,11 @@ BLCD.options =  {
 								if (UnitFactionGroup("player") ~= "Alliance") then
 									return false
 								else
-									return BLCD.profileDB.cooldown.SHA_HE
+									return BLCD.db.profile.cooldown.SHA_HE
 								end
 							end,
 							set = function(key, value)
-								BLCD.profileDB.cooldown.SHA_HE = value; BLCD:DynamicCooldownFrame()
+								BLCD.db.profile.cooldown.SHA_HE = value; BLCD:DynamicCooldownFrame()
 							end,
 						},		
 						SHA_RE = {

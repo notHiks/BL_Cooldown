@@ -1,12 +1,13 @@
 ## Interface: 60000
-## Version: 3.58
+## Version: 3.59
 ## Title: |cffc41f3bBlood Legion|r Cooldown
 ## Notes: Minimalistic Visual Raid Cooldowns
 ## OptionalDeps: ElvUI
 ## SavedVariables: BLCDDB
 ## SavedVariablesPerCharacter: BLCDrosterReload
 ## DefaultState: Enabled
-## LoadOnDemand: 0
+## LoadOnDemand: 1
+
 
 libs\load_libs.xml
 load_bl_cooldown.xml

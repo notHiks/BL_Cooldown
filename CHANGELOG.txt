@@ -1,3 +1,6 @@
+3.59
+- Various bug fixes
+
 3.58
 - Fix Spirit Shell CD
 - Fix Stampeding Roar when not glyped
@@ -6,7 +9,6 @@
 - Add separate battle rez tracker, shows on boss engage. Top of the frame.
 - Handle players that release/insta-res better
 - Add minimap button
-- Added Spirit Shell and Stampeding Roar
 
 3.56
 - Send chat messages to specified channels

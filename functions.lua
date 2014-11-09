@@ -107,9 +107,9 @@ end
 -- Display Bar Functions --
 --------------------------------------------------------
 local function barSorter(a, b)
-	local caster1 = a:Get("raidcooldowns:caster")
-	local caster2 = b:Get("raidcooldowns:caster")
 	if a.remaining == b.remaining then
+		local caster1 = a:Get("raidcooldowns:caster")
+		local caster2 = b:Get("raidcooldowns:caster")
 		return caster1 < caster2
 	else
 		return a.remaining < b.remaining
@@ -131,7 +131,9 @@ function BLCD:RearrangeBars(anchor) -- frameicon
 	for bar in pairs(anchor.bars) do
 		if bar:IsVisible() then
 			currBars[#currBars + 1] = bar
-		else	
+		else
+			--print('hidden', bar:Get("raidcooldowns:caster"), bar:Get("raidcooldowns:spell"))
+			bar:Show()
 			anchor.bars[bar] = nil
 			bar:Stop()
 		end
@@ -281,16 +283,7 @@ end
 function BLCD:CheckVisibility()
 	local frame = BLCooldownBase_Frame
 	local grouptype = BLCD:GetPartyType()
-	if(BLCD.db.profile.show == "always") then
-		frame:Show()
-		BLCD.show = true
-	elseif(BLCD.db.profile.show == "never") then
-		frame:Hide()
-		BLCD.show = nil
-	elseif(BLCD.db.profile.show == "solo" and grouptype == "none") then
-		frame:Show()
-		BLCD.show = true
-	elseif(BLCD.db.profile.show == "solo" and grouptype ~= "none") then
+	if(BLCD.db.profile.show == "never") then
 		frame:Hide()
 		BLCD.show = nil
 	elseif(BLCD.db.profile.show == "raid" and (grouptype =="raid" or grouptype == "instance")) then

@@ -168,13 +168,11 @@ BLCD.options =  {
 						BLCD.db.profile.show = value; BLCD:DynamicCooldownFrame(); BLCD:CheckVisibility()
 					end,
 					values = {
-						['always'] = "Always",
+						['raidorparty'] = "Raid or Party",
 						['raid'] = "Raid",
 						['party'] = "Party (BG's/Arena included)",
-						['raidorparty'] = "Raid or Party",
 						['never'] = "Never",
-						['solo'] = "Solo",
-					},			
+					},
 				},
 				clickannounce = {
 					type = "toggle",

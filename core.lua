@@ -49,11 +49,11 @@ function BLCD:OnLGIST(event, guid, unit, info)
 		if spec_id ~= 0 then BLCD['raidRoster'][guid]['spec'] = spec_id end
 		if next(talents) ~= nil then BLCD['raidRoster'][guid]['talents'] = talents end
 	elseif event == "GroupInSpecT_Remove" then
-		if (guid) then
+		--[[if (guid) then
 			BLCD['raidRoster'][guid] = nil
 		else
 			BLCD['raidRoster'] = {}
-		end
+		end]]
 	end
 end
 
@@ -67,50 +67,45 @@ local function hasHoTW(guid)
 end
 
 function BLCD:UpdateRoster(cooldown)
-	local sologroup = (not IsInGroup() and (BLCD.db.profile.show == "solo" or BLCD.db.profile.show == "always"))
-	if(IsInGroup() or sologroup) then
-		local guid, name, char
-		for guid, name in pairs(BLCD.cooldownRoster[cooldown['spellID']]) do
-			--if not(UnitInRaid(name) or UnitInParty(name)) or guid['extra'] or sologroup then
-				BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
-				if BLCD.db.profile.availablebars then
-					BLCD:StopPausedBar(cooldown,guid)
-				end
-			--end
-		end
-
+	if IsInGroup() then
 		local rosterCount = 0
 		for guid, char in pairs(BLCD['raidRoster']) do
-			if (UnitInRaid(char['name']) or UnitInParty(char['name']) or sologroup) and not char['extra'] then
+			if (UnitInRaid(char['name']) or UnitInParty(char['name'])) and not char['extra'] then
 				if(char["class"] and string.lower(char["class"]:gsub(" ", ""))==string.lower(cooldown["class"]):gsub(" ", "")) then
 					local unitalive = (not UnitIsDeadOrGhost(char['name'])) and UnitIsConnected(char['name'])
 					if((cooldown["spec"] or cooldown["notspec"]) and char["spec"]) then
 						if(cooldown["spec"] and char["spec"]==cooldown["spec"]) or (cooldown["notspec"] and char["spec"]~=cooldown["notspec"]) then
 							BLCD.cooldownRoster[cooldown['spellID']][guid] = char['name']
 							rosterCount = rosterCount + 1
+						else
+							BLCD.cooldownRoster[cooldown['spellID']][guid] = nil 
 						end
 					elseif(cooldown["talent"] and char["talents"]) then
 						if(char["talents"][cooldown["talentidx"]]) then
 							BLCD.cooldownRoster[cooldown['spellID']][guid] = char['name']
 							rosterCount = rosterCount + 1
+						else
+							BLCD.cooldownRoster[cooldown['spellID']][guid] = nil 
 						end
 						if cooldown['name'] == "DRU_HEOFTHWI" then
 							if hasHoTW(guid) then
 								BLCD.cooldownRoster[108291][guid] = char['name']
 								rosterCount = rosterCount + 1
+							else
+								BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
 							end
 						end
 					elseif(not cooldown["spec"] and not cooldown["notspec"] and not cooldown["talent"] and cooldown["class"] == char["class"]) then
 						BLCD.cooldownRoster[cooldown['spellID']][guid] = char['name']
 						rosterCount = rosterCount + 1
 					end
-					if BLCD.db.profile.availablebars then
-						if BLCD.db.profile.cooldown[cooldown.name] and unitalive and BLCD.cooldownRoster[cooldown['spellID']][guid] then
+					if BLCD.db.profile.availablebars and BLCD.db.profile.cooldown[cooldown.name] then
+						if unitalive and BLCD.cooldownRoster[cooldown['spellID']][guid] then
 							--((cooldown["spec"] and char["spec"] and char["spec"] == cooldown["spec"] or (cooldown["notspec"] and char["spec"] and char["spec"] ~= cooldown["notspec"])) or 
 							--(cooldown["talent"] and char["talents"] and (char["talents"][cooldown["talentidx"]] or hasHoTW(guid))) or
 							--(not cooldown["spec"] and not cooldown["notspec"] and not cooldown["talent"] and cooldown["class"] == char["class"])) then
 							BLCD:CreatePausedBar(cooldown,guid)
-						elseif(unitalive and BLCD.cooldownRoster[cooldown["spellID"]][guid]) then
+						elseif(unitalive) then
 							BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
 							BLCD:StopPausedBar(cooldown,guid)
 						end
@@ -676,7 +671,7 @@ function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 		text:SetText(BLCD:GetTotalCooldown(cooldown['spellID']))
 	elseif(event =="GROUP_ROSTER_UPDATE") then
 	    local partyType = BLCD:GetPartyType()
-	    if(partyType=="none" and (BLCD.db.profile.show ~= "always" or BLCD.db.profile.show ~= "solo")) then
+	    if(partyType=="none") then
 	        BLCD:CancelBars(cooldown['spellID'])
 	        BLCD.curr[cooldown['spellID']]={}
 	        BLCD.cooldownRoster[cooldown['spellID']] = {}

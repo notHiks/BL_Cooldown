@@ -107,9 +107,9 @@ end
 -- Display Bar Functions --
 --------------------------------------------------------
 local function barSorter(a, b)
-	if a.remaining == b.remaining then
 		local caster1 = a:Get("raidcooldowns:caster")
-		local caster2 = b:Get("raidcooldowns:caster")
+		local caster2 = b:Get("raidcooldowns:caster")	
+	if a.remaining == b.remaining then
 		return caster1 < caster2
 	else
 		return a.remaining < b.remaining
@@ -231,8 +231,10 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 end	
 
 function BLCD:CancelBars(spellID)
-	for guid, bar in pairs(BLCD.curr[spellID]) do
-		bar:Stop()
+	if BLCD.db.profile.cooldown[BLCD.cooldowns[spellID].name] then
+		for guid, bar in pairs(BLCD.curr[spellID]) do
+			bar:Stop()
+		end
 	end
 end
 

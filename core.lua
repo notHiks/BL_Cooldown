@@ -49,11 +49,11 @@ function BLCD:OnLGIST(event, guid, unit, info)
 		if spec_id ~= 0 then BLCD['raidRoster'][guid]['spec'] = spec_id end
 		if next(talents) ~= nil then BLCD['raidRoster'][guid]['talents'] = talents end
 	elseif event == "GroupInSpecT_Remove" then
-		--[[if (guid) then
+		if (guid) then
 			BLCD['raidRoster'][guid] = nil
 		else
 			BLCD['raidRoster'] = {}
-		end]]
+		end
 	end
 end
 
@@ -149,6 +149,7 @@ function BLCD:UpdateRoster(cooldown)
 		BLCD:StopAllBars()
 		BLCD.curr[cooldown['spellID']] = {}
 		BLCD.dead = {}
+		BLCD.raidRoster = {}
 	end
 	BLCD:RearrangeBars(cooldownFrameicons[cooldown['spellID']])
 end
@@ -160,8 +161,12 @@ function BLCD:DebugFunc()
 			self:CheckPausedBars(BLCD.cooldowns[id],name)
 		end
 	end]]
-	for ID, cooldown in pairs(BLCD.cooldowns) do
-		if BLCD.db.profile.cooldown[cooldown.name] then BLCD:UpdateRoster(cooldown) end
+	for spellid, stuff in pairs(BLCD.curr) do
+		for guid, bars in pairs(stuff) do
+			if bars then
+				bars:Stop()
+			end
+		end
 	end
 end
 

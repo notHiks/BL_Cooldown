@@ -1,3 +1,6 @@
+3.59
+- Brez bug fixes
+
 3.58
 - Fix Spirit Shell CD
 - Fix Stampeding Roar when not glyphed

@@ -1,3 +1,6 @@
+3.60
+- Move functions to same file for now
+
 3.59
 - Brez bug fixes
 

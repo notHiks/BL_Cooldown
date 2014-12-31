@@ -7,6 +7,7 @@ local CB = LibStub("LibCandyBar-3.0")
 local Elv = IsAddOnLoaded("ElvUI")
 local ACD = LibStub("AceConfigDialog-3.0") -- Also for options panel
 
+local E, L, V, P, G
 if(Elv) then
 	E, L, V, P, G =  unpack(ElvUI);
 end

@@ -105,7 +105,7 @@ BLCD.options =  {
 					type = "toggle",
 					name = "Minimap Button",
 					order = getOrder(),
-					set = function(info,value) 
+					set = function(info,value)
 						BLCD.db.profile.minimap = value;
 						if value then BLCD.minimapButton:Show("BLCD") else BLCD.minimapButton:Hide("BLCD") end
 					end,
@@ -195,7 +195,7 @@ BLCD.options =  {
 					desc = "Hide the icons for cooldowns which no one in the raid has",
 					order = getOrder(),
 					set = function(key, value)
-						BLCD.db.profile.hideempty = value; 
+						BLCD.db.profile.hideempty = value;
 						BLCD:DynamicCooldownFrame()
 					end,
 				},
@@ -422,7 +422,7 @@ BLCD.options =  {
 							set = function(key, value)
 								BLCD.db.profile.cooldown.SHA_HE = value; BLCD:DynamicCooldownFrame()
 							end,
-						},		
+						},
 						SHA_RE = {
 							type = "toggle",
 							name = "Reincarnation",

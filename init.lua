@@ -18,7 +18,7 @@ if (not frame) then
 	BLCD.frame = frame
 end
 
-BLCD.frame:SetScript("OnEvent", function(this, event, ...) 
+BLCD.frame:SetScript("OnEvent", function(this, event, ...)
 	BLCD[event](BLCD, ...)
 end)
 

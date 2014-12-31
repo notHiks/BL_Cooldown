@@ -88,7 +88,7 @@ BLCD.cooldowns = {
 		index = getIndex(),
 	},
 -- Priest
-	[62618] = { -- Power Word: Barrier 
+	[62618] = { -- Power Word: Barrier
 		spellID = 62618,
 		name = "PRI_POWOBA",
 		succ = "SPELL_CAST_SUCCESS",
@@ -98,13 +98,13 @@ BLCD.cooldowns = {
 		spec = 256,
 		index = getIndex(),
 	},
-	[33206] = { -- Pain Suppression  
+	[33206] = { -- Pain Suppression
 		spellID = 33206,
 		name = "PRI_PASU",
 		succ = "SPELL_CAST_SUCCESS",
 		CD = 180,
 		cast = 8,
-		class = "PRIEST", 
+		class = "PRIEST",
 		spec = 256,
 		index = getIndex(),
 	},
@@ -114,7 +114,7 @@ BLCD.cooldowns = {
 		succ = "SPELL_CAST_SUCCESS",
 		CD = 60,
 		cast = 10,
-		class = "PRIEST", 
+		class = "PRIEST",
 		talent = 5,
 		talentidx = 21754,
 		index = getIndex(),
@@ -123,32 +123,32 @@ BLCD.cooldowns = {
 		spellID = 64843,
 		name = "PRI_DIHY",
 		succ = "SPELL_CAST_SUCCESS",
-		CD = 180, 
+		CD = 180,
 		cast = 8,
 		class = "PRIEST",
 		spec = 257,
 		index = getIndex(),
-	},	
-	[47788] = { -- Guardian Spirit 
+	},
+	[47788] = { -- Guardian Spirit
 		spellID = 47788,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "PRI_GUSP",
 		CD = 180,
 		cast = 10,
-		class = "PRIEST", 
+		class = "PRIEST",
 		spec = 257,
 		index = getIndex(),
-	},	
+	},
 	[15286] = { -- Vampiric Embrace
 		spellID = 15286,
 		succ = "SPELL_CAST_SUCCESS",
 		name = "PRI_VAEM",
-		CD = 180, 
+		CD = 180,
 		cast = 15,
 		class = "PRIEST",
 		spec = 258,
 		index = getIndex(),
-	},	
+	},
 -- Druid
 	[740] = { -- Tranquility
 		spellID = 740,
@@ -216,7 +216,7 @@ BLCD.cooldowns = {
 		name = "SHA_SPLITO",
 		CD = 180,
 		cast = 6,
-		class = "SHAMAN", 
+		class = "SHAMAN",
 		spec = 264,
 		index = getIndex(),
 	},
@@ -317,7 +317,7 @@ BLCD.cooldowns = {
 -- Death Knight
 	[61999] = { -- Raise Ally
 		spellID = 61999,
-		succ = "SPELL_RESURRECT", 
+		succ = "SPELL_RESURRECT",
 		name = "DEA_RAAL",
 		CD = 600,
 		class = "DEATHKNIGHT",

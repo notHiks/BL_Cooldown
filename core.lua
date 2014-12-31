@@ -343,60 +343,6 @@ function BLCD:CreateCooldown(index, cooldown)
 		--BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon, ...)
 	end)
 
-	local function CleanBar(callback, bar)
-		local a = bar:Get("raidcooldowns:anchor") --'a' is frameicon
-		if a and a.bars and a.bars[bar] then
-			a.bars[bar] = nil
-
-			local bd = bar.candyBarBackdrop
-			bd:Hide()
-			if bd.iborder then
-				bd.iborder:Hide()
-				bd.oborder:Hide()
-			end
-			--bar:SetTexture(nil)
-			local guid = bar:Get("raidcooldowns:key")
-			local spell = bar:Get("raidcooldowns:spell")
-			local cooldown = bar:Get("raidcooldowns:cooldown")
-			local caster = bar:Get("raidcooldowns:caster")
-			--[[if BLCD['handles'] and BLCD["handles"][guid] and BLCD["handles"][guid][spell] then
-				BLCD['handles'][guid][spell] = nil
-			end]]
-			BLCD.curr[cooldown['spellID']][guid] = nil;
-
-			if(BLCD.db.profile.cdannounce and BLCD.dead[caster] == 0) then
-				local name = select(1, GetSpellInfo(cooldown['spellID']))
-				local message = caster.."'s ".. GetSpellLink(cooldown['spellID']).. " is ready!"
-				if BLCD.db.profile.announcechannel then
-					local list = {GetChannelList()}
-					local channel = BLCD.db.profile.customchan
-					for i = 1,#list/2 do
-						if list[i*2] == channel then
-							SendChatMessage(message ,"CHANNEL", nil, list[(i*2)-1]);
-						end
-					end
-				elseif IsInRaid() or IsInGroup(2) then
-					SendChatMessage(message ,IsInGroup(2) and "INSTANCE_CHAT" or "RAID");
-				elseif IsInGroup() then
-					SendChatMessage(message ,"PARTY");
-				else
-					SendChatMessage(message ,"SAY");
-				end
-			end
-
-			if BLCD.db.profile.availablebars and BLCD.db.profile.cooldown[cooldown.name] and a:IsVisible() then
-				local unitalive = (not UnitIsDeadOrGhost(caster) and UnitIsConnected(caster))
-				if BLCD.cooldownRoster[cooldown['spellID']][guid] and unitalive then
-					BLCD:CreatePausedBar(cooldown,guid)
-				end
-			end
-			BLCD:RearrangeBars(a)
-			a.text:SetText(BLCD:GetTotalCooldown(cooldown['spellID']))
-		end
-	end
-
-	CB.RegisterCallback(self, "LibCandyBar_Stop", CleanBar)
-
 	frameicon:SetScript("OnEnter", function(self,event, ...)
 		BLCD:OnEnter(self, cooldown, BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']])
    	end);
@@ -960,6 +906,60 @@ function BLCD:OnInitialize()
 	BLCD:CheckVisibility()
 
 	count = 1
+
+	local function CleanBar(callback, bar)
+		local a = bar:Get("raidcooldowns:anchor") --'a' is frameicon
+		if a and a.bars and a.bars[bar] then
+			a.bars[bar] = nil
+
+			local bd = bar.candyBarBackdrop
+			bd:Hide()
+			if bd.iborder then
+				bd.iborder:Hide()
+				bd.oborder:Hide()
+			end
+			--bar:SetTexture(nil)
+			local guid = bar:Get("raidcooldowns:key")
+			local spell = bar:Get("raidcooldowns:spell")
+			local cooldown = bar:Get("raidcooldowns:cooldown")
+			local caster = bar:Get("raidcooldowns:caster")
+			--[[if BLCD['handles'] and BLCD["handles"][guid] and BLCD["handles"][guid][spell] then
+				BLCD['handles'][guid][spell] = nil
+			end]]
+			BLCD.curr[cooldown['spellID']][guid] = nil;
+
+			if(BLCD.db.profile.cdannounce and BLCD.dead[caster] == 0) then
+				local name = select(1, GetSpellInfo(cooldown['spellID']))
+				local message = caster.."'s ".. GetSpellLink(cooldown['spellID']).. " is ready!"
+				if BLCD.db.profile.announcechannel then
+					local list = {GetChannelList()}
+					local channel = BLCD.db.profile.customchan
+					for i = 1,#list/2 do
+						if list[i*2] == channel then
+							SendChatMessage(message ,"CHANNEL", nil, list[(i*2)-1]);
+						end
+					end
+				elseif IsInRaid() or IsInGroup(2) then
+					SendChatMessage(message ,IsInGroup(2) and "INSTANCE_CHAT" or "RAID");
+				elseif IsInGroup() then
+					SendChatMessage(message ,"PARTY");
+				else
+					SendChatMessage(message ,"SAY");
+				end
+			end
+
+			if BLCD.db.profile.availablebars and BLCD.db.profile.cooldown[cooldown.name] and a:IsVisible() then
+				local unitalive = (not UnitIsDeadOrGhost(caster) and UnitIsConnected(caster))
+				if BLCD.cooldownRoster[cooldown['spellID']][guid] and unitalive then
+					BLCD:CreatePausedBar(cooldown,guid)
+				end
+			end
+			BLCD:RearrangeBars(a)
+			a.text:SetText(BLCD:GetTotalCooldown(cooldown['spellID']))
+		end
+	end
+
+	CB.RegisterCallback(self, "LibCandyBar_Stop", CleanBar)
 end
 
 function BLCD:onProfileChanged()

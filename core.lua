@@ -449,10 +449,10 @@ function BLCD:CreatePausedBar(cooldown,guid)
 		local bar = BLCD:CreateBar(nil, cooldown, caster, cooldownFrameicons[spellID], guid, duration - 1, spellName)
 		BLCD.curr[spellID][guid] = bar
 		bar:SetTimeVisibility(false)
-		bar:Start()
-		bar.updater:Pause()
 		bar:EnableMouse(true)
 		bar:SetScript("OnMouseDown", function(self,event, ...) SendChatMessage("Use "..GetSpellLink(self:Get("raidcooldowns:spell")).." please!", "WHISPER", "Common", GetUnitName(self:Get("raidcooldowns:caster"),1)) end)
+		bar:Start()
+		bar:Pause()
 	end
 end
 
@@ -468,7 +468,7 @@ function BLCD:StopAllPausedBars()
 	local spellId,bar,frame
 	for spellId, guid in pairs(BLCD.curr) do
 		for i, bar in pairs(guid) do
-			if not bar.updater:IsPlaying() then bar:Stop() end
+			if bar.paused then bar:Stop() end
 		end
 	end
 end
@@ -1499,7 +1499,7 @@ end
 function BLCD:StopPausedBar(cooldown,guid)
 	if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 		local bar = BLCD.curr[cooldown['spellID']][guid]
-		if not bar.updater:IsPlaying() then
+		if bar.paused then
 			bar:Stop()
 		end
 	end
@@ -1514,7 +1514,7 @@ function BLCD:CheckPausedBars(cooldown,unit)
 		if BLCD.curr[cooldown['spellID']] and BLCD.curr[cooldown['spellID']][guid] then
 			local bar = BLCD.curr[cooldown['spellID']][guid]
 			if unitDead or not unitOnline then
-				if not bar.updater:IsPlaying() then
+				if bar.paused then
 					bar:Stop()
 				end
 			end

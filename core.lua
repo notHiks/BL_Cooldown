@@ -624,7 +624,6 @@ function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 		end
 	elseif(event == "PARTY_MEMBER_ENABLE" or event == "PARTY_MEMBER_DISABLE" or event == "UNIT_CONNECTION") then
 		local unit = ...
-		if event == "UNIT_CONNECTION" and cooldown['name'] == 'DRU_RE' then print('Unit Connection: '.. unit) end
 		BLCD:CheckPausedBars(cooldown,unit)
 		text:SetText(BLCD:GetTotalCooldown(cooldown['spellID']))
 	elseif(event =="GROUP_ROSTER_UPDATE") then

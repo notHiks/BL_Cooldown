@@ -1,5 +1,5 @@
 3.60
-- Move functions to same file for now
+- Funkydude: Helped fix bar issues with bigwigs
 
 3.59
 - Brez bug fixes

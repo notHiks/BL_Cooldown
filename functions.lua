@@ -9,7 +9,7 @@ local ACD = LibStub("AceConfigDialog-3.0") -- Also for options panel
 
 local E, L, V, P, G
 if(Elv) then
-	E, L, V, P, G =  unpack(ElvUI);
+	E, L, V, P, G = unpack(ElvUI);
 end
 
 
@@ -204,9 +204,9 @@ function BLCD:RearrangeBars(anchor) -- frameicon
 	for i, bar in ipairs(currBars) do
 		local spacing = (((-14)*(i-1))-2)
 		bar:ClearAllPoints()
-		if(growth  == "right") then
+		if(growth == "right") then
 			BLCD:BLPoint(bar, "TOPLEFT", anchor, "TOPRIGHT", 5, spacing)
-		elseif(growth  == "left") then
+		elseif(growth == "left") then
 			BLCD:BLPoint(bar, "TOPRIGHT", anchor, "TOPLEFT", -5, spacing)
 		end
 	end
@@ -543,7 +543,7 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 end
 
 function BLCD:OnLeave(self)
-   GameTooltip:Hide()
+	GameTooltip:Hide()
 end
 
 function BLCD:PostClick(self, cooldown, rosterCD, onCD)
@@ -616,7 +616,7 @@ function BLCD:SetBarGrowthDirection(frame, frameicon, index)
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);
 		end
 		BLCD:BLPoint(frameicon,'TOPRIGHT', frame, 'TOPRIGHT');
-	elseif(BLCD.db.profile.growth  == "right") then
+	elseif(BLCD.db.profile.growth == "right") then
 		--[[if index == nil then
 			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
 		else
@@ -633,7 +633,7 @@ function BLCD:RepositionFrames(frame, index, cooldownFrames)
 		else
 			BLCD:BLPoint(frame,'TOPRIGHT', 'BLCooldown'..(index), 'BOTTOMRIGHT', 0, -2);
 		end
-	elseif(BLCD.db.profile.growth  == "right") then
+	elseif(BLCD.db.profile.growth == "right") then
 		if index == nil then
 			BLCD:BLPoint(frame,'TOPLEFT', 'BLCooldownBase_Frame', 'TOPLEFT', 2, -2);
 		else

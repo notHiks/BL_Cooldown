@@ -1,5 +1,5 @@
 ## Interface: 60000
-## Version: 3.60
+## Version: 3.61
 ## Title: |cffc41f3bBlood Legion|r Cooldown
 ## Notes: Minimalistic Visual Raid Cooldowns
 ## OptionalDeps: ElvUI

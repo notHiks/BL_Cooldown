@@ -460,7 +460,7 @@ function BLCD:CreatePausedBar(cooldown,guid)
 		BLCD.curr[spellID][guid] = bar
 		bar:SetTimeVisibility(false)
 		bar:EnableMouse(true)
-		bar:SetScript("OnMouseDown", function(self,event, ...) SendChatMessage("Use "..GetSpellLink(self:Get("raidcooldowns:spell")).." please!", "WHISPER", "Common", GetUnitName(self:Get("raidcooldowns:caster"),1)) end)
+		bar:SetScript("OnMouseDown", function(self,event, ...) SendChatMessage("Use " .. self:Get("raidcooldowns:spell") .. " please!", "WHISPER", "Common", GetUnitName(self:Get("raidcooldowns:caster"),1)) end)
 		bar:Start()
 		bar:Pause()
 	end

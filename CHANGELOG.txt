@@ -1,3 +1,6 @@
+3.62
+- Fix click to announce on paused bars
+
 3.60
 - Funkydude: Helped fix bar issues with bigwigs
 

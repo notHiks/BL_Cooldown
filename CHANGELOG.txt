@@ -1,3 +1,8 @@
+3.63 BETA
+- Added initial code to support Paladin charge spells when spec'd Clemency
+*Will add other spells after beta
+*Could be broken with double sac on 2 different people (looking for bugs)
+
 3.62
 - Fix click to announce on paused bars
 

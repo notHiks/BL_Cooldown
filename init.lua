@@ -40,6 +40,7 @@ function BLCD:CreateRaidTables()
 	BLCD.raidRoster = BLCDrosterReload or {}
 	BLCD.curr = {}
 	BLCD.dead = {}
+	BLCD.charge_time = {}
 	BLCD.charges = {}
 	BLCD.frame_cache = {}
 	BLCD.cooldownFrameicons = {}

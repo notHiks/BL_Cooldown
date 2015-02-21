@@ -30,6 +30,7 @@ BLCD.cooldowns = {
 		CD = 120,
 		cast = 12,
 		class = "PALADIN",
+		notspec = 999,
 		index = getIndex(),
 	},
 	[1022] = { -- Hand of Protection
@@ -404,5 +405,13 @@ BLCD.cooldowns = {
 		class = "HUNTER",
 		index = getIndex(),
 	},
+}
+
+BLCD.cooldownReduction = {
+	["PAL_HAOFSA"] = {
+				spellID = 6940,
+				CD = 90,
+				spec = 70,
+			},
 }
 --------------------------------------------------------

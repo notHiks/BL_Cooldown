@@ -866,25 +866,27 @@ end
 
 local timeUpdater, inCombat = nil, false
 function BLCD:updateStatus()
-	local charges, maxCharges, started, duration = GetSpellCharges(20484)
-	if charges then
-		if not inCombat then
-			inCombat = true
-			BLCD.resFrame:Show()
-			updateBRes()
-			BLCD.resTimer = BLCD:ScheduleRepeatingTimer(updateBRes, 1)
-		end
-		if BLCD.resCount ~= charges then
-			BLCD.resCount = charges
-			for _, spellID in pairs(bResIDs) do
-				BLCD:CancelBars(spellID)
+	if BLCD.db.profile.battleres then 
+		local charges, maxCharges, started, duration = GetSpellCharges(20484)
+		if charges then
+			if not inCombat then
+				inCombat = true
+				BLCD.resFrame:Show()
+				updateBRes()
+				BLCD.resTimer = BLCD:ScheduleRepeatingTimer(updateBRes, 1)
 			end
+			if BLCD.resCount ~= charges then
+				BLCD.resCount = charges
+				for _, spellID in pairs(bResIDs) do
+					BLCD:CancelBars(spellID)
+				end
+			end
+		elseif inCombat and not charges then
+			inCombat = false
+			BLCD.resFrame:Hide()
+			BLCD:ResetWipe()
+			BLCD:CancelTimer(BLCD.resTimer)
 		end
-	elseif inCombat and not charges then
-		inCombat = false
-		BLCD.resFrame:Hide()
-		BLCD:ResetWipe()
-		BLCD:CancelTimer(BLCD.resTimer)
 	end
 end
 

@@ -44,6 +44,7 @@ BLCD.defaults = {
 		hideempty = true,
 		availablebars = true,
 		classcolorbars = false,
+		battleres = true,
 		cooldown = {
 			PAL_DEAU = true,
 			PAL_HAOFSA = false,
@@ -215,6 +216,15 @@ BLCD.options =  {
 					order = getOrder(),
 					set = function(key, value)
 						BLCD.db.profile.classcolorbars = value; BLCD:RecolorBars(value)
+					end,
+				},
+				battleres = {
+					type = "toggle",
+					name = "Battle Res Monitor",
+					desc = "Show the battle res monitor at the top of the frame",
+					order = getOrder(),
+					set = function(key, value)
+						BLCD.db.profile.battleres = value;
 					end,
 				},
 			},

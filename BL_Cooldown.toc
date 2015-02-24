@@ -1,4 +1,4 @@
-## Interface: 60000
+## Interface: 60100
 ## Version: 3.62
 ## Title: |cffc41f3bBlood Legion|r Cooldown
 ## Notes: Minimalistic Visual Raid Cooldowns

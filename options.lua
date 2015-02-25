@@ -44,6 +44,7 @@ BLCD.defaults = {
 		hideempty = true,
 		availablebars = true,
 		classcolorbars = false,
+		barfill = false,
 		battleres = true,
 		cooldown = {
 			PAL_DEAU = true,
@@ -98,7 +99,7 @@ BLCD.options =  {
 			order = getOrder(),
 			type = "group",
 			name = "General Settings",
-			cmdInline = true,
+			--inline = true,
 			get = function(info) return BLCD.db.profile[info[#info]] end,
 			set = function(info,value) BLCD.db.profile[info[#info]] = value; end,
 			args = {
@@ -111,34 +112,7 @@ BLCD.options =  {
 						if value then BLCD.minimapButton:Show("BLCD") else BLCD.minimapButton:Hide("BLCD") end
 					end,
 				},
-				desc = {
-					type = "description",
-					name = "",
-					width = "full",
-					order = getOrder(),
-				},
-				castannounce = {
-					type = "toggle",
-					name = "Announce Casts",
-					order = getOrder(),
-				},
-				cdannounce = {
-					type = "toggle",
-					name = "Announce CD Expire",
-					order = getOrder(),
-				},
-				announcechannel = {
-					order = getOrder(),
-					name = "Announce to Custom Channel",
-					type = 'toggle',
-				},
-				customchan = {
-					order = getOrder(),
-					type = "input",
-					name = "Channel Name",
-					desc = "Channel you want to announce to",
-				},
-				scale = {
+								scale = {
 					order = getOrder(),
 					type = "range",
 					name = 'Set Scale',
@@ -148,18 +122,6 @@ BLCD.options =  {
 						BLCD.db.profile.scale = value;
 						BLCD:Scale();
 					end,
-				},
-				growth = {
-					order = getOrder(),
-					name = "Bar Grow Direction",
-					type = 'select',
-					set = function(info, value)
-						BLCD.db.profile.growth = value; BLCD:UpdateBarGrowthDirection()
-					end,
-					values = {
-						['left'] = "Left",
-						['right'] = "Right",
-					},
 				},
 				show = {
 					order = getOrder(),
@@ -174,11 +136,6 @@ BLCD.options =  {
 						['party'] = "Party (BG's/Arena included)",
 						['never'] = "Never",
 					},
-				},
-				clickannounce = {
-					type = "toggle",
-					name = "Click to Announce Available",
-					order = getOrder(),
 				},
 				autocheckextra = {
 					type = "toggle",
@@ -200,24 +157,6 @@ BLCD.options =  {
 						BLCD:DynamicCooldownFrame()
 					end,
 				},
-				availablebars = {
-					type = "toggle",
-					name = "Ready bar mode",
-					desc = "Always show bars",
-					order = getOrder(),
-					set = function(key, value)
-						BLCD.db.profile.availablebars = value; BLCD:AvailableBars(value)
-					end,
-				},
-				classcolorbars = {
-					type = "toggle",
-					name = "Class color bars",
-					desc = "Color the cooldown bars according to class",
-					order = getOrder(),
-					set = function(key, value)
-						BLCD.db.profile.classcolorbars = value; BLCD:RecolorBars(value)
-					end,
-				},
 				battleres = {
 					type = "toggle",
 					name = "Battle Res Monitor",
@@ -226,6 +165,86 @@ BLCD.options =  {
 					set = function(key, value)
 						BLCD.db.profile.battleres = value;
 					end,
+				},
+				announcegroup = {
+					type = "group",
+					name = "Announce Options",
+					inline = true,
+					args = {
+						castannounce = {
+							type = "toggle",
+							name = "Announce Casts",
+							order = getOrder(),
+						},
+						cdannounce = {
+							type = "toggle",
+							name = "Announce CD Expire",
+							order = getOrder(),
+						},
+						clickannounce = {
+							type = "toggle",
+							name = "Click to Announce Available",
+							order = getOrder(),
+						},
+						announcechannel = {
+							order = getOrder(),
+							name = "Announce to Custom Channel",
+							desc = "Click the abilities icon to announce to raid whose coolddown is available",
+							type = 'toggle',
+						},
+						customchan = {
+							order = getOrder(),
+							type = "input",
+							name = "Channel Name",
+							desc = "Channel you want to announce to",
+						},
+					},
+				},
+				bargroup = {
+					type = "group",
+					name = "Bar Options",
+					inline = true,
+					args = {
+						growth = {
+							order = getOrder(),
+							name = "Bar Grow Direction",
+							type = 'select',
+							set = function(info, value)
+								BLCD.db.profile.growth = value; BLCD:UpdateBarGrowthDirection()
+							end,
+							values = {
+								['left'] = "Left",
+								['right'] = "Right",
+							},
+						},
+						availablebars = {
+							type = "toggle",
+							name = "Ready bar mode",
+							desc = "Always show bars",
+							order = getOrder(),
+							set = function(key, value)
+								BLCD.db.profile.availablebars = value; BLCD:AvailableBars(value)
+							end,
+						},
+						classcolorbars = {
+							type = "toggle",
+							name = "Class color bars",
+							desc = "Color the cooldown bars according to class",
+							order = getOrder(),
+							set = function(key, value)
+								BLCD.db.profile.classcolorbars = value; BLCD:RecolorBars(value)
+							end,
+						},
+						barfill = {
+							type = "toggle",
+							name = "Bar drain/fill",
+							desc = "Toggle the direction that the bars drain (default false = drain)",
+							order = getOrder(),
+							set = function(key, value)
+								BLCD.db.profile.barfill = value; BLCD:RefillBars(value)
+							end,
+						},
+					},
 				},
 			},
 		},

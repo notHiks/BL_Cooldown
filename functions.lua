@@ -273,6 +273,7 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	else
 		bar:SetColor(.5,.5,.5,1)
 	end
+	bar:SetFill(BLCD.db.profile.barfill)
 	bar:SetDuration(duration)
 	bar:SetScale(BLCD.db.profile.scale)
 	bar:SetClampedToScreen(true)
@@ -290,15 +291,6 @@ function BLCD:CancelBars(spellID)
 			bar:Stop()
 		end
 	end
-end
-
-function BLCD:restyleBar(self)
-	self.candyBarBar:SetPoint("TOPLEFT", self)
-	self.candyBarBar:SetPoint("BOTTOMLEFT", self)
-	self.candyBarIconFrame:Hide()
-	if self.candyBarLabel:GetText() then self.candyBarLabel:Show()
-	else self.candyBarLabel:Hide() end
-	self.candyBarDuration:Hide()
 end
 
 function BLCD:StopPausedBar(cooldown,guid)

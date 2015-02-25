@@ -537,15 +537,32 @@ function BLCD:AvailableBars(value)
 end
 
 function BLCD:RecolorBars(value)
-	local spellId,bar,frame,cooldown
+	local cooldown, color, bar
 	for spellId, frame in pairs(cooldownFrameicons) do
 		for bar in pairs(frame.bars) do
 			if value then
 				cooldown = bar:Get("raidcooldowns:cooldown")
-				local color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
+				color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
 				bar:SetColor(color.r,color.g,color.b,1)
 			else
 				bar:SetColor(.5,.5,.5,1)
+			end
+		end
+	end
+end
+
+function BLCD:RefillBars(value)
+	local cooldown, color, bar
+	for spellId, frame in pairs(cooldownFrameicons) do
+		for bar in pairs(frame.bars) do
+			if bar.paused then
+				bar.fill = value
+				bar.start = GetTime()
+				bar.exp = bar.start + bar.remaining
+				bar.candyBarBar:SetMinMaxValues(0, bar.remaining)
+				bar.candyBarBar:SetValue(value and 0 or bar.remaining)
+			else
+				bar:SetFill(value)
 			end
 		end
 	end
@@ -617,7 +634,7 @@ function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 				local duration = BLCD:getCooldownCD(cooldown,sourceGUID)
 				local index = frame.index
 				BLCD:StartCD(frame,cooldown,text,sourceGUID,sourceName,frameicon,spellName,duration,false,destName)
-				local data = {{spellID = cooldown['spellID'], name = cooldown['name'], class = cooldown['class']},sourceGUID,sourceName,spellName,duration,index}
+				local data = {{spellID = cooldown['spellID'], name = cooldown['name'], class = cooldown['class'], CD = cooldown['CD']},sourceGUID,sourceName,spellName,duration,index}
 				BLCD:SendCommand(data)
 				text:SetText(BLCD:GetTotalCooldown(spellId))
 			end
@@ -687,7 +704,12 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 	if bar then
 		bar:SetTimeVisibility(true)
 		bar:EnableMouse(false)
-		bar:Start()
+		if bar.paused then
+			bar.start = GetTime() -- For reverse fill
+			bar:Resume()
+		else
+			bar:Start()
+		end
 	else
 		if(cooldown["spec"]) then
 			BLCD['raidRoster'][guid]["spec"] = cooldown["spec"]
@@ -709,7 +731,12 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 		bar = BLCD.curr[cooldown['spellID']][guid]
 		bar:SetTimeVisibility(true)
 		bar:EnableMouse(false)
-		bar:Start()
+		if bar.paused then
+			bar.start = GetTime() -- For reverse fill
+			bar:Resume()
+		else
+			bar:Start()
+		end
 	end
 	BLCD:RearrangeBars(frameicon)
 
@@ -1255,7 +1282,12 @@ function BLCD:ReceiveMessage(prefix, message, distribution, sender)
 							if bar then
 								bar:SetTimeVisibility(true)
 								bar:EnableMouse(false)
-								bar:Start()
+								if bar.paused then
+									bar.start = GetTime()
+									bar:Resume()
+								else
+									bar:Start()
+							end
 							end
 						local frameicon = cooldownFrameicons[DATA[1]['spellID']]
 						local text = frameicon.text

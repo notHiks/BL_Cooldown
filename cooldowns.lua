@@ -217,6 +217,7 @@ BLCD.cooldowns = {
 		name = "SHA_SPLITO",
 		CD = 180,
 		cast = 6,
+		charges = 2,
 		class = "SHAMAN",
 		spec = 264,
 		index = getIndex(),

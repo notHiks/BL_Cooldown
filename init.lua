@@ -40,10 +40,17 @@ function BLCD:CreateRaidTables()
 	BLCD.raidRoster = BLCDrosterReload or {}
 	BLCD.curr = {}
 	BLCD.dead = {}
-	BLCD.charge_time = {}
-	BLCD.charges = {}
 	BLCD.frame_cache = {}
 	BLCD.cooldownFrameicons = {}
+
+	--Charge tables
+	BLCD['charges'] = {
+	['PAL_HAOFSA'] = {},
+	['PAL_HAOFPR'] = {},
+	['PAL_HAOFPU'] = {},
+	['PAL_HAOFSAL'] = {},
+	['SHA_SPLITO'] = {},
+	}
 
 	for guid, v in pairs(BLCD['raidRoster']) do -- Clean old GUIDs
 		if not guid:find("%a+-%x+-%x+") then

@@ -696,7 +696,7 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 	else
 		bar = BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration-adjust,spellName)
 	end
-	if cooldown['charges'] and cooldown['name'] == "PAL_HAOFSA" then
+	if cooldown['charges'] then
 		local duration = BLCD:getCooldownCD(cooldown,guid)
 		duration = BLCD:handleCharges(cooldown,guid,duration)
 		bar:SetDuration(duration-adjust)
@@ -789,49 +789,54 @@ function BLCD:getCooldownCD(cooldown,sourceGUID)
 end
 
 function BLCD:handleCharges(cooldown,sourceGUID,duration)
-	if cooldown['name'] == "PAL_HAOFSA" and cooldown['charges'] and BLCD['raidRoster'][sourceGUID]['talents'][17593] then
-		if BLCD['charges'][sourceGUID] == nil then BLCD['charges'][sourceGUID] = 2 end -- setup init charges
+	if cooldown['charges'] and (BLCD['raidRoster'][sourceGUID]['talents'][17593] or BLCD['raidRoster'][sourceGUID]['talents'][19273]) then -- Pal Clem/ Shaman Echo
+		if BLCD['charges'][cooldown['name']][sourceGUID] == nil then 
+			BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = 2 }
+		end -- setup init charges
 		local curtime = GetTime()
-		local recharge = BLCD['charge_time'][sourceGUID]
+		local chgtable = BLCD['charges'][cooldown['name']][sourceGUID] 
+		local charges = chgtable['charges']
+		local recharge = chgtable['recharge']
 		--print('true', curtime - (recharge or 0), ' ... ', recharge)
 		-- Using a charge
+
 		if recharge == nil or (curtime - recharge) < 0 then
-			if BLCD['charges'][sourceGUID] == 2 and recharge == nil then 
+			if charges == 2 and recharge == nil then 
 			--print(1)
 			-- 1st use, use cast time as bar time
-				BLCD['charges'][sourceGUID] = 1
+				charges = 1
 				duration = cooldown['cast']
-			elseif BLCD['charges'][sourceGUID] == 1 and recharge == nil then
+			elseif charges == 1 and recharge == nil then
 			--print(2)
 			-- Return from 1st use with cast bar
 				recharge = curtime + duration - cooldown['cast']
 				duration = duration - cooldown['cast']
-			elseif BLCD['charges'][sourceGUID] == 1 then -- charge already used, 2nd use
+			elseif charges == 1 then -- charge already used, 2nd use
 			--print(3)
-				BLCD['charges'][sourceGUID] = 0
+				charges = 0
 				--local oldtime = recharge 		-- Timestamp to gain charge
 				--recharge = curtime + duration
 				--duration = oldtime - curtime		-- bar = (gain charge time - cur time)
 				duration = (recharge or duration) - curtime -- (or duration) should fix double sac'ing
-			elseif BLCD['charges'][sourceGUID] == 0 then -- Recharge from 0
+			elseif charges == 0 then -- Recharge from 0
 			--print(4)
-				BLCD['charges'][sourceGUID] = 1
+				charges = 1
 				recharge = curtime + duration
 			end
 		else
-			if BLCD['charges'][sourceGUID] == 1 then -- Recharge with 1 charge left, no cleanbar trigger
+			if charges == 1 then -- Recharge with 1 charge left, no cleanbar trigger
 			--print(5)
-				BLCD['charges'][sourceGUID] = 2
+				charges = 2
 				recharge = nil
-				BLCD['charge_time'][sourceGUID] = nil
+				BLCD['charges'][cooldown['name']][sourceGUID]['recharge'] = nil
 				duration = BLCD:handleCharges(cooldown,sourceGUID,duration)  --recall
-			elseif BLCD['charges'][sourceGUID] == 0 then -- Recharge from 0, redundancy
+			elseif charges == 0 then -- Recharge from 0, redundancy
 			--print(4,4)
-				BLCD['charges'][sourceGUID] = 1
+				charges = 1
 				recharge = curtime + duration
 			end
 		end
-		BLCD['charge_time'][sourceGUID] = recharge
+		BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = charges, ['recharge'] = recharge}
 		--print(duration)
 	end
 	return duration
@@ -847,7 +852,7 @@ end
 
 function BLCD:ResetWipe()
 	for spellId,guids in pairs(BLCD.curr) do
-		if BLCD.cooldowns[spellId]['CD'] >= 300 or spellId == 115310 or spellId == 740 then
+		if BLCD.cooldowns[spellId]['CD'] >= 180 then
 			for guid,bar in pairs(BLCD.curr[spellId]) do
 				bar:Stop()
 			end

@@ -536,35 +536,38 @@ function BLCD:AvailableBars(value)
 	end
 end
 
-function BLCD:RecolorBars(value)
+function BLCD:RestyleBars(style, value)
 	local cooldown, color, bar
 	for spellId, frame in pairs(cooldownFrameicons) do
 		for bar in pairs(frame.bars) do
-			if value then
-				cooldown = bar:Get("raidcooldowns:cooldown")
-				color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
-				bar:SetColor(color.r,color.g,color.b,1)
-			else
-				bar:SetColor(.5,.5,.5,1)
+			if style == "fill" then
+				if bar.paused then
+					bar.fill = value
+					bar.start = GetTime()
+					bar.exp = bar.start + bar.remaining
+					bar.candyBarBar:SetMinMaxValues(0, bar.remaining)
+					bar.candyBarBar:SetValue(value and 0 or bar.remaining)
+				else
+					bar:SetFill(value)
+				end
+			elseif style == "color" then
+				if value then
+					cooldown = bar:Get("raidcooldowns:cooldown")
+					color = RAID_CLASS_COLORS[cooldown['class']] or {r=0.5; g=0.5; b=0.5}
+					bar:SetColor(color.r,color.g,color.b,1)
+				else
+					bar:SetColor(.5,.5,.5,1)
+				end
+			elseif style == "height" then
+				bar:SetHeight(value or 9)
+			elseif style == "width" then
+				bar:SetWidth(value or 100)
+			elseif style == "barfont" then
+				bar.candyBarLabel:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", value)
+				bar.candyBarDuration:SetFont("Interface\\AddOns\\BL_Cooldown\\media\\PT_Sans_Narrow.ttf", BLCD.db.profile.barfontsize)
 			end
 		end
-	end
-end
-
-function BLCD:RefillBars(value)
-	local cooldown, color, bar
-	for spellId, frame in pairs(cooldownFrameicons) do
-		for bar in pairs(frame.bars) do
-			if bar.paused then
-				bar.fill = value
-				bar.start = GetTime()
-				bar.exp = bar.start + bar.remaining
-				bar.candyBarBar:SetMinMaxValues(0, bar.remaining)
-				bar.candyBarBar:SetValue(value and 0 or bar.remaining)
-			else
-				bar:SetFill(value)
-			end
-		end
+		BLCD:RearrangeBars(frame)
 	end
 end
 

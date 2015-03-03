@@ -6,6 +6,8 @@
 - Regroup addon options to make it look pretty
 - Add Remaining charge spells
 - Fix: 3 min CDs reset on wipe
+- Add adjustable bar size and font
+- Fixed mouseover bug on who's cd is available
 
 3.62
 - Fix click to announce on paused bars

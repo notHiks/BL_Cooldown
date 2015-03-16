@@ -249,7 +249,7 @@ function BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration,spell)
 	bar:Set("raidcooldowns:anchor", frameicon)
 	bar:Set("raidcooldowns:key", guid)
 	bar:Set("raidcooldowns:spell", spell)
-	bar:Set("raidcooldowns:caster", caster)
+	bar:Set("raidcooldowns:caster", strsplit(" ", caster)) -- Prevent charges from messing it up later
 	bar:Set("raidcooldowns:cooldown", cooldown)
 	bar:SetParent(frameicon)
 	bar:SetFrameStrata("MEDIUM")
@@ -503,17 +503,14 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 		for i,v in pairs(rosterCD) do
 		-- guid, name
 			local logic = (BLCD.db.profile.availablebars and onCD[i] and onCD[i]['paused']) or (not BLCD.db.profile.availablebars and not onCD[i])
-			if logic then
-				local unitAlive = not (UnitIsDeadOrGhost(v) or false)
-				local unitOnline = (UnitIsConnected(v) or false)
-				--print(v, tostring(unitAlive), tostring(unitOnline))
-				if unitAlive and unitOnline then
-					GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
-				elseif not unitOnline then
-					GameTooltip:AddLine(v .. ' OFFLINE but ready!', 1, 0, 0)
-				else
-					GameTooltip:AddLine(v .. ' DEAD but Ready!', 1, 0, 0)
-				end
+			local unitAlive = not (UnitIsDeadOrGhost(v) or false)
+			local unitOnline = (UnitIsConnected(v) or false)
+			if unitAlive and unitOnline and logic then
+				GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+			elseif not unitOnline then
+				GameTooltip:AddLine(v .. ' OFFLINE but ready!', 1, 0, 0)
+			else
+				GameTooltip:AddLine(v .. ' DEAD but Ready!', 1, 0, 0)
 			end
 		end
 	end

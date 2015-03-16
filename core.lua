@@ -163,19 +163,6 @@ function BLCD:UpdateRoster(cooldown)
 end
 
 function BLCD:DebugFunc()
-	--[[for id,tabl in pairs(BLCD.cooldownRoster) do
-		for guid,name in pairs(tabl) do
-			print('check ', name)
-			self:CheckPausedBars(BLCD.cooldowns[id],name)
-		end
-	end]]
-	for spellid, stuff in pairs(BLCD.curr) do
-		for guid, bars in pairs(stuff) do
-			if bars then
-				bars:Stop()
-			end
-		end
-	end
 end
 
 local function print(...)
@@ -193,12 +180,12 @@ function BLCD:SetExtras(set)
 		end
 
 		if IsInRaid() and inInstance then
-			local i, cooldown
 			for i=1, GetNumGroupMembers(), 1 do
-				local _,_,subgroup,_,_,_,_,_,_,_,_ = GetRaidRosterInfo(i)
+				--local _,_,subgroup,_,_,_,_,_,_,_,_ = GetRaidRosterInfo(i)
 				local guid = UnitGUID("raid"..tostring(i))
 				if BLCD["raidRoster"] and BLCD["raidRoster"][guid] then
-					if subgroup > maxSubgroup then
+					--if subgroup > maxSubgroup then
+					if i > maxPlayers then
 						BLCD["raidRoster"][guid]["extra"] = true
 					else
 						BLCD["raidRoster"][guid]["extra"] = nil
@@ -214,7 +201,6 @@ function BLCD:SetExtras(set)
 			end
 		end
 	else
-		local k, v, i, cooldown
 		for k,v in pairs(BLCD["raidRoster"]) do
 			if BLCD["raidRoster"][k]["extra"] then
 				BLCD["raidRoster"][k]["extra"] = nil
@@ -244,11 +230,7 @@ function BLCD:GROUP_ROSTER_UPDATE()
 end
 
 function BLCD:UpdateExtras()
-	if not BLCD.db.profile.autocheckextra
-		or not IsInRaid()
-		 then return end
-
-	BLCD:SetExtras(true)
+	BLCD:SetExtras(BLCD.db.profile.autocheckextra)
 end
 --------------------------------------------------------
 
@@ -329,7 +311,6 @@ function BLCD:CreateCooldown(index, cooldown)
 		frameicon.cooldown:SetSwipeTexture("Interface\\Garrison\\Garr_TimerFill-Upgrade")
 	end
 	cooldownFrameicons[cooldown['spellID']] = frameicon
-	--BLCD.cooldownFrameicons[cooldown['spellID']] = frameicon
 	--BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon)
 
 	frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -342,15 +323,11 @@ function BLCD:CreateCooldown(index, cooldown)
 		-- Delay these as it's creating a race condition with the callback set up in OnInitialization()
 		BLCD:ScheduleTimer("UpdateRoster", .4, cooldown)
 		BLCD:ScheduleTimer("UpdateCooldown", .5, frame,event,cooldown,frameicon.text,frameicon, ...)
-		--BLCD:UpdateRoster(cooldown)
-		--BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon, ...)
 	end)
 
 	LGIST.RegisterCallback (frame, "GroupInSpecT_Remove", function(event, ...)
 		BLCD:ScheduleTimer("UpdateRoster", .4, cooldown)
 		BLCD:ScheduleTimer("UpdateCooldown", .5, frame,event,cooldown,frameicon.text,frameicon, ...)
-		--BLCD:UpdateRoster(cooldown)
-		--BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon, ...)
 	end)
 
 	frameicon:SetScript("OnEnter", function(self,event, ...)
@@ -402,26 +379,9 @@ function BLCD:CreateResFrame()
 	BLCD:BLFontTemplate(frameicon.text, 14*BLCD.db.profile.scale, 'OUTLINE')
 	BLCD:BLPoint(frameicon.text, "CENTER", frameicon, "CENTER", 2, 0)
 	frameicon.text:SetFormattedText("%d\n%d:%02d", 0, 0, 0)
-	--frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");]]
-
 
 	BLCD.resFrame = frame
 	BLCD.resFrameIcon = frameicon
-	-- frameicon:SetScript("OnEnter", function(self,event, ...)
-		-- BLCD:OnEnter(self, cooldown, BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']])
-	-- end);
-
-	-- frameicon:SetScript("PostClick", function(self,event, ...)
-		-- BLCD:PostClick(self, cooldown, BLCD.cooldownRoster[cooldown['spellID']], BLCD.curr[cooldown['spellID']])
-	-- end);
-
-	-- frameicon:SetScript("OnLeave", function(self,event, ...)
-		-- BLCD:OnLeave(self)
-	-- end);
-
-	-- frame:SetScript("OnEvent", function(self,event, ...)
-		-- BLCD:UpdateCooldown(frame,event,cooldown,frameicon.text,frameicon, ...)
-	-- end);
 	frame:Hide()
 end
 
@@ -447,20 +407,13 @@ function BLCD:HandleEvents(frame,register)
 	end]]
 end
 
-function BLCD:CreatePausedBar(cooldown,guid,fromCleanBar)
-	if BLCD.curr[cooldown['spellID']][guid] then
-		--local bar = BLCD.curr[cooldown['spellID']][guid]
-		--if (cooldown['name'] == "PAL_HAOFSA") then
-			--local duration = BLCD:getCooldownCD(cooldown,guid)
-			--bar:SetDuration(duration - 1)
-		--end
-		--bar:Show()
-	else
+function BLCD:CreatePausedBar(cooldown,guid)
+	if not BLCD.curr[cooldown['spellID']][guid] then
 		local duration = BLCD:getCooldownCD(cooldown,guid)
-		if fromCleanBar then duration = BLCD:handleCharges(cooldown,guid,duration) end
+		local duration, label = BLCD:handleCharges(cooldown,guid,duration,true)
 		local spellID = cooldown['spellID']
 		local spellName = GetSpellInfo(spellID)
-		local caster = select(6,GetPlayerInfoByGUID(guid))
+		local caster = select(6,GetPlayerInfoByGUID(guid)) .. (label or "")
 		local bar = BLCD:CreateBar(nil, cooldown, caster, cooldownFrameicons[spellID], guid, duration - 1, spellName)
 		BLCD.curr[spellID][guid] = bar
 		bar:SetTimeVisibility(false)
@@ -628,7 +581,7 @@ function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 		local timestamp, eventType , _, sourceGUID, sourceName, srcFlags, _, destGUID, destName, dstFlags, _, spellId, spellName = select(1, ...)
 		if (spellId == 108292 or spellId == 108293 or spellId == 108294) and cooldown['spellID'] == 108291 then -- Stupid Heart of the Wild with it's 4 ID's
 			spellId = 108291
-		elseif spellId == 106898 and cooldown['spellID'] == 77761 then
+		elseif (spellId == 77764 or spellId == 106898) and cooldown['spellID'] == 77761 then
 			spellId = 77761
 		end
 		local group = bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_AFFILIATION_RAID)
@@ -694,16 +647,21 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 	end
 
 	local bar
+	if cooldown['charges'] then
+		duration = BLCD:handleCharges(cooldown,guid,duration)
+	end
 	if BLCD.db.profile.availablebars then
 		bar = BLCD.curr[cooldown['spellID']][guid]
+		bar:SetDuration(duration-adjust)
 	else
 		bar = BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration-adjust,spellName)
 	end
-	if cooldown['charges'] then
+	--[[if bar and cooldown['charges'] then
 		local duration = BLCD:getCooldownCD(cooldown,guid)
 		duration = BLCD:handleCharges(cooldown,guid,duration)
 		bar:SetDuration(duration-adjust)
-	end
+		bar.candyBarBar:SetMinMaxValues(0, bar.remaining)
+	--end]]
 	if bar then
 		bar:SetTimeVisibility(true)
 		bar:EnableMouse(false)
@@ -791,58 +749,62 @@ function BLCD:getCooldownCD(cooldown,sourceGUID)
 	return duration
 end
 
-function BLCD:handleCharges(cooldown,sourceGUID,duration)
-	if cooldown['charges'] and (BLCD['raidRoster'][sourceGUID]['talents'][17593] or BLCD['raidRoster'][sourceGUID]['talents'][19273]) then -- Pal Clem/ Shaman Echo
+function BLCD:handleCharges(cooldown,sourceGUID,duration,notCasted)
+	if cooldown['charges'] and BLCD['raidRoster'][sourceGUID]['talents'] and (BLCD['raidRoster'][sourceGUID]['talents'][17593] or BLCD['raidRoster'][sourceGUID]['talents'][19273]) then -- Pal Clem/ Shaman Echo
 		if BLCD['charges'][cooldown['name']][sourceGUID] == nil then 
 			BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = 2 }
 		end -- setup init charges
 		local curtime = GetTime()
 		local chgtable = BLCD['charges'][cooldown['name']][sourceGUID] 
 		local charges = chgtable['charges']
-		local recharge = chgtable['recharge']
-		--print('true', curtime - (recharge or 0), ' ... ', recharge)
-		-- Using a charge
+		local label = " (x%d)"
 
-		if recharge == nil or (curtime - recharge) < 0 then
-			if charges == 2 and recharge == nil then 
-			--print(1)
-			-- 1st use, use cast time as bar time
-				charges = 1
-				duration = cooldown['cast']
-			elseif charges == 1 and recharge == nil then
-			--print(2)
-			-- Return from 1st use with cast bar
-				recharge = curtime + duration - cooldown['cast']
-				duration = duration - cooldown['cast']
-			elseif charges == 1 then -- charge already used, 2nd use
-			--print(3)
-				charges = 0
-				--local oldtime = recharge 		-- Timestamp to gain charge
-				--recharge = curtime + duration
-				--duration = oldtime - curtime		-- bar = (gain charge time - cur time)
-				duration = (recharge or duration) - curtime -- (or duration) should fix double sac'ing
-			elseif charges == 0 then -- Recharge from 0
-			--print(4)
-				charges = 1
-				recharge = curtime + duration
-			end
-		else
-			if charges == 1 then -- Recharge with 1 charge left, no cleanbar trigger
-			--print(5)
-				charges = 2
-				recharge = nil
-				BLCD['charges'][cooldown['name']][sourceGUID]['recharge'] = nil
-				duration = BLCD:handleCharges(cooldown,sourceGUID,duration)  --recall
-			elseif charges == 0 then -- Recharge from 0, redundancy
-			--print(4,4)
-				charges = 1
-				recharge = curtime + duration
-			end
+		-- Using a charge
+		if notCasted then
+			return cooldown['cast'], string.format(label, charges)
 		end
-		BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = charges, ['recharge'] = recharge}
-		--print(duration)
+		
+		if charges == 2 then
+			charges = 1
+			chgtable[1] = curtime + duration
+			duration = cooldown['cast']
+			--print('2 use one')
+		elseif charges == 1 then
+			-- use
+			if curtime < chgtable[1] then
+				charges = 0
+				chgtable[2] = curtime + duration
+				duration = chgtable[1] - curtime
+				--print('1 charge, 0 left')
+			-- recharge
+			elseif curtime > chgtable[1] then
+				--charges = 1 -- just recharge really 
+				chgtable[1] = curtime + duration
+				duration = cooldown['cast']
+				--print('1 charge, recharge, use')
+			end
+		elseif charges == 0 then
+			-- double recharg
+			if curtime > chgtable[2] then
+				charges = 1
+				chgtable[2] = nil
+				chgtable[1] = curtime + duration
+				duration = cooldown['cast']
+				--print('double recharge')
+			elseif curtime > chgtable[1] then --recharge one, use it
+				--charges = 0, no change
+				chgtable[1] = chgtable[2] -- Charge 2 moves to 1 slot
+				chgtable[2] = curtime + duration -- New charge 2 time = curtime + cooldown duration
+				duration = chgtable[1] - curtime -- Bar duration is charge time left on 1
+				--print('recharge, reuse')
+			end
+		else -- shouldn't reach
+			--print('This is bad')
+		end
+		chgtable['charges'] = charges
+		BLCD['charges'][cooldown['name']][sourceGUID] = chgtable
 	end
-	return duration
+	return duration--, string.format(label or "", charges)
 end
 
 function BLCD:ResetAll()
@@ -867,6 +829,8 @@ function BLCD:ResetWipe()
 			frameicon.cooldown:SetCooldown(0, 0)
 		end
 	end
+	BLCD.charges['SHA_SPLITO'] = {}
+	BLCD.charges['PAL_HAOFPR'] = {}
 end
 --------------------------------------------------------
 
@@ -1020,21 +984,16 @@ function BLCD:OnInitialize()
 		local a = bar:Get("raidcooldowns:anchor") --'a' is frameicon
 		if a and a.bars and a.bars[bar] then
 			a.bars[bar] = nil
-
 			local bd = bar.candyBarBackdrop
 			bd:Hide()
 			if bd.iborder then
 				bd.iborder:Hide()
 				bd.oborder:Hide()
 			end
-			--bar:SetTexture(nil)
 			local guid = bar:Get("raidcooldowns:key")
 			local spell = bar:Get("raidcooldowns:spell")
 			local cooldown = bar:Get("raidcooldowns:cooldown")
 			local caster = bar:Get("raidcooldowns:caster")
-			--[[if BLCD['handles'] and BLCD["handles"][guid] and BLCD["handles"][guid][spell] then
-				BLCD['handles'][guid][spell] = nil
-			end]]
 			BLCD.curr[cooldown['spellID']][guid] = nil;
 
 			if(BLCD.db.profile.cdannounce and BLCD.dead[caster] == 0) then
@@ -1056,25 +1015,16 @@ function BLCD:OnInitialize()
 					SendChatMessage(message ,"SAY");
 				end
 			end
-			
-			--[[local recharge = false
-			if cooldown['charges'] and BLCD['charges'][guid] < 2 then
-				BLCD['charges'][guid] = BLCD['charges'][guid] + 1
-				recharge = true
-			end]]
-
 			if BLCD.db.profile.availablebars and BLCD.db.profile.cooldown[cooldown.name] and a:IsVisible() then
 				local unitalive = (not UnitIsDeadOrGhost(caster) and UnitIsConnected(caster))
 				if BLCD.cooldownRoster[cooldown['spellID']][guid] and unitalive then
 					BLCD:CreatePausedBar(cooldown,guid,true)
 				end
 			end
-
 			BLCD:RearrangeBars(a)
 			a.text:SetText(BLCD:GetTotalCooldown(cooldown['spellID']))
 		end
 	end
-
 	CB.RegisterCallback(self, "LibCandyBar_Stop", CleanBar)
 end
 
@@ -1274,7 +1224,7 @@ function BLCD:ReceiveMessage(prefix, message, distribution, sender)
 		elseif type(DATA) == "table" then
 			local index = DATA[6]
 			--print('recieved@ ', GetTime(), 'from: ', sender)--, 'message: ', BLCD:print_r(DATA))
-			--local data = {{cooldown['spellID'], cooldown['name']},soureGUID,sourceName,spellName,duration,index}
+			--local data = {{spellID = cooldown['spellID'], name = cooldown['name'], class = cooldown['class'], CD = cooldown['CD']},sourceGUID,sourceName,spellName,duration,index}
 			--local DATA = {cooldown,sourceGUID,sourceName,spellName,duration,index}
 			--	DATA			1		 2		   3		  4		   5	   6
 			if BLCD.db.profile.cooldown[DATA[1]['name']] then -- The player might not be tracking the cooldown that is received from comms

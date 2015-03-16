@@ -413,7 +413,7 @@ function BLCD:CreatePausedBar(cooldown,guid)
 		local duration, label = BLCD:handleCharges(cooldown,guid,duration,true)
 		local spellID = cooldown['spellID']
 		local spellName = GetSpellInfo(spellID)
-		local caster = select(6,GetPlayerInfoByGUID(guid)) .. (label or "")
+		local caster = select(6,GetPlayerInfoByGUID(guid)) --.. (label or "")
 		local bar = BLCD:CreateBar(nil, cooldown, caster, cooldownFrameicons[spellID], guid, duration - 1, spellName)
 		BLCD.curr[spellID][guid] = bar
 		bar:SetTimeVisibility(false)

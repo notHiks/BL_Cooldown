@@ -505,8 +505,12 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 			local logic = (BLCD.db.profile.availablebars and onCD[i] and onCD[i]['paused']) or (not BLCD.db.profile.availablebars and not onCD[i])
 			local unitAlive = not (UnitIsDeadOrGhost(v) or false)
 			local unitOnline = (UnitIsConnected(v) or false)
+			local hasCharges 
+			if cooldown['charges'] then
+				hasCharges = BLCD['charges'][cooldown['name']][i] and " (has charges)" or ""
+			end
 			if unitAlive and unitOnline and logic then
-				GameTooltip:AddLine(v .. ' Ready!', 0, 1, 0)
+				GameTooltip:AddLine(v .. ' Ready!' .. hasCharges, 0, 1, 0)
 			elseif not unitOnline then
 				GameTooltip:AddLine(v .. ' OFFLINE but ready!', 1, 0, 0)
 			else

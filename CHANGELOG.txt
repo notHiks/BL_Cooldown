@@ -1,6 +1,5 @@
-3.63 BETA
-- Added initial code to support Paladin charge spells when spec'd Clemency
-*Could be broken with double sac on 2 different people (looking for bugs)
+3.63
+- Added support Paladin to charge spells when spec'd Clemency
 - Added option to disable battle res monitor
 - Add option to set bar fill/drain direction
 - Regroup addon options to make it look pretty

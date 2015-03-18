@@ -652,7 +652,9 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 	end
 	if BLCD.db.profile.availablebars then
 		bar = BLCD.curr[cooldown['spellID']][guid]
-		bar:SetDuration(duration-adjust)
+		if cooldown['charges'] then
+			bar:SetDuration(duration-adjust)
+		end
 	else
 		bar = BLCD:CreateBar(frame,cooldown,caster,frameicon,guid,duration-adjust,spellName)
 	end
@@ -750,59 +752,63 @@ function BLCD:getCooldownCD(cooldown,sourceGUID)
 end
 
 function BLCD:handleCharges(cooldown,sourceGUID,duration,notCasted)
-	if cooldown['charges'] and BLCD['raidRoster'][sourceGUID]['talents'] and (BLCD['raidRoster'][sourceGUID]['talents'][17593] or BLCD['raidRoster'][sourceGUID]['talents'][19273]) then -- Pal Clem/ Shaman Echo
-		if BLCD['charges'][cooldown['name']][sourceGUID] == nil then 
-			BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = 2 }
-		end -- setup init charges
-		local curtime = GetTime()
-		local chgtable = BLCD['charges'][cooldown['name']][sourceGUID] 
-		local charges = chgtable['charges']
-		local label = " (x%d)"
+	if cooldown['charges'] then
+		if BLCD['raidRoster'][sourceGUID]['talents'] and (BLCD['raidRoster'][sourceGUID]['talents'][17593] or BLCD['raidRoster'][sourceGUID]['talents'][19273]) then -- Pal Clem/ Shaman Echo
+			if BLCD['charges'][cooldown['name']][sourceGUID] == nil then 
+				BLCD['charges'][cooldown['name']][sourceGUID] = { ['charges'] = 2 }
+			end -- setup init charges
+			local curtime = GetTime()
+			local chgtable = BLCD['charges'][cooldown['name']][sourceGUID] 
+			local charges = chgtable['charges']
+			local label = " (x%d)"
 
-		-- Using a charge
-		if notCasted then
-			return cooldown['cast'], string.format(label, charges)
-		end
-		
-		if charges == 2 then
-			charges = 1
-			chgtable[1] = curtime + duration
-			duration = cooldown['cast']
-			--print('2 use one')
-		elseif charges == 1 then
-			-- use
-			if curtime < chgtable[1] then
-				charges = 0
-				chgtable[2] = curtime + duration
-				duration = chgtable[1] - curtime
-				--print('1 charge, 0 left')
-			-- recharge
-			elseif curtime > chgtable[1] then
-				--charges = 1 -- just recharge really 
-				chgtable[1] = curtime + duration
-				duration = cooldown['cast']
-				--print('1 charge, recharge, use')
+			-- Using a charge
+			if notCasted then
+				return cooldown['cast'], string.format(label, charges)
 			end
-		elseif charges == 0 then
-			-- double recharg
-			if curtime > chgtable[2] then
+			
+			if charges == 2 then
 				charges = 1
-				chgtable[2] = nil
 				chgtable[1] = curtime + duration
 				duration = cooldown['cast']
-				--print('double recharge')
-			elseif curtime > chgtable[1] then --recharge one, use it
-				--charges = 0, no change
-				chgtable[1] = chgtable[2] -- Charge 2 moves to 1 slot
-				chgtable[2] = curtime + duration -- New charge 2 time = curtime + cooldown duration
-				duration = chgtable[1] - curtime -- Bar duration is charge time left on 1
-				--print('recharge, reuse')
+				--print('2 use one')
+			elseif charges == 1 then
+				-- use
+				if curtime < chgtable[1] then
+					charges = 0
+					chgtable[2] = curtime + duration
+					duration = chgtable[1] - curtime
+					--print('1 charge, 0 left')
+				-- recharge
+				elseif curtime > chgtable[1] then
+					--charges = 1 -- just recharge really 
+					chgtable[1] = curtime + duration
+					duration = cooldown['cast']
+					--print('1 charge, recharge, use')
+				end
+			elseif charges == 0 then
+				-- double recharg
+				if curtime > chgtable[2] then
+					charges = 1
+					chgtable[2] = nil
+					chgtable[1] = curtime + duration
+					duration = cooldown['cast']
+					--print('double recharge')
+				elseif curtime > chgtable[1] then --recharge one, use it
+					--charges = 0, no change
+					chgtable[1] = chgtable[2] -- Charge 2 moves to 1 slot
+					chgtable[2] = curtime + duration -- New charge 2 time = curtime + cooldown duration
+					duration = chgtable[1] - curtime -- Bar duration is charge time left on 1
+					--print('recharge, reuse')
+				end
+			else -- shouldn't reach
+				--print('This is bad')
 			end
-		else -- shouldn't reach
-			--print('This is bad')
+			chgtable['charges'] = charges
+			BLCD['charges'][cooldown['name']][sourceGUID] = chgtable
+		else
+			BLCD['charges'][cooldown['name']][sourceGUID] = nil
 		end
-		chgtable['charges'] = charges
-		BLCD['charges'][cooldown['name']][sourceGUID] = chgtable
 	end
 	return duration--, string.format(label or "", charges)
 end

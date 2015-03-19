@@ -172,20 +172,22 @@ end
 function BLCD:SetExtras(set)
 	if set then
 		local inInstance,_ = IsInInstance()
-		local _,_,_,_,_,_,_,_,maxPlayers = GetInstanceInfo()
+		local _,_,_,_,_,_,_,mapID,maxPlayers = GetInstanceInfo()
 		local maxSubgroup = 8
 
-		if maxPlayers < 40 and maxPlayers ~= 0 then
-			maxSubgroup = math.ceil(maxPlayers/5)
-		end
+		--if maxPlayers < 40 and maxPlayers ~= 0 then
+			--maxSubgroup = math.ceil(maxPlayers/5)
+		--end
 
 		if IsInRaid() and inInstance then
 			for i=1, GetNumGroupMembers(), 1 do
 				--local _,_,subgroup,_,_,_,_,_,_,_,_ = GetRaidRosterInfo(i)
-				local guid = UnitGUID("raid"..tostring(i))
+				local unit = "raid" .. tostring(i)
+				local _,_,_,unitMapID = UnitPosition(unit)
+				local guid = UnitGUID(unit)
 				if BLCD["raidRoster"] and BLCD["raidRoster"][guid] then
 					--if subgroup > maxSubgroup then
-					if i > maxPlayers then
+					if mapID ~= unitMapID then
 						BLCD["raidRoster"][guid]["extra"] = true
 					else
 						BLCD["raidRoster"][guid]["extra"] = nil

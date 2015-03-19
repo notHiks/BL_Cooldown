@@ -1,3 +1,6 @@
+3.64
+- New way of setting extras
+
 3.63
 - Added support Paladin to charge spells when spec'd Clemency
 - Added option to disable battle res monitor

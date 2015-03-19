@@ -505,7 +505,7 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 			local logic = (BLCD.db.profile.availablebars and onCD[i] and onCD[i]['paused']) or (not BLCD.db.profile.availablebars and not onCD[i])
 			local unitAlive = not (UnitIsDeadOrGhost(v) or false)
 			local unitOnline = (UnitIsConnected(v) or false)
-			local hasCharges 
+			local hasCharges = ""
 			if cooldown['charges'] then
 				hasCharges = BLCD['charges'][cooldown['name']][i] and " (has charges)" or ""
 			end

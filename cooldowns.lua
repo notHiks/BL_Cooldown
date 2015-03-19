@@ -41,6 +41,7 @@ BLCD.cooldowns = {
 		CD = 300,
 		cast = 10,
 		class = "PALADIN",
+		notspec = 999,
 		index = getIndex(),
 	},
 	[105809] = { -- Holy Avenger

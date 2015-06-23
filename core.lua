@@ -116,6 +116,8 @@ function BLCD:UpdateRoster(cooldown)
 						elseif(not unitalive) then
 							--BLCD.cooldownRoster[cooldown['spellID']][guid] = nil
 							BLCD:StopPausedBar(cooldown,guid)
+						elseif BLCD.curr[cooldown['spellID']][guid] then
+							BLCD:StopPausedBar(cooldown,guid)
 						end
 					end
 				end
@@ -281,11 +283,11 @@ function BLCD:CreateCooldown(index, cooldown)
 
 	local frameicon = CreateFrame("Button", 'BLCooldownIcon'..index, BLCooldownBase_Frame);
 
-	if(Elv) then
-		frameicon:SetTemplate()
-	else
+	--if(Elv) then
+		--frameicon:SetTemplate()
+	--else
 		frameicon:SetBackdrop({nil, edgeFile = "Interface\\BUTTONS\\WHITE8X8", tile = false, tileSize = 0, edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0}})
-	end
+	--end
 	local classcolor = RAID_CLASS_COLORS[string.upper(cooldown.class):gsub(" ", "")]
 	frameicon:SetBackdropBorderColor(classcolor.r,classcolor.g,classcolor.b)
 	frameicon:SetParent(frame)
@@ -361,11 +363,11 @@ function BLCD:CreateResFrame()
 
 	local frameicon = CreateFrame("Button", 'BLCooldownIconBattleRes', BLCooldownBase_Frame);
 
-	if(Elv) then
-		frameicon:SetTemplate()
-	else
+	--if(Elv) then
+		--frameicon:SetTemplate()
+	--else
 		frameicon:SetBackdrop({nil, edgeFile = "Interface\\BUTTONS\\WHITE8X8", tile = false, tileSize = 0, edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0}})
-	end
+	--end
 	frameicon:SetBackdropBorderColor(1,1,1)
 	frameicon:SetParent(frame)
 	BLCD:BLSize(frameicon,35*BLCD.db.profile.scale,30*BLCD.db.profile.scale)
@@ -654,7 +656,7 @@ function BLCD:StartCD(frame,cooldown,text,guid,caster,frameicon,spellName,durati
 	end
 	if BLCD.db.profile.availablebars then
 		bar = BLCD.curr[cooldown['spellID']][guid]
-		if cooldown['charges'] then
+		if cooldown['charges'] and bar then
 			bar:SetDuration(duration-adjust)
 		end
 	else

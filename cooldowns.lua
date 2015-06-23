@@ -378,15 +378,6 @@ BLCD.cooldowns = {
 		class = "MAGE",
 		index = getIndex(),
 	},
-	[159916] = { -- Amplify Magic
-		spellID = 159916,
-		succ = "SPELL_CAST_SUCCESS",
-		name = "MAG_AMMA",
-		CD = 120,
-		cast = 6,
-		class = "MAGE",
-		index = getIndex(),
-	},
 -- Rogue
 	[76577] = { -- Smoke Bomb
 		spellID = 76577,
@@ -395,16 +386,6 @@ BLCD.cooldowns = {
 		CD = 180,
 		cast = 5,
 		class = "ROGUE",
-		index = getIndex(),
-	},
--- Hunter
-	[172106] = { -- Aspect of the Fox
-		spellID = 172106,
-		succ = "SPELL_CAST_SUCCESS",
-		name = "HUN_ASOFTHFO",
-		CD = 180,
-		cast = 6,
-		class = "HUNTER",
 		index = getIndex(),
 	},
 }

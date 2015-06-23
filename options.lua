@@ -87,9 +87,7 @@ BLCD.defaults = {
 			WARR_SHTH = false,
 			WARR_IN = false,
 			MAG_TIWA = false,
-			MAG_AMMA = true,
 			ROG_SMBO = true,
-			HUN_ASOFTHFO = true,
 		},
 	},
 }
@@ -598,12 +596,6 @@ BLCD.options =  {
 							desc = "Warp the flow of time, increasing melee, ranged, and spell haste by 30% for all party and raid members. Lasts 40 sec.\n\nAllies receiving this effect will become unstuck in time, and be unable to benefit from Bloodlust, Heroism, or Time Warp again for 10 min.",
 							order = getOrder(),
 						},
-						MAG_AMMA = {
-							type = "toggle",
-							name = "Amplify Magic",
-							desc = "Amplify the effects of helpful magic, increasing all healing received by 12% for all party and raid members within 100 yards. Lasts 6 sec.",
-							order = getOrder(),
-						},
 					},
 				},
 				rogue = {
@@ -615,19 +607,6 @@ BLCD.options =  {
 							type = "toggle",
 							name = "Smoke Bomb",
 							desc = "Creates a cloud of thick smoke in an 8 yard radius around the Rogue for 5 sec. Enemies are unable to target into or out of the smoke cloud. Allies take 20% less damage while within the cloud.",
-							order = getOrder(),
-						},
-					},
-				},
-				hunter = {
-					type = "group",
-					name = "Hunter Cooldowns",
-					order = getOrder(),
-					args ={
-						HUN_ASOFTHFO = {
-							type = "toggle",
-							name = "Aspect of the Fox",
-							desc = "Party and raid members within 40 yards take on the aspects of a fox, allowing them to move while casting all spells and abilities for 6 sec. Only one Aspect can be active at a time.",
 							order = getOrder(),
 						},
 					},

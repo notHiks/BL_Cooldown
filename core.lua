@@ -1221,6 +1221,7 @@ end
 ------------------------------------------------
 
 function BLCD:ReceiveMessage(prefix, message, distribution, sender)
+	return --TODO Redo
 	if UnitIsUnit(sender, "player") then return end
 	if prefix == commPrefix then
 		local blPrefix, blMsg = message:match("^(%u-):(.+)")

@@ -1,3 +1,6 @@
+3.65
+- Initial update for legion
+
 3.64
 - New way of setting extras
 

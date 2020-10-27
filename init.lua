@@ -76,7 +76,7 @@ function BLCD:SlashProcessor_BLCD(input)
 	elseif v1 == "lock" or v1 == "unlock" or v1 == "drag" or v1 == "move" or v1 == "l" then
 		BLCD:ToggleMoversLock()
 	elseif v1 == "show" then
-		--BLCD:ToggleVisibility()
+		BLCD:ToggleVisibility()
 	elseif v1 == "raid" then
 		BLCD:print_raid()
 	elseif v1 == "config" or v1 == "opt" or v1 == "options" then

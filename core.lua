@@ -57,13 +57,10 @@ function BLCD:OnLGIST(event, guid, unit, info)
 	end
 end
 
+--improved MOTW has been removed. Need to clean up later
 local function hasHoTW(guid)
 	local char = BLCD['raidRoster'][guid]
-	if char['talents'][18584] or char['talents'][21714] or char['talents'][21715] or char['talents'][21716] then
-		return true
-	else
 		return false
-	end
 end
 
 function BLCD:UpdateRoster(cooldown)
@@ -226,7 +223,7 @@ function BLCD:GROUP_ROSTER_UPDATE()
 	local groupType = (IsInGroup(2) and 3) or (IsInRaid() and 2) or (IsInGroup() and 1) -- LE_PARTY_CATEGORY_INSTANCE = 2
 	if (not grouped and groupType) or (grouped and groupType and grouped ~= groupType) then
 		grouped = groupType
-		SendAddonMessage("BLCD", ("VQ:%.2f"):format(BLCD_VERSION), groupType == 3 and "INSTANCE_CHAT" or "RAID")
+		C_ChatInfo.SendAddonMessage("BLCD", ("VQ:%.2f"):format(BLCD_VERSION), groupType == 3 and "INSTANCE_CHAT" or "RAID")
 	elseif grouped and not groupType then
 		grouped = nil
 		wipe(usersRelease)
@@ -242,7 +239,7 @@ end
 -- Frame Management --
 -------------------------------------------------------
 function BLCD:CreateBase()
-	local raidcdbasemover = CreateFrame("Frame", 'BLCooldownBaseMover_Frame', UIParent)
+	local raidcdbasemover = CreateFrame("Frame", 'BLCooldownBaseMover_Frame', UIParent, BackdropTemplateMixin and "BackdropTemplate")
 	raidcdbasemover:SetClampedToScreen(true)
 	raidcdbasemover:SetBackdrop({
 		bgFile = "Interface/Tooltips/UI-Tooltip-Background",
@@ -262,7 +259,7 @@ function BLCD:CreateBase()
 	raidcdbasemover:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 	raidcdbasemover:Hide()
 
-	local raidcdbase = CreateFrame("Frame", 'BLCooldownBase_Frame', UIParent)
+	local raidcdbase = CreateFrame("Frame", 'BLCooldownBase_Frame')
 	BLCD:BLSize(raidcdbase,32*BLCD.db.profile.scale,(96)*BLCD.db.profile.scale)
 	BLCD:BLPoint(raidcdbase,'TOPLEFT', raidcdbasemover, 'TOPLEFT')
 	raidcdbase:SetClampedToScreen(true)
@@ -281,7 +278,7 @@ function BLCD:CreateCooldown(index, cooldown)
 	frame:SetClampedToScreen(true);
 	frame.index = index
 
-	local frameicon = CreateFrame("Button", 'BLCooldownIcon'..index, BLCooldownBase_Frame);
+	local frameicon = CreateFrame("Button", 'BLCooldownIcon'..index, BLCooldownBase_Frame, BackdropTemplateMixin and "BackdropTemplate");
 
 	--if(Elv) then
 		--frameicon:SetTemplate()
@@ -323,6 +320,7 @@ function BLCD:CreateCooldown(index, cooldown)
 	frame:RegisterEvent("PARTY_MEMBER_DISABLE")
 	frame:RegisterEvent("UNIT_CONNECTION")
 
+
 	LGIST.RegisterCallback (frame, "GroupInSpecT_Update", function(event, ...)
 		-- Delay these as it's creating a race condition with the callback set up in OnInitialization()
 		BLCD:ScheduleTimer("UpdateRoster", .4, cooldown)
@@ -355,13 +353,14 @@ function BLCD:CreateCooldown(index, cooldown)
 	return frame
 end
 
+
 function BLCD:CreateResFrame()
 	local frame = CreateFrame("Frame", 'BLCooldownBattleRes', BLCooldownBase_Frame);
 	BLCD:BLSize(frame,35*BLCD.db.profile.scale,30*BLCD.db.profile.scale);
 	frame:SetClampedToScreen(true);
 	BLCD:BLPoint(frame,'BOTTOM', 'BLCooldownBase_Frame', 'TOP', 0, 3);
 
-	local frameicon = CreateFrame("Button", 'BLCooldownIconBattleRes', BLCooldownBase_Frame);
+	local frameicon = CreateFrame("Button", 'BLCooldownIconBattleRes', BLCooldownBase_Frame, BackdropTemplateMixin and "BackdropTemplate");
 
 	--if(Elv) then
 		--frameicon:SetTemplate()
@@ -582,10 +581,10 @@ end
 --------------------------------------------------------
 function BLCD:UpdateCooldown(frame,event,cooldown,text,frameicon, ...)
 	if(event == "COMBAT_LOG_EVENT_UNFILTERED") then
-		local timestamp, eventType , _, sourceGUID, sourceName, srcFlags, _, destGUID, destName, dstFlags, _, spellId, spellName = select(1, ...)
+		local timestamp, eventType , _, sourceGUID, sourceName, srcFlags, _, destGUID, destName, dstFlags, _, spellId = CombatLogGetCurrentEventInfo()
 		if (spellId == 108292 or spellId == 108293 or spellId == 108294) and cooldown['spellID'] == 108291 then -- Stupid Heart of the Wild with it's 4 ID's
 			spellId = 108291
-		elseif (spellId == 77764 or spellId == 106898) and cooldown['spellID'] == 77761 then
+		elseif (spellId == 77764 or spellId == 106898) and cooldown['spellID'] == 77761 then -- Stampeding Roar
 			spellId = 77761
 		end
 		local group = bit.bor(COMBATLOG_OBJECT_AFFILIATION_MINE, COMBATLOG_OBJECT_AFFILIATION_PARTY, COMBATLOG_OBJECT_AFFILIATION_RAID)
@@ -1124,7 +1123,7 @@ do
 	local timer = BLCD.frame:CreateAnimationGroup()
 	timer:SetScript("OnFinished", function()
 		if IsInGroup() then
-			SendAddonMessage("BLCD", ("VR:%2f"):format(BLCD_VERSION), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- LE_PARTY_CATEGORY_INSTANCE = 2
+			C_ChatInfo.SendAddonMessage("BLCD", ("VR:%2f"):format(BLCD_VERSION), IsInGroup(2) and "INSTANCE_CHAT" or "RAID") -- LE_PARTY_CATEGORY_INSTANCE = 2
 		end
 	end)
 	local anim = timer:CreateAnimation()
@@ -1164,9 +1163,9 @@ do
 		end
 	end
 end
-
+--remove
 function BLCD:PrintVersions()
-	if not IsInGroup() then return end
+	--if not IsInGroup() then return end
 
 	local function coloredNameVersion(name, version)
 		if version == -1 then
@@ -1221,7 +1220,7 @@ end
 ------------------------------------------------
 
 function BLCD:ReceiveMessage(prefix, message, distribution, sender)
-	return --TODO Redo
+	--return --TODO Redo
 	if UnitIsUnit(sender, "player") then return end
 	if prefix == commPrefix then
 		local blPrefix, blMsg = message:match("^(%u-):(.+)")

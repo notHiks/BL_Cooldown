@@ -513,8 +513,10 @@ function BLCD:OnEnter(self, cooldown, rosterCD, onCD)
 				GameTooltip:AddLine(v .. ' Ready!' .. hasCharges, 0, 1, 0)
 			elseif not unitOnline then
 				GameTooltip:AddLine(v .. ' OFFLINE but ready!', 1, 0, 0)
+			elseif not unitAlive then
+				GameTooltip:AddLine(v .. ' DEAD but ready!', 1, 0, 0)
 			else
-				GameTooltip:AddLine(v .. ' DEAD but Ready!', 1, 0, 0)
+				GameTooltip:AddLine(v .. ' on CD!', 1, 0, 0)
 			end
 		end
 	end

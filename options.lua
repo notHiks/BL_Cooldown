@@ -51,7 +51,7 @@ BLCD.defaults = {
 		battleres = true,
 		cooldown = {
 			PAL_AUMA = true,
-			PAL_AEOFLI = false,
+			--PAL_AEOFLI = false,
 			PAL_BLOFSA = false,
 			PAL_BLOFPR = false,
 			PAL_BLOFSPE = false,
@@ -69,7 +69,7 @@ BLCD.defaults = {
 			SHA_HETITO = true,
 			SHA_AS = false,
 			SHA_WIRUTO = false,
-			SHA_ANPRTO = false,
+			--SHA_ANPRTO = false,
 			--SHA_RE = false,
 			SHA_ANGU = false,
 			MON_LICO = false,
@@ -296,12 +296,12 @@ BLCD.options =  {
 							desc = "Empowers your chosen aura and increases its radius to 40 yards for 6 sec.",
 							order = getOrder(),
 						},
-						PAL_AEOFLI = {
-							type = "toggle",
-							name = "Aegis of Light",
-							desc = "Channels an Aegis of Light that protects you and all allies standing within 10 yards behind you for 6 sec, reducing all damage taken by 20%.",
-							order = getOrder(),
-						},
+						--PAL_AEOFLI = {
+						--	type = "toggle",
+						--	name = "Aegis of Light",
+						--	desc = "Channels an Aegis of Light that protects you and all allies standing within 10 yards behind you for 6 sec, reducing all damage taken by 20%.",
+						--	order = getOrder(),
+						--},
 						PAL_BLOFSA = {
 							type = "toggle",
 							name = "Blessing of Sacrifice",
@@ -425,12 +425,12 @@ BLCD.options =  {
 							desc = "Summons a totem at the target location for 15 sec, continually granting all allies who pass within 10 yards 60% increased movement speed for 5 sec.",
 							order = getOrder(),
 						},
-						SHA_ANPRTO = {
-							type = "toggle",
-							name = "Ancestral Protection Totem",
-							desc = "Summons a totem at the target location for 30 sec. All allies within 20 yards of the totem gain 10% increased health. If an ally dies, the totem will be consumed to allow them to Reincarnate with 20% health and mana.\n\nCannot reincarnate an ally who dies to massive damage.",
-							order = getOrder(),
-						},
+						--SHA_ANPRTO = {
+						--	type = "toggle",
+						--	name = "Ancestral Protection Totem",
+						--	desc = "Summons a totem at the target location for 30 sec. All allies within 20 yards of the totem gain 10% increased health. If an ally dies, the totem will be consumed to allow them to Reincarnate with 20% health and mana.\n\nCannot reincarnate an ally who dies to massive damage.",
+						--	order = getOrder(),
+						--},
 						--[[SHA_BL = {
 							type = "toggle",
 							name = "Bloodlust",

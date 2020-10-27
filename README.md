@@ -5,8 +5,8 @@ Visually simple cooldown-monitor addon for World of Warcraft.
 [Blood Legion CoolDown](https://www.curseforge.com/wow/addons/bl_cooldown)
 
 ## Current Changes :
-* Updated Combat log APi for 8.1
-* Updated Addon Messging for 8.1
+* Updated Combat log APi for 9.0
+* Updated Addon Messaging for 9.0
 * Updated backdrop color API for 9.0
 * Updated Cooldown timer for 9.0.1 and added GC value so it matchs the cd on the spell
 * Updated all Lib files to latest version.
